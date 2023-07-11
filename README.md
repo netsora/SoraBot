@@ -53,7 +53,9 @@ _✨ 基于 Nonebot2 和 go-cqhttp 开发，超可爱的林汐酱 ✨_
 ## 特色
 * 使用 NoneBot2 进行项目底层构建.
 * 使用 go-cqhttp 作为默认协议端.
-* 适配 QQ、QQ频道 等平台
+* 互通 QQ、QQ频道 等平台
+* 独立ID，更方便管理与互通数据
+* 全新的权限系统，不用重启便可自定义 Bot管理员 和 Bot协助者
 * Coming soon...
 
 ## 更新日志
@@ -73,14 +75,17 @@ _✨ 基于 Nonebot2 和 go-cqhttp 开发，超可爱的林汐酱 ✨_
 
 请参考 [贡献指南](./CONTRIBUTING.md)
 
-## 许可证
-本项目使用 AGPLv3.
-
-意味着你可以运行本项目，并向你的用户提供服务。除非获得商业授权，否则无论以何种方式修改或者使用代码，都需要开源
-
 ## 鸣谢
 感谢以下 开发者 和 Github项目 对 SoraBot 作出的贡献：（排名不分先后）
 * [`nonebot/noenbot2`](https://github.com/nonebot/nonebot2)：跨平台Python异步机器人框架  
 * [`Mrs4s/go-cqhttp`](https://github.com/Mrs4s/go-cqhttp)：cqhttp的golang实现，轻量、原生跨平台.  
 * [`Kyomotoi/ATRI`](https://github.com/Kyomotoi/ATRI)：高性能文爱萝卜子
 * [`CMHopeSunshine/LittlePaimon`](https://github.com/CMHopeSunshine/LittlePaimon)：原神Q群机器人
+* [`nonebot_plugin_saa`](https://github.com/felinae98/nonebot-plugin-send-anything-anywhere)：多适配器消息发送支持
+
+## 许可证
+本项目使用 AGPLv3.
+
+意味着你可以运行本项目，并向你的用户提供服务。除非获得商业授权，否则无论以何种方式修改或者使用代码，都需要开源
+
+## 活动

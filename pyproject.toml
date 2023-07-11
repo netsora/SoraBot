@@ -1,0 +1,56 @@
+[project]
+name = "sorabot"
+version = "1.0.0"
+description = "基于 Nonebot2 和 go-cqhttp 开发，超可爱的林汐酱"
+readme = "README.md"
+requires-python = ">=3.8, <4.0"
+
+[tool.nonebot]
+adapters = [
+    { name = "OneBot V11", module_name = "nonebot.adapters.onebot.v11" },
+    { name = "QQ 频道", module_name = "nonebot.adapters.qqguild" },
+    { name = "OneBot V12", module_name = "nonebot.adapters.onebot.v12" }
+]
+plugins = []
+plugin_dirs = ["sorabot/plugins"]
+builtin_plugins = ["echo"]
+
+[tool.poetry]
+name = "sorabot"
+version = "1.0.0"
+description = "基于 Nonebot2 和 go-cqhttp 开发，超可爱的林汐酱"
+authors = ["mute. <mute231010@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+nonebot2 = "^2.0.0"
+cattrs = "^23.1.2"
+nonebot-plugin-gocqhttp = "^0.6.10"
+cookiecutter = "^2.2.0"
+cachetools = "^5.3.1"
+emoji = "^2.6.0"
+aiosqlite = "^0.19.0"
+strenum = "^0.4.15"
+pygments = "^2.15.1"
+pycln = "^2.1.5"
+
+[tool.black]
+line-length = 88
+target-version = ["py38", "py39", "py310", "py311"]
+include = '\.pyi?$'
+extend-exclude = '''
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 88
+length_sort = true
+skip_gitignore = true
+force_sort_within_sections = true
+src_paths = ["nonebot", "tests"]
+extra_standard_library = ["typing_extensions"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

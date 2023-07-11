@@ -1,0 +1,13 @@
+# 设置参考文档: https://sorabot.netlify.app/blogs/develop/set/set-sora.html
+ConfigVersion: "1.0.0"
+
+WithGoCQHTTP:
+  enabled: {is_use_with_gocqhttp}
+  accounts: {accounts}
+
+  download_domain: "{download_domain}"
+  download_version: "v1.1.0"
+
+  gocqhttp_webui_username: "Sora"
+  gocqhttp_webui_password: "Sora231010"
+

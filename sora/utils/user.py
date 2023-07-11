@@ -3,7 +3,7 @@ import string
 import datetime
 from typing import Union
 
-from sora.database import UserBind
+from sora.database.models import UserBind
 from nonebot.adapters.qqguild import MessageEvent as GuildMessageEvent
 from nonebot.adapters.onebot.v11 import MessageEvent as V11MessageEvent
 
@@ -61,6 +61,6 @@ async def get_user_id(event: Union[V11MessageEvent, GuildMessageEvent]):
             "arcaea_id",
             "phigros_id",
         )
-    user_id = user_bind_info[0][0]
+    user_id = user_bind_info[0]
 
     return user_id

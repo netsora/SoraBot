@@ -48,7 +48,7 @@ _✨ 基于 Nonebot2 和 go-cqhttp 开发，超可爱的林汐酱 ✨_
 > **Note**  
 > 一切开发旨在学习，请勿用于非法用途
 
-基于 Nonebot2 和 go-cqhttp 开发，以 sqlite3 作为数据库的娱乐机器人
+林汐（SoraBot）基于 Nonebot2 和 go-cqhttp 开发，以 sqlite3 作为数据库的功能型机器人
 
 ## 特色
 * 使用 NoneBot2 进行项目底层构建.
@@ -57,6 +57,49 @@ _✨ 基于 Nonebot2 和 go-cqhttp 开发，超可爱的林汐酱 ✨_
 * 独立ID，更方便管理与互通数据
 * 全新的权限系统，不用重启便可自定义 Bot管理员 和 Bot协助者
 * Coming soon...
+
+## 你可能会问
+**什么是独立ID，它有什么用？**  
+独立ID是林汐为每个用户分配的专属ID，通过它，我们便可知晓用户信息、绑定信息、权限等，以便我们更好向用户提供服务
+
+**全新的权限系统，新在哪里？**  
+林汐的权限系统，并没有使用 Nonebot2 所提供的 `SUPERUSER`，而是改为了 `Bot管理员` 和 `Bot协助者`
+> **Warning**  
+> 请不要将 Bot管理员ID 重复设置在 Bot协助者中。事实上，Bot协助者本就包括Bot管理员
+```py
+# Bot管理员ID
+# 启动后，林汐会创建 ID 为 231010 的 Bot管理员账号，并设置密码。您需要输入 /登录 231010 [密码] 来绑定管理员账户
+BOT_ADMIN=["231010"]
+
+# Bot协助者ID
+# 启动后，林汐会分别创建ID为 666666、233333的 Bot协助者账号，并设置密码。您需要输入 /登录 231010 [密码] 来绑定协助者账户
+BOT_HELPER=["666666","233333"]
+```
+启动后，林汐会自动为他们注册账号及密码，并设置权限。  
+
+
+**Bot管理员 和 Bot协助者 的区别是？**  
+Bot管理员是最高权限， 拥有 Bot协助者 的权限，所以我们便可以说 Bot协助者 包括 Bot管理员
+
+<details>
+<summary>Example</summary>
+
+`/重启` 指令只能由 Bot管理员 触发
+```python
+reboot_cmd = on_command(
+    cmd='重启',
+    permission=BOT_ADMIN
+)
+```
+
+`/重启` 指令可以由 Bot管理员 和 Bot协助者 触发
+```python
+reboot_cmd = on_command(
+    cmd='重启',
+    permission=BOT_HELPER
+)
+```
+</details>
 
 ## 更新日志
 

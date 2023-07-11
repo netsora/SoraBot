@@ -26,8 +26,6 @@ reboot_cmd = on_command(
 
 ```
 """
-from typing import Union
-
 from nonebot.adapters import Event
 from sora.utils.user import get_user_id
 from sora.database.models import UserInfo
@@ -66,7 +64,7 @@ class BotAdminUser:
     def __repr__(self) -> str:
         return "BotAdminUser()"
 
-    async def __call__(self, event: Union[V11MessageEvent, GuildMessageEvent]) -> bool:
+    async def __call__(self, event: Event) -> bool:
         try:
             user_id: str = await get_user_id(event)
         except Exception:
@@ -75,6 +73,8 @@ class BotAdminUser:
         admin_list: list = await get_admin_list()
         if user_id in admin_list:
             return True
+        else:
+            return False
 
 
 class BotHelperUser:
@@ -85,7 +85,7 @@ class BotHelperUser:
     def __repr__(self) -> str:
         return "BotHelperUser()"
 
-    async def __call__(self, event: Union[V11MessageEvent, GuildMessageEvent]) -> bool:
+    async def __call__(self, event: Event) -> bool:
         try:
             user_id: str = await get_user_id(event)
         except Exception:
@@ -94,6 +94,8 @@ class BotHelperUser:
         helper_list: list = await get_helper_list()
         if user_id in helper_list:
             return True
+        else:
+            return False
 
 
 BOT_ADMIN: Permission = Permission(BotAdminUser())

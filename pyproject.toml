@@ -24,19 +24,29 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-nonebot2 = "^2.0.0"
+nonebot2 = {extras = ["fastapi"], version = "^2.0.0"}
 cattrs = "^23.1.2"
 nonebot-plugin-gocqhttp = "^0.6.10"
 cookiecutter = "2.1.1"
 cachetools = "^5.3.1"
 emoji = "^2.6.0"
-aiosqlite = "^0.19.0"
+aiosqlite = "0.17.0"
 strenum = "^0.4.15"
 pygments = "^2.15.1"
 pycln = "^2.1.5"
 nonebot-adapter-telegram = "^0.1.0b14"
 nonebot-adapter-onebot = "^2.2.3"
 nonebot-adapter-qqguild = "^0.2.3"
+tortoise = "^0.1.1"
+rich = "^13.4.2"
+tortoise-orm = "^0.19.3"
+apscheduler = "^3.10.1"
+pillow = "9.5.0"
+nonebot-plugin-send-anything-anywhere = "^0.2.7"
+ruamel-yaml = "^0.17.32"
+tqdm = "^4.65.0"
+bbcode = "^1.1.0"
+pil-utils = "^0.1.7"
 
 [tool.black]
 line-length = 88

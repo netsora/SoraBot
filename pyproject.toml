@@ -48,6 +48,14 @@ tqdm = "^4.65.0"
 bbcode = "^1.1.0"
 pil-utils = "^0.1.7"
 codecov = "^2.1.13"
+isort = "^5.12.0"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.0.276"
+pycln = "^2.1.3"
+isort = "^5.12.0"
+black = "^23.7.0"
+pre-commit = "^3.0.0"
 
 [tool.black]
 line-length = 88
@@ -62,8 +70,19 @@ line_length = 88
 length_sort = true
 skip_gitignore = true
 force_sort_within_sections = true
-src_paths = ["nonebot", "tests"]
+src_paths = ["sora", "tests"]
 extra_standard_library = ["typing_extensions"]
+
+[tool.ruff]
+select = ["E", "W", "F", "UP", "C", "T", "PYI", "PT", "Q"]
+ignore = ["E402", "C901"]
+
+line-length = 88
+target-version = "py38"
+
+[tool.ruff.flake8-pytest-style]
+fixture-parentheses = false
+mark-parentheses = false
 
 [build-system]
 requires = ["poetry-core"]

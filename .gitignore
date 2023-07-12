@@ -142,5 +142,6 @@ dmypy.json
 data/
 .env.*
 .idea
+.ruff_cache
 accounts/
 config.yaml

@@ -14,7 +14,7 @@ _✨ 基于 Nonebot2 和 go-cqhttp 开发，超可爱的林汐酱 ✨_
 <a href="https://raw.githubusercontent.com/netsora/SoraBot/master/LICENSE">
     <img src="https://img.shields.io/github/license/netsora/SoraBot" alt="license">
 </a>
-<img src="https://img.shields.io/badge/python-3.10+-blue" alt="python">
+<img src="https://img.shields.io/badge/python-3.8+-blue" alt="python">
 <a href="https://github.com/netsora/SoraBot/releases">
   <img src="https://img.shields.io/github/v/release/netsora/SoraBot" alt="release"/>
 </a>

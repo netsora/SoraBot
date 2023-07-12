@@ -27,19 +27,16 @@ actionText: About
 actionLink: /blogs/about/introduce.md
 ---
 
-<!-- Google tag (gtag.js) -->
-<script>
+<!-- Google tag (gtag.js)
+<ClientOnly><script>
     const Analytics_ID = process.env.ANALYTICS_ID;
     const script = document.createElement('script');
     script.async = true;
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${Analytics_ID}`;
-    
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${Analytics_ID}`;  
     document.head.appendChild(script);
-
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-ZM7QTC95DS');
-</script>
+</script></ClientOnly> -->
 

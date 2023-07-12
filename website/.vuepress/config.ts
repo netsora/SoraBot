@@ -1,14 +1,13 @@
 import { defineUserConfig } from "vuepress";
 import recoTheme from "vuepress-theme-reco";
-const Analytics_ID = process.env.ANALYTICS_ID;
+
 const Valine_ID = process.env.VALINE_ID;
 const Valine_Key = process.env.VALINE_KEY
 
 export default defineUserConfig({
   title: "林汐 の 文档",
   description: "SoraBot的使用与开发文档",
-  head: [['link', { rel: 'icon', href: '/logo.png' }],
-        ['script', { src: `https://www.googletagmanager.com/gtag/js?id=${Analytics_ID}`}]],
+  head: [['link', { rel: 'icon', href: '/logo.png' }]],
   theme: recoTheme({
     style: "@vuepress-reco/style-default",
     logo: "/logo.png",

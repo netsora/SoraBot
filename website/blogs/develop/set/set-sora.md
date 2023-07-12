@@ -14,6 +14,36 @@ tags:
 :::
 安装 Sora 后会有 .env 和 .env.prod 文件，它们都是 Sora 的基础配置，在初次启动后会生成 config.yaml，其为 Sora 插件配置。
 
+## 申请 QQ频道 机器人
+您需要前往 [QQ开放平台](q.qq.com) 注册您的机器人
+
+## 申请 Telegram 机器人
+首先你需要有一个 Telegram 帐号，添加 [BotFather](https://t.me/botfather) 为好友。
+
+接着，向它发送 `/newbot` 指令，按要求回答问题。
+
+如果你成功创建了一个机器人，BotFather 会发给你机器人的 token：
+```
+1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHI
+```
+将这个 token 填入 Bot 的 `env` 文件：
+```py
+telegram_bots = [{"token": "1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHI"}]
+```
+::: tip
+如果你需要让你的 Bot 响应除了 `/` 开头之外的消息，你需要向 BotFather 发送 `/setprivacy` 并选择 `Disable`。
+
+如果你需要让你的 Bot 接收 inline query，你还需要向 BotFather 发送 `/setinline`。
+:::
+
+### 使用代理
+::: tip
+如果你的代理使用 socks 协议，你需要安装 httpx[socks]。
+:::
+如果运行 林汐 的服务器位于中国大陆，那么你可能需要配置代理，否则将无法调用 Telegram 提供的任何 API。
+```py
+telegram_proxy = "···"
+```
 
 ## 配置详细
 
@@ -28,7 +58,7 @@ DRIVER=~fastapi+~httpx+~websockets
 # 是否为沙盒模式
 QQGUILD_IS_SANDBOX=false
 
-# 机器人帐号
+# QQ频道机器人帐号
 QQGUILD_BOTS='
 [
     {
@@ -41,8 +71,12 @@ QQGUILD_BOTS='
         }   
     }
 ]
+
+# Telegram 机器人账号
+telegram_bots = [{"token": "1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHI"}]
+telegram_proxy = "http://127.0.0.1:7890"
 ```
-您需要前往 [QQ开放平台](q.qq.com) 注册您的机器人
+
 
 #### .env.prod
 这个文件没什么好改的，可以直接用

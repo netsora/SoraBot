@@ -14,7 +14,7 @@ _✨ 基于 Nonebot2 和 go-cqhttp 开发，超可爱的林汐酱 ✨_
 <a href="https://raw.githubusercontent.com/netsora/SoraBot/master/LICENSE">
     <img src="https://img.shields.io/github/license/netsora/SoraBot" alt="license">
 </a>
-<img src="https://img.shields.io/badge/python-3.8+-blue" alt="python">
+<img src="https://img.shields.io/badge/python-3.10+-blue" alt="python">
 <a href="https://github.com/netsora/SoraBot/releases">
   <img src="https://img.shields.io/github/v/release/netsora/SoraBot" alt="release"/>
 </a>
@@ -53,7 +53,7 @@ _✨ 基于 Nonebot2 和 go-cqhttp 开发，超可爱的林汐酱 ✨_
 ## 特色
 * 使用 NoneBot2 进行项目底层构建.
 * 使用 go-cqhttp 作为默认协议端.
-* 互通 QQ、QQ频道 等平台
+* 互通 QQ、QQ频道、Telegram 等平台
 * 独立ID，更方便管理与互通数据
 * 全新的权限系统，不用重启便可自定义 Bot管理员 和 Bot协助者
 * Coming soon...

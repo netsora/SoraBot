@@ -20,47 +20,14 @@ def _init_config(conf_path: Path, default_conf_path: Path):
 
     console.info("[b]Bot 主体设置[/b]\n", style="white")
     console.warn("由于技术原因，暂无法实现。主体设置请直接修改 .env 文件")
-    # host = console.input(
-    #     "Bot 监听的主机名 (IP). 建议: [green]0.0.0.0[/green] (默认: [green]127.0.0.1[/green])",
-    #     "127.0.0.1",
-    #     IPv4Address,
-    #     "输入不正确 示例: 127.0.0.1",
-    # )
-    # port = console.input(
-    #     "Bot 对外开放的端口 (Port). 范围建议: [green]10000-60000[/green] (默认: [green]20000[/green])",
-    #     "20000",
-    #     int,
-    #     "输入不正确 示例: 20000",
-    # )
-    # bot_admin = console.input(
-    #     "Bot 管理员, 即 Bot 的[b]主人[/b]. 可填多个, 用英文逗号 (,) 隔开 (默认: [green]2740324073[/green])",
-    #     "2740324073",
-    #     str,
-    #     "输入不正确 示例: 2740324073",
-    # )
-    # bot_helper = console.input(
-    #     "Bot 协助者, 即 [b]协助Bot管理员的人[/b]. 可填多个, 用英文逗号 (,) 隔开",
-    #     "2740324073",
-    #     str,
-    #     "输入不正确 示例: 2740324073"
-    # )
-    # proxy = console.input(
-    #     "是否有代理. 格式参考: http(s)://127.0.0.1:8100 (如无请 Enter 以跳过)",
-    #     str(),
-    #     str,
-    #     "输入不正确 示例: http://127.0.0.1:8100",
-    # )
-    # console.success("Bot 主体配置完成\n")
 
     console.info("[b]Bot 进阶设置[/b]\n", style="white")
-    is_use_with_gocqhttp = console.input(
-        "是否启用内置的 gocqhttp? (y/n) (默认: y)", "y", str, "输入不正确 示例: y"
-    )
+    is_use_with_gocqhttp = console.input("是否启用内置的 gocqhttp? (y/n) (默认: y)", "y", str, "输入不正确 示例: y")
     if is_use_with_gocqhttp in ["y", "Y", "true", "True", "是"]:
         uin = console.input("Bot 账号", "28717103871", int, "输入不正确 示例: 2871703871")
         password = console.input(
-            "Bot 账号密码 (已做隐藏处理, 如不确定是否填写正确, 请查阅填写完毕后所生成的文件: config_manage.yml)",
-            str(),
+            "Bot 账号密码（已做隐藏处理）",
+            "",
             str,
             password=True,
         )
@@ -70,14 +37,12 @@ def _init_config(conf_path: Path, default_conf_path: Path):
             int,
             "输入不正确 范围 0-6",
         )
-        download_domain = console.input(
-            "gocqhttp 下载源域名设置. 具体请参考文档: 部署项目-设置 (默认: github.com)", "github.com"
-        )
+        download_domain = console.input("gocqhttp 下载源域名设置 (默认: github.com)", "github.com")
 
-        console.success("内置 gocqhttp 配置完成. 支持多账号, 具体请参考文档: 部署项目-设置\n")
+        console.success("内置 gocqhttp 配置完成\n")
 
         raw_conf = raw_conf.replace("{is_use_with_gocqhttp}", "true")
-        raw_conf = raw_conf.replace("{download_domain}", download_domain)  # type: ignore
+        raw_conf = raw_conf.replace("{download_domain}", download_domain)
         raw_conf = raw_conf.replace(
             "{accounts}",
             """
@@ -86,7 +51,7 @@ def _init_config(conf_path: Path, default_conf_path: Path):
               protocol: {protocol}""".format(
                 uin=str(uin), password=password, protocol=str(protocol)
             ),
-        )  # type: ignore
+        )
 
     else:
         console.info("已跳过\n")

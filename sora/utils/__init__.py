@@ -1,11 +1,10 @@
 from typing import List
 
-from sora import config
-from sora.log import logger
 from nonebot import get_driver
-from sora.database.models import UserInfo
 
-from .scheduler import scheduler
+from sora.log import logger
+
+from .scheduler import scheduler as scheduler
 
 __version__ = "1.0.0"
 
@@ -21,6 +20,6 @@ if not bot_admin:
     exit()
 
 try:
-    NICKNAME: List = list(config.BotConfig.nickname)[0]
+    NICKNAME: List[str] = [str(s) for s in DRIVER.config.nickname]
 except Exception:
-    NICKNAME: str = "林汐"
+    NICKNAME: List[str] = ["林汐"]

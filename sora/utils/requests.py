@@ -4,8 +4,8 @@ from ssl import SSLCertVerificationError
 from typing import Any, Dict, Tuple, Union, Optional
 
 import httpx
-import tqdm.asyncio
 from PIL import Image
+from tqdm.asyncio import tqdm as async_tqdm
 
 
 class aiorequests:
@@ -28,9 +28,7 @@ class aiorequests:
             :param timeout: 超时时间
         """
         async with httpx.AsyncClient() as client:
-            return await client.get(
-                url, headers=headers, params=params, timeout=timeout, **kwargs
-            )
+            return await client.get(url, headers=headers, params=params, timeout=timeout, **kwargs)
 
     @staticmethod
     async def post(
@@ -96,9 +94,7 @@ class aiorequests:
         else:
             try:
                 async with httpx.AsyncClient() as client:
-                    resp = await client.get(
-                        url, headers=headers, params=params, timeout=timeout, **kwargs
-                    )
+                    resp = await client.get(url, headers=headers, params=params, timeout=timeout, **kwargs)
                     # 不保存安柏计划的问号图标
                     if (
                         resp.headers.get("etag") == 'W/"6363798a-13c7"'
@@ -139,9 +135,7 @@ class aiorequests:
                     img = Image.open(BytesIO(resp))
         if size:
             if isinstance(size, float):
-                img = img.resize(
-                    (int(img.size[0] * size), int(img.size[1] * size)), Image.ANTIALIAS
-                )
+                img = img.resize((int(img.size[0] * size), int(img.size[1] * size)), Image.ANTIALIAS)
             elif isinstance(size, tuple):
                 img = img.resize(size, Image.ANTIALIAS)
         if mode:
@@ -164,17 +158,13 @@ class aiorequests:
         :param exclude_json: 是否排除json文件
         """
         save_path.parent.mkdir(parents=True, exist_ok=True)
-        async with httpx.AsyncClient().stream(
-            method="GET", url=url, follow_redirects=True
-        ) as datas:
-            if exclude_json and "application/json" in str(
-                datas.headers["Content-Type"]
-            ):
+        async with httpx.AsyncClient().stream(method="GET", url=url, follow_redirects=True) as datas:
+            if exclude_json and "application/json" in str(datas.headers["Content-Type"]):
                 raise Exception("file not match type")
             size = int(datas.headers["Content-Length"])
             f = save_path.open("wb")
-            async for chunk in tqdm.asyncio.tqdm(
-                iterable=datas.aiter_bytes(1),
+            async for chunk in async_tqdm(
+                iterable=datas.aiter_bytes(1),  # type: ignore
                 desc=url.split("/")[-1],
                 unit="iB",
                 unit_scale=True,
@@ -182,5 +172,5 @@ class aiorequests:
                 total=size,
                 colour="green",
             ):
-                f.write(chunk)
+                f.write(await chunk)
             f.close()

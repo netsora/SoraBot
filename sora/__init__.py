@@ -1,13 +1,13 @@
 from pathlib import Path
 from typing import Any, Dict
 
-import nonebot
+from nonebot import logger, load_plugins
+from tortoise.connection import ConnectionHandler
+
 from sora import database
 from sora.utils import DRIVER
 from sora.config import Config
-from nonebot import logger, load_plugins
 from sora.config.path import SORA_CONFIG
-from tortoise.connection import ConnectionHandler
 
 DBConfigType = Dict[str, Any]
 
@@ -26,11 +26,11 @@ async def _init(self, db_config: "DBConfigType", create_db: bool):
 
 ConnectionHandler._init = _init
 
-logo = """<g>
-   _____                     ____        __ 
+logo = r"""<g>
+   _____                     ____        __
   / ___/____  _________ _   / __ )____  / /_
   \__ \/ __ \/ ___/ __ `/  / __  / __ \/ __/
- ___/ / /_/ / /  / /_/ /  / /_/ / /_/ / /_  
+ ___/ / /_/ / /  / /_/ /  / /_/ / /_/ / /_
 /____/\____/_/   \__,_/  /_____/\____/\__/</g>"""
 
 

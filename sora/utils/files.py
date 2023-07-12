@@ -27,9 +27,7 @@ def load_json(path: Union[Path, str], encoding: str = "utf-8"):
     return json.loads(path.read_text(encoding=encoding)) if path.exists() else {}
 
 
-async def load_json_from_url(
-    url: str, path: Union[Path, str] = None, force_refresh: bool = False
-) -> dict:
+async def load_json_from_url(url: str, path: Union[Path, str, None] = None, force_refresh: bool = False) -> dict:
     """
     从网络url中读取json，当有path参数时，如果path文件不存在，就会从url下载保存到path，如果path文件存在，则直接读取path
 
@@ -50,7 +48,7 @@ async def load_json_from_url(
     return data
 
 
-def save_json(data: dict, path: Union[Path, str] = None, encoding: str = "utf-8"):
+def save_json(data: dict, path: Union[Path, str, None] = None, encoding: str = "utf-8"):
     """
     保存json文件
 
@@ -60,8 +58,9 @@ def save_json(data: dict, path: Union[Path, str] = None, encoding: str = "utf-8"
     """
     if isinstance(path, str):
         path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding=encoding)
+    if path is not None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding=encoding)
 
 
 def load_yaml(path: Union[Path, str], encoding: str = "utf-8"):
@@ -74,14 +73,10 @@ def load_yaml(path: Union[Path, str], encoding: str = "utf-8"):
     """
     if isinstance(path, str):
         path = Path(path)
-    return (
-        yaml.load(path.read_text(encoding=encoding), Loader=yaml.Loader)
-        if path.exists()
-        else {}
-    )
+    return yaml.load(path.read_text(encoding=encoding), Loader=yaml.Loader) if path.exists() else {}
 
 
-def save_yaml(data: dict, path: Union[Path, str] = None, encoding: str = "utf-8"):
+def save_yaml(data: dict, path: Union[Path, str, None] = None, encoding: str = "utf-8"):
     """
     保存yaml文件
 
@@ -91,6 +86,7 @@ def save_yaml(data: dict, path: Union[Path, str] = None, encoding: str = "utf-8"
     """
     if isinstance(path, str):
         path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding=encoding) as f:
-        yaml.dump(data, f, indent=2, Dumper=yaml.RoundTripDumper, allow_unicode=True)
+    if path is not None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("w", encoding=encoding) as f:
+            yaml.dump(data, f, indent=2, Dumper=yaml.RoundTripDumper, allow_unicode=True)

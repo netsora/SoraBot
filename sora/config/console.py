@@ -25,9 +25,9 @@ class Console(C):
     def input(
         self,
         prompt: str,
-        default_return=str(),
+        default_return="",
         assign_type=None,
-        reject_message=str(),
+        reject_message="",
         *args,
         **kwargs,
     ) -> str:

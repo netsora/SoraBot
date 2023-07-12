@@ -6,7 +6,7 @@ from tortoise.models import Model
 
 class UserCheckInfo(Model):
     id: int = fields.IntField(pk=True, generated=True, auto_increment=True)
-    user_id: str = fields.CharField(max_length=8)
+    user_id = fields.CharField(max_length=8)
     """指用户注册后 Sora 为其分配的ID"""
     total_days: int = fields.IntField()
     """累计签到天数"""

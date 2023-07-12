@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Tuple, Union, Iterable, Optional, cast
 
 from PIL import Image
-from nonebot.log import logger
 from pydantic import BaseModel
 from pygments import highlight
 from pygments.style import Style
@@ -21,9 +20,11 @@ from nonebot.matcher import Matcher, current_bot, current_event
 from nonebot.internal.adapter import Bot, Message, MessageSegment
 
 require("nonebot_plugin_saa")
-from sora.permission import BOT_HELPER
 from nonebot_plugin_saa import MessageFactory
 from nonebot_plugin_saa import Image as SAAImage
+
+from sora.log import logger
+from sora.permission import BOT_HELPER
 
 __plugin_meta__ = PluginMetadata(
     name="CallAPI",
@@ -59,12 +60,8 @@ class Codeblock:
 
 
 def item_to_plain_text(item: Union[str, Codeblock]) -> str:
-    parsed: List[
-        Tuple[int, Optional[str], Optional[dict], str]
-    ] = bbcode_parser.tokenize(
-        f"```{item.lang or ''}\n{item.content}\n```"
-        if isinstance(item, Codeblock)
-        else item,
+    parsed: List[Tuple[int, Optional[str], Optional[dict], str]] = bbcode_parser.tokenize(
+        f"```{item.lang or ''}\n{item.content}\n```" if isinstance(item, Codeblock) else item,
     )
     return "".join(
         [
@@ -148,15 +145,20 @@ def draw_image(items: List[Union[str, Codeblock]]) -> bytes:
 async def send_return(items: List[Union[str, Codeblock]]):
     event = current_event.get()
     bot = current_bot.get()
+    adapter = bot.adapter.get_name()
 
-    try:
-        # via saa
-        image = draw_image(items)
-        await MessageFactory(SAAImage(image)).send(reply=True)
+    if adapter == "QQ Guild":
+        logger.warning("CallAPI", "Error sending image to channel, fallback to plain text")
         await bot.send(event, format_plain_text(items))
-    except Exception:
-        logger.exception("Error when sending image via saa, fallback to plain text")
-        await bot.send(event, format_plain_text(items))
+    else:
+        try:
+            # via saa
+            image = draw_image(items)
+            await MessageFactory(SAAImage(image)).send(reply=True)
+            await bot.send(event, format_plain_text(items))
+        except Exception:
+            logger.warning("CallAPI", "Error when sending image via saa, fallback to plain text")
+            await bot.send(event, format_plain_text(items))
 
 
 def cast_param_type(param: str) -> Any:
@@ -179,12 +181,11 @@ def parse_args(params: str) -> Tuple[str, Dict[str, Any]]:
 
     try:
         param_dict = json.loads("\n".join(param_lines))
-
-    except:
+    except Exception:
         param_dict = {}
         for line in param_lines:
             if "=" not in line:
-                raise ValueError(  # noqa: B904, TRY200
+                raise ValueError(
                     f"参数 `{line}` 格式错误，应为 name=param",
                 )
 
@@ -204,8 +205,7 @@ HELP_ITEMS = [
     Codeblock(
         lang=None,
         content=(
-            "callapi get_stranger_info\n"
-            "[color=#008000][b]user_id[/b][/color]=[color=#666666]3076823485[/color]"
+            "callapi get_stranger_info\n" "[color=#008000][b]user_id[/b][/color]=[color=#666666]3076823485[/color]"
         ),
     ),
     "使用 JSON（可以多行）：",
@@ -213,7 +213,7 @@ HELP_ITEMS = [
         lang=None,
         content=(
             "callapi get_stranger_info\n"
-            '{ [color=#008000][b]"user_id"[/b][/color]: [color=#666666]3076823485[/color] }'
+            '{ [color=#008000][b]"user_id"[/b][/color]: [color=#666666]3076823485[/color] }'  # noqa: E501
         ),
     ),
 ]
@@ -237,10 +237,7 @@ call_api_matcher = on_command(
 @call_api_matcher.handle()
 async def _(matcher: Matcher, bot: Bot, args: Message = CommandArg()):
     arg_txt = "".join(
-        [
-            txt if x.is_text() and (txt := x.data.get("text")) else str(x)
-            for x in cast(Iterable[MessageSegment], args)
-        ],
+        [txt if x.is_text() and (txt := x.data.get("text")) else str(x) for x in cast(Iterable[MessageSegment], args)],
     ).strip()
 
     if not arg_txt:
@@ -252,7 +249,7 @@ async def _(matcher: Matcher, bot: Bot, args: Message = CommandArg()):
     except ValueError as e:
         await matcher.finish(e.args[0])
     except Exception:
-        logger.exception("参数解析错误")
+        logger.warning("CallAPI", "参数解析错误")
         await matcher.finish("参数解析错误，请检查后台输出")
 
     ret_items = [

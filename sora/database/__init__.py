@@ -1,19 +1,15 @@
-import shutil
 from pathlib import Path
 from typing import List, Union, Optional
 
 from tortoise import Tortoise
 from nonebot.log import logger
+
 from sora.log import logger as Sogger
 from sora.utils import DRIVER, scheduler
 from sora.utils.user import generate_password
-from sora.config.path import (
-    USER_BIND_DB_PATH,
-    USER_INFO_DB_PATH,
-    USER_CHECK_INFO_DB_PATH,
-)
+from sora.config.path import USER_BIND_DB_PATH, USER_INFO_DB_PATH, USER_CHECK_INFO_DB_PATH
 
-from .models import *
+from .models import UserBind, UserInfo, bind, user, check_in
 
 bot_admin: List[str] = [str(s) for s in DRIVER.config.bot_admin]
 bot_helper: List[str] = [str(s) for s in DRIVER.config.bot_helper]
@@ -96,9 +92,7 @@ async def connect():
                     jrrp=20,
                 )
                 await UserBind.update_or_create(user_id=user_id)
-                Sogger.success(
-                    "Bot 配置", f"已自动设置用户ID: {user_id} 为 Bot管理员。登录密码：{password}"
-                )
+                Sogger.success("Bot 配置", f"已自动设置用户ID: {user_id} 为 Bot管理员。登录密码：{password}")
         for user_id in bot_helper:
             password = generate_password()
             user = await UserInfo.filter(user_id=user_id).first()
@@ -112,9 +106,7 @@ async def connect():
                     jrrp=20,
                 )
                 await UserBind.update_or_create(user_id=user_id)
-                Sogger.success(
-                    "Bot 配置", f"已自动设置用户ID: {user_id} 为 Bot协助者。登录密码：{password}"
-                )
+                Sogger.success("Bot 配置", f"已自动设置用户ID: {user_id} 为 Bot协助者。登录密码：{password}")
 
     except Exception as e:
         logger.opt(colors=True).warning(f"<u><y>[数据库]</y></u><r>连接失败:{e}</r>")

@@ -21,9 +21,6 @@ _✨ 基于 Nonebot2 和 go-cqhttp 开发，超可爱的林汐酱 ✨_
 <a href="https://results.pre-commit.ci/latest/github/netsora/SoraBot/master">
   <img src="https://results.pre-commit.ci/badge/github/netsora/SoraBot/nonebot2/master.svg" alt="pre-commit" />
 </a>
-<a href="https://bot.netsora.info/">
-  <img src="https://api.netlify.com/api/v1/badges/7dfd5fe6-d423-4f55-a6fc-02753f07e9e9/deploy-status" alt="netlify-status" />
-</a>
 </br>
 <a href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=A9oTio04Frz8oX0WgbPWM9OszLcF5RHT&authKey=D84U3cnB2Lax1qgww4psT1OgEU1iOOKW4evsdhnQuHtV3QFedQGNNLm1kK2Mfj15&noverify=0&group_code=817451732">
   <img src="https://img.shields.io/badge/QQ%E7%BE%A4-817451732-orange?style=flat-square" alt="QQ Chat Group">

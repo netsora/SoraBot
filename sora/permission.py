@@ -26,8 +26,6 @@ reboot_cmd = on_command(
 
 ```
 """
-from typing import Union
-
 from nonebot.internal.permission import Permission as Permission
 from nonebot.adapters.qqguild import MessageEvent as GuildMessageEvent
 from nonebot.adapters.onebot.v11 import MessageEvent as V11MessageEvent
@@ -63,7 +61,7 @@ class BotAdminUser:
     def __repr__(self) -> str:
         return "BotAdminUser()"
 
-    async def __call__(self, event: Union[V11MessageEvent, GuildMessageEvent, TGMessageEvent]) -> bool:
+    async def __call__(self, event: V11MessageEvent | GuildMessageEvent | TGMessageEvent) -> bool:
         try:
             user_id: str = await get_user_id(event)
         except Exception:
@@ -84,7 +82,7 @@ class BotHelperUser:
     def __repr__(self) -> str:
         return "BotHelperUser()"
 
-    async def __call__(self, event: Union[V11MessageEvent, GuildMessageEvent, TGMessageEvent]) -> bool:
+    async def __call__(self, event: V11MessageEvent | GuildMessageEvent | TGMessageEvent) -> bool:
         try:
             user_id: str = await get_user_id(event)
         except Exception:

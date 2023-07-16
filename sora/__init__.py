@@ -1,5 +1,5 @@
+from typing import Any
 from pathlib import Path
-from typing import Any, Dict
 
 from nonebot import logger, load_plugins
 from tortoise.connection import ConnectionHandler
@@ -9,7 +9,7 @@ from sora.utils import DRIVER
 from sora.config import Config
 from sora.config.path import SORA_CONFIG
 
-DBConfigType = Dict[str, Any]
+DBConfigType = dict[str, Any]
 
 __conf = Config(SORA_CONFIG)
 config = __conf.parse()

@@ -1,7 +1,6 @@
 import os
 import platform
 from pathlib import Path
-from typing import Union
 
 from nonebot.adapters.qqguild import Bot as GuildBot
 from nonebot.adapters.onebot.v11 import Bot as V11Bot
@@ -13,7 +12,7 @@ from sora.database.models import UserInfo
 
 
 @DRIVER.on_bot_connect
-async def remind(bot: Union[V11Bot, GuildBot, TGBot]):
+async def remind(bot: V11Bot | GuildBot | TGBot):
     if str(platform.system()).lower() != "windows":
         restart = Path() / "restart.sh"
         if not restart.exists():

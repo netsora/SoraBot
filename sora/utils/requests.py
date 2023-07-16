@@ -1,7 +1,7 @@
 from io import BytesIO
+from typing import Any
 from pathlib import Path
 from ssl import SSLCertVerificationError
-from typing import Any, Dict, Tuple, Union, Optional
 
 import httpx
 from PIL import Image
@@ -13,9 +13,9 @@ class aiorequests:
     async def get(
         url: str,
         *,
-        headers: Optional[Dict[str, str]] = None,
-        params: Optional[Dict[str, Any]] = None,
-        timeout: Optional[int] = 20,
+        headers: dict[str, str] | None = None,
+        params: dict[str, Any] | None = None,
+        timeout: int | None = 20,
         **kwargs,
     ) -> httpx.Response:
         """
@@ -34,11 +34,11 @@ class aiorequests:
     async def post(
         url: str,
         *,
-        headers: Optional[Dict[str, str]] = None,
-        params: Optional[Dict[str, Any]] = None,
-        data: Optional[Dict[str, Any]] = None,
-        json: Optional[Dict[str, Union[Any, str]]] = None,
-        timeout: Optional[int] = 20,
+        headers: dict[str, str] | None = None,
+        params: dict[str, Any] | None = None,
+        data: dict[str, Any] | None = None,
+        json: dict[str, Any | str] | None = None,
+        timeout: int | None = 20,
         **kwargs,
     ) -> httpx.Response:
         """
@@ -67,15 +67,15 @@ class aiorequests:
     async def get_img(
         url: str,
         *,
-        headers: Optional[Dict[str, str]] = None,
-        params: Optional[Dict[str, Any]] = None,
-        timeout: Optional[int] = 20,
-        save_path: Optional[Union[str, Path]] = None,
-        size: Optional[Union[Tuple[int, int], float]] = None,
-        mode: Optional[str] = None,
-        crop: Optional[Tuple[int, int, int, int]] = None,
+        headers: dict[str, str] | None = None,
+        params: dict[str, Any] | None = None,
+        timeout: int | None = 20,
+        save_path: str | Path | None = None,
+        size: tuple[int, int] | float | None = None,
+        mode: str | None = None,
+        crop: tuple[int, int, int, int] | None = None,
         **kwargs,
-    ) -> Union[None, Image.Image]:
+    ) -> None | Image.Image:
         """
         说明：
             httpx的get请求封装，获取图片

@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import List, Union, Optional
 
 from tortoise import Tortoise
 from nonebot.log import logger
@@ -11,8 +10,8 @@ from sora.config.path import USER_BIND_DB_PATH, USER_INFO_DB_PATH, USER_CHECK_IN
 
 from .models import UserBind, UserInfo, bind, user, check_in
 
-bot_admin: List[str] = [str(s) for s in DRIVER.config.bot_admin]
-bot_helper: List[str] = [str(s) for s in DRIVER.config.bot_helper]
+bot_admin: list[str] = [str(s) for s in DRIVER.config.bot_admin]
+bot_helper: list[str] = [str(s) for s in DRIVER.config.bot_helper]
 
 DATABASE = {
     "connections": {
@@ -53,7 +52,7 @@ DATABASE = {
 }
 
 
-def register_database(db_name: str, models: str, db_path: Optional[Union[str, Path]]):
+def register_database(db_name: str, models: str, db_path: str | Path | None):
     """
     注册数据库
     """

@@ -1,5 +1,3 @@
-from typing import List
-
 from nonebot import get_driver
 
 from sora.log import logger
@@ -11,7 +9,7 @@ __version__ = "1.0.0"
 DRIVER = get_driver()
 
 try:
-    bot_admin: List[str] = [str(s) for s in DRIVER.config.bot_admin]
+    bot_admin: list[str] = [str(s) for s in DRIVER.config.bot_admin]
 except Exception:
     bot_admin = []
 
@@ -20,6 +18,6 @@ if not bot_admin:
     exit()
 
 try:
-    NICKNAME: List[str] = [str(s) for s in DRIVER.config.nickname]
+    NICKNAME: list[str] = [str(s) for s in DRIVER.config.nickname]
 except Exception:
-    NICKNAME: List[str] = ["林汐"]
+    NICKNAME: list[str] = ["林汐"]

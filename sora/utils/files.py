@@ -4,7 +4,6 @@ except ImportError:
     import json
 
 from pathlib import Path
-from typing import Union
 from ssl import SSLCertVerificationError
 
 from ruamel import yaml
@@ -12,7 +11,7 @@ from ruamel import yaml
 from .requests import aiorequests
 
 
-def load_json(path: Union[Path, str], encoding: str = "utf-8"):
+def load_json(path: Path | str, encoding: str = "utf-8"):
     """
     读取本地json文件，返回文件数据。
 
@@ -27,7 +26,7 @@ def load_json(path: Union[Path, str], encoding: str = "utf-8"):
     return json.loads(path.read_text(encoding=encoding)) if path.exists() else {}
 
 
-async def load_json_from_url(url: str, path: Union[Path, str, None] = None, force_refresh: bool = False) -> dict:
+async def load_json_from_url(url: str, path: Path | str | None = None, force_refresh: bool = False) -> dict:
     """
     从网络url中读取json，当有path参数时，如果path文件不存在，就会从url下载保存到path，如果path文件存在，则直接读取path
 
@@ -48,7 +47,7 @@ async def load_json_from_url(url: str, path: Union[Path, str, None] = None, forc
     return data
 
 
-def save_json(data: dict, path: Union[Path, str, None] = None, encoding: str = "utf-8"):
+def save_json(data: dict, path: Path | str | None = None, encoding: str = "utf-8"):
     """
     保存json文件
 
@@ -63,7 +62,7 @@ def save_json(data: dict, path: Union[Path, str, None] = None, encoding: str = "
         path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding=encoding)
 
 
-def load_yaml(path: Union[Path, str], encoding: str = "utf-8"):
+def load_yaml(path: Path | str, encoding: str = "utf-8"):
     """
     读取本地yaml文件，返回字典。
 
@@ -76,7 +75,7 @@ def load_yaml(path: Union[Path, str], encoding: str = "utf-8"):
     return yaml.load(path.read_text(encoding=encoding), Loader=yaml.Loader) if path.exists() else {}
 
 
-def save_yaml(data: dict, path: Union[Path, str, None] = None, encoding: str = "utf-8"):
+def save_yaml(data: dict, path: Path | str | None = None, encoding: str = "utf-8"):
     """
     保存yaml文件
 

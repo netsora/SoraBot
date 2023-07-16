@@ -1,7 +1,6 @@
 import random
 import string
 import datetime
-from typing import Union
 
 from nonebot.adapters.qqguild import MessageEvent as GuildMessageEvent
 from nonebot.adapters.onebot.v11 import MessageEvent as V11MessageEvent
@@ -26,7 +25,7 @@ def generate_password(length=10, chars=string.ascii_letters + string.digits):
     return "".join([random.choice(chars) for i in range(length)])
 
 
-async def get_user_id(event: Union[V11MessageEvent, GuildMessageEvent, TGMessageEvent]):
+async def get_user_id(event: V11MessageEvent | GuildMessageEvent | TGMessageEvent):
     """
     通过 平台ID 获取 用户ID
 
@@ -78,7 +77,7 @@ async def get_user_id(event: Union[V11MessageEvent, GuildMessageEvent, TGMessage
     return user_id
 
 
-async def get_user_login_list(event: Union[V11MessageEvent, GuildMessageEvent, TGMessageEvent]):
+async def get_user_login_list(event: V11MessageEvent | GuildMessageEvent | TGMessageEvent):
     """
     通过 用户ID 获取 登录信息
 

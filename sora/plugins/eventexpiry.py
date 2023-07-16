@@ -1,5 +1,4 @@
 import time
-from typing import Union
 
 from nonebot import get_driver
 from nonebot.plugin import PluginMetadata
@@ -21,7 +20,7 @@ driver = get_driver()
 
 
 @event_preprocessor
-def event_expiry_handler(event: Union[V11Event, GuildEvent]) -> None:
+def event_expiry_handler(event: V11Event | GuildEvent) -> None:
     if isinstance(event, V11Event):
         event_time: int = event.time
 

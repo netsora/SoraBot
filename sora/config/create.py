@@ -13,7 +13,7 @@ def _init_config(conf_path: Path, default_conf_path: Path):
 
     console.print("\n[b]是林汐吖！[/b]\n", style="#00bee6")
 
-    console.warn("文档地址: https://sorabot.netlify.app")
+    console.warn("文档地址: https://bot.netsora.info")
     console.info("这是你第一次启动本项目, 请根据提示填写信息")
     console.info("如中途填写出错, 你可以直接退出, 再次启动以重新填写")
     console.info("如需使用默认值, Enter 跳过方可\n")
@@ -32,8 +32,8 @@ def _init_config(conf_path: Path, default_conf_path: Path):
             password=True,
         )
         protocol = console.input(
-            "Bot 登录设备类型. 范围: 0-6, 具体请参考文档 (默认: 6)",
-            "6",
+            "Bot 登录设备类型. 范围: 0-6, 具体请参考文档 (默认: 1)",
+            "1",
             int,
             "输入不正确 范围 0-6",
         )
@@ -57,7 +57,7 @@ def _init_config(conf_path: Path, default_conf_path: Path):
         console.info("已跳过\n")
 
         raw_conf = raw_conf.replace("{is_use_with_gocqhttp}", "false")
-        raw_conf = raw_conf.replace("{account}", "[]")
+        raw_conf = raw_conf.replace("{accounts}", "[]")
 
     console.success("[white]至此, 所需基本配置已填写完毕[white]")
 

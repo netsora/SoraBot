@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -11,7 +11,7 @@ class GoCQHTTPAccountList(BaseModel):
 
 class WithGoCQHTTP(BaseModel):
     enabled: bool
-    accounts: List[GoCQHTTPAccountList]
+    accounts: Optional[List[GoCQHTTPAccountList]]
     download_domain: str
     download_version: str
     gocqhttp_webui_username: str
@@ -24,7 +24,7 @@ class ConfigModel(BaseModel):
 
 
 class RuntimeConfig(BaseModel):
-    gocqhttp_accounts: list
+    gocqhttp_accounts: Optional[list]
     gocqhttp_download_domain: str
     gocqhttp_version: str
     gocqhttp_webui_username: str

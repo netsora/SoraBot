@@ -11,13 +11,7 @@ from nonebot.exception import StopPropagation, SkippedException
 from nonebot.adapters.qqguild import MessageEvent as GuildMessageEvent
 from nonebot.adapters.onebot.v11 import MessageEvent as V11MessageEvent
 from nonebot import on_regex, on_command, on_keyword, on_endswith, on_startswith
-from nonebot.matcher import (
-    Matcher,
-    current_bot,
-    current_event,
-    current_handler,
-    current_matcher,
-)
+from nonebot.matcher import Matcher, current_bot, current_event, current_handler, current_matcher
 
 """
 通过猴子补丁，干掉一些log，并为nonebot的部分matcher注入其命令到默认state中
@@ -32,10 +26,7 @@ async def simple_run(
     stack: Optional[AsyncExitStack] = None,
     dependency_cache: Optional[T_DependencyCache] = None,
 ):
-    logger.debug(
-        f"{self} run with incoming args: "
-        f"bot={bot}, event={event!r}, state={state!r}"
-    )
+    logger.debug(f"{self} run with incoming args: " f"bot={bot}, event={event!r}, state={state!r}")
     b_t = current_bot.set(bot)
     e_t = current_event.set(event)
     m_t = current_matcher.set(self)
@@ -83,9 +74,7 @@ def on_endswith_(msg: Union[str, Tuple[str, ...]], state: dict = None, *args, **
     return on_endswith(msg=msg, state=state, _depth=1, *args, **kwargs)
 
 
-def on_startswith_(
-    msg: Union[str, Tuple[str, ...]], state: dict = None, *args, **kwargs
-):
+def on_startswith_(msg: Union[str, Tuple[str, ...]], state: dict = None, *args, **kwargs):
     if state is None:
         state = {}
     if "pm_name" not in state:
@@ -125,9 +114,7 @@ def _check_nickname(bot: Bot, event: Union[V11MessageEvent, GuildMessageEvent]) 
         nickname_regex = "|".join(nicknames)
         first_text = first_msg_seg.data["text"]
 
-        if m := re.search(
-            rf"^({nickname_regex})([\s,，]*|$)", first_text, re.IGNORECASE
-        ):
+        if m := re.search(rf"^({nickname_regex})([\s,，]*|$)", first_text, re.IGNORECASE):
             nickname = m[1]
             if isinstance(event, V11MessageEvent):
                 v11log("DEBUG", f"User is calling me {nickname}")

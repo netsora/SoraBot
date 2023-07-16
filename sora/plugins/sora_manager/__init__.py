@@ -15,7 +15,7 @@ __sora_plugin_meta__ = PluginMetadata(
     name="Bot管理",
     description="管理林汐",
     usage="...",
-    extra={"author": "mute.", "priority": 1},
+    extra={"author": "KomoriDev", "priority": 1},
 )
 
 reboot = on_command(

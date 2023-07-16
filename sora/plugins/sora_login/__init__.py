@@ -1,5 +1,3 @@
-from typing import Union
-
 from nonebot.rule import to_me
 from nonebot.typing import T_State
 from nonebot import require, on_command
@@ -17,11 +15,11 @@ from tortoise.exceptions import DoesNotExist, ValidationError
 from sora.database import UserBind, UserInfo
 from sora.utils.user import generate_id, get_user_login_list
 
-__plugin_meta__ = PluginMetadata(
+__sora_plugin_meta__ = PluginMetadata(
     name="登录",
     description="登录您的专属账户",
     usage="/注册\n/登录",
-    extra={"author": "mute.", "priority": 1},
+    extra={"author": "KomoriDev", "priority": 1},
 )
 
 
@@ -94,7 +92,7 @@ async def get_user_password(state: T_State, password: str = ArgStr("password")):
 
 
 @register.handle()
-async def register_user_info_(event: Union[V11MessageEvent, GuildMessageEvent, TGMessageEvent], state: T_State):
+async def register_user_info_(event: V11MessageEvent | GuildMessageEvent | TGMessageEvent, state: T_State):
     user_id = state.get("user_id")
     user_name = state.get("user_name")
     password = state.get("password")
@@ -161,7 +159,7 @@ async def get_user_password_(state: T_State, password: str = ArgStr("password"))
 
 
 @login.handle()
-async def login_platform_(event: Union[V11MessageEvent, GuildMessageEvent, TGMessageEvent], state: T_State):
+async def login_platform_(event: V11MessageEvent | GuildMessageEvent | TGMessageEvent, state: T_State):
     input_user_id = state.get("user_id")
     input_password = state.get("password")
 
@@ -202,7 +200,7 @@ async def login_platform_(event: Union[V11MessageEvent, GuildMessageEvent, TGMes
 
 
 @login_list.handle()
-async def get_login_list(event: Union[V11MessageEvent, GuildMessageEvent, TGMessageEvent]):
+async def get_login_list(event: V11MessageEvent | GuildMessageEvent | TGMessageEvent):
     list = await get_user_login_list(event)
     msg = f"""
     您的登录信息如下：

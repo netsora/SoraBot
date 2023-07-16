@@ -19,7 +19,7 @@ builtin_plugins = ["echo"]
 name = "sorabot"
 version = "1.0.0"
 description = "基于 Nonebot2 和 go-cqhttp 开发，超可爱的林汐酱"
-authors = ["mute. <mute231010@gmail.com>"]
+authors = ["KomoriDev <mute231010@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -59,7 +59,7 @@ pre-commit = "^3.0.0"
 
 [tool.black]
 line-length = 120
-target-version = ["py38", "py39", "py310", "py311"]
+target-version = ["py310", "py311"]
 include = '\.pyi?$'
 extend-exclude = '''
 '''
@@ -78,7 +78,7 @@ select = ["E", "W", "F", "UP", "C", "T", "PYI", "PT", "Q"]
 ignore = ["E402", "C901"]
 
 line-length = 120
-target-version = "py38"
+target-version = "py310"
 
 [tool.ruff.flake8-pytest-style]
 fixture-parentheses = false

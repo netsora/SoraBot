@@ -3,15 +3,15 @@ ConfigVersion: "1.0.0"
 Award:
   # 金币奖励
   Coin:
-    register: 50      
+    login: 50      
     sign: [20, 60]
   # 好感度奖励
   Jrrp:
-    register: 20
+    login: 20
     sign: 10
   # 经验值奖励
   Exp:
-    register: 0
+    login: 0
     sign: 10
 
 

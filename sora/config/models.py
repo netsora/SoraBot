@@ -17,17 +17,17 @@ class WithGoCQHTTP(BaseModel):
 
 
 class Coin(BaseModel):
-    register: int
+    login: int
     sign: list[int]
 
 
 class Jrrp(BaseModel):
-    register: int
+    login: int
     sign: int
 
 
 class Exp(BaseModel):
-    register: int
+    login: int
     sign: int
 
 

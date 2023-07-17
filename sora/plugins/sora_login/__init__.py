@@ -112,9 +112,9 @@ async def register_user_info_(event: V11MessageEvent | GuildMessageEvent | TGMes
             password=password,
             permission="user",
             level=1,
-            exp=award.Exp.register,
-            coin=award.Coin.register,
-            jrrp=award.Jrrp.register,
+            exp=award.Exp.login,
+            coin=award.Coin.login,
+            jrrp=award.Jrrp.login,
         )
     except ValidationError:
         await MessageFactory("注册失败。用户名不可大于10位").send(at_sender=True)
@@ -141,7 +141,7 @@ async def register_user_info_(event: V11MessageEvent | GuildMessageEvent | TGMes
             注册成功\n
              > 用户名：{user_name}（Lv.1）\n
              > ID：{user_id}\n
-            奖励您 {award.Coin.register}枚 硬币，好感度增加 {award.Jrrp.register}%\n
+            奖励您 {award.Coin.login}枚 硬币，好感度增加 {award.Jrrp.login}%\n
            『提示』我们已自动将 您的账户与 您的 {platform}ID 绑定。您可以通过发送 [/登录信息] 查询自己的绑定信息。"""
     ).send(at_sender=True)
 

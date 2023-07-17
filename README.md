@@ -1,5 +1,5 @@
 <div align="center">
-  <a href="https://bot.netsora.info/"><img src="./resources/logo.png" width="200" height="200" 
+  <a href="https://bot.netsora.info/"><img src="./resources/logo.jpg" width="200" height="200" 
   style="border-radius: 100px" alt="SoraBot"></a>
 </div>
 
@@ -37,11 +37,11 @@ _✨ 基于 Nonebot2 和 go-cqhttp 开发，超可爱的林汐酱 ✨_
 </p>
 
 <p align="center">
-  <a href="https://bot.netsora.info/">文档</a>
+  <a href="#">文档</a>
   ·
-  <a href="https://bot.netsora.info/docs/module/">服务列表</a>
+  <a href="#">服务列表</a>
   ·
-  <a href="https://bot.netsora.info/blogs/develop/foreword/prepare.html">安装文档</a>
+  <a href="#">安装文档</a>
 </p>
 
 ## 简介

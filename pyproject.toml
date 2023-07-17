@@ -49,6 +49,7 @@ bbcode = "^1.1.0"
 pil-utils = "^0.1.7"
 codecov = "^2.1.13"
 isort = "^5.12.0"
+gitpython = "^3.1.32"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.276"

@@ -29,7 +29,7 @@ async def remind(bot: V11Bot | GuildBot | TGBot):
     is_restart_file = Path() / "is_restart"
     if is_restart_file.exists():
         if isinstance(bot, V11Bot):
-            admin_list = await UserInfo.filter(permission="bot_admin").values_list("user_id", "user_qq_id", flat=True)
+            admin_list = await UserInfo.filter(permission="bot_admin").values_list("user_id", "qq_id", flat=True)
             await bot.send_private_msg(user_id=int(str(admin_list[1])), message=f"{NICKNAME}重启完毕...")
         # elif isinstance(bot, TGBot):
         #     await bot.get_chat

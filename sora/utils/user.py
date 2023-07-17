@@ -38,41 +38,11 @@ async def get_user_id(event: V11MessageEvent | GuildMessageEvent | TGMessageEven
     * qqguild
     * telegram
     """
-    event_user_id = event.get_user_id()
-    if isinstance(event, V11MessageEvent):
-        user_bind_info = await UserBind.get_or_none(user_qq_id=event_user_id).values_list(
-            "user_id",
-            "user_qq_id",
-            "user_qqguild_id",
-            "discord_id",
-            "telegram_id",
-            "bilibili_id",
-            "arcaea_id",
-            "phigros_id",
-        )
-    elif isinstance(event, GuildMessageEvent):
-        user_bind_info = await UserBind.get_or_none(user_qqguild_id=event_user_id).values_list(
-            "user_id",
-            "user_qq_id",
-            "user_qqguild_id",
-            "discord_id",
-            "telegram_id",
-            "bilibili_id",
-            "arcaea_id",
-            "phigros_id",
-        )
+    login_list = await get_user_login_list(event)
+    if login_list is None:
+        user_id = None
     else:
-        user_bind_info = await UserBind.get_or_none(telegram_id=event_user_id).values_list(
-            "user_id",
-            "user_qq_id",
-            "user_qqguild_id",
-            "discord_id",
-            "telegram_id",
-            "bilibili_id",
-            "arcaea_id",
-            "phigros_id",
-        )
-    user_id = user_bind_info[0]
+        user_id = login_list[0]
 
     return user_id
 
@@ -99,12 +69,12 @@ async def get_user_login_list(event: V11MessageEvent | GuildMessageEvent | TGMes
     * arcaea
     * phigros
     """
-    event_user_id = event.get_user_id()
     if isinstance(event, V11MessageEvent):
-        user_bind_info = await UserBind.get_or_none(user_qq_id=event_user_id).values_list(
+        event_user_id = event.get_user_id()
+        user_bind_info = await UserBind.get_or_none(qq_id=event_user_id).values_list(
             "user_id",
-            "user_qq_id",
-            "user_qqguild_id",
+            "qq_id",
+            "qqguild_id",
             "discord_id",
             "telegram_id",
             "bilibili_id",
@@ -112,10 +82,11 @@ async def get_user_login_list(event: V11MessageEvent | GuildMessageEvent | TGMes
             "phigros_id",
         )
     elif isinstance(event, GuildMessageEvent):
-        user_bind_info = await UserBind.get_or_none(user_qqguild_id=event_user_id).values_list(
+        event_user_id = event.get_user_id()
+        user_bind_info = await UserBind.get_or_none(qqguild_id=event_user_id).values_list(
             "user_id",
-            "user_qq_id",
-            "user_qqguild_id",
+            "qq_id",
+            "qqguild_id",
             "discord_id",
             "telegram_id",
             "bilibili_id",
@@ -123,10 +94,11 @@ async def get_user_login_list(event: V11MessageEvent | GuildMessageEvent | TGMes
             "phigros_id",
         )
     else:
+        event_user_id = event.get_user_id()
         user_bind_info = await UserBind.get_or_none(telegram_id=event_user_id).values_list(
             "user_id",
-            "user_qq_id",
-            "user_qqguild_id",
+            "qq_id",
+            "qqguild_id",
             "discord_id",
             "telegram_id",
             "bilibili_id",

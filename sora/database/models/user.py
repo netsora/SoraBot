@@ -13,6 +13,10 @@ class UserInfo(Model):
     """用户昵称"""
     password = fields.CharField(max_length=20)
     """用户密码"""
+    level: int = fields.IntField()
+    """等级"""
+    exp: int = fields.IntField()
+    """经验值"""
     coin: int = fields.IntField()
     """硬币数"""
     jrrp: int = fields.IntField()

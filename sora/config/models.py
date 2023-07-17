@@ -16,9 +16,31 @@ class WithGoCQHTTP(BaseModel):
     gocqhttp_webui_password: str
 
 
+class Coin(BaseModel):
+    register: int
+    sign: list[int]
+
+
+class Jrrp(BaseModel):
+    register: int
+    sign: int
+
+
+class Exp(BaseModel):
+    register: int
+    sign: int
+
+
+class Award(BaseModel):
+    Coin: Coin
+    Jrrp: Jrrp
+    Exp: Exp
+
+
 class ConfigModel(BaseModel):
     ConfigVersion: str
     WithGoCQHTTP: WithGoCQHTTP
+    Award: Award
 
 
 class RuntimeConfig(BaseModel):

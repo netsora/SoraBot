@@ -1,5 +1,19 @@
-# 设置参考文档: https://sorabot.netlify.app/blogs/develop/set/set-sora.html
 ConfigVersion: "1.0.0"
+
+Award:
+  # 金币奖励
+  Coin:
+    register: 50      
+    sign: [20, 60]
+  # 好感度奖励
+  Jrrp:
+    register: 20
+    sign: 10
+  # 经验值奖励
+  Exp:
+    register: 0
+    sign: 10
+
 
 WithGoCQHTTP:
   enabled: {is_use_with_gocqhttp}
@@ -10,4 +24,3 @@ WithGoCQHTTP:
 
   gocqhttp_webui_username: "Sora"
   gocqhttp_webui_password: "Sora231010"
-

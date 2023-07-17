@@ -6,9 +6,9 @@ from nonebot.log import logger
 from sora.log import logger as Sogger
 from sora.utils import DRIVER, scheduler
 from sora.utils.user import generate_password
-from sora.config.path import USER_BIND_DB_PATH, USER_INFO_DB_PATH, USER_CHECK_INFO_DB_PATH
+from sora.config.path import USER_BIND_DB_PATH, USER_INFO_DB_PATH, USER_SIGN_DB_PATH
 
-from .models import UserBind, UserInfo, bind, user, check_in
+from .models import UserBind, UserInfo, UserSign, bind, sign, user
 
 bot_admin: list[str] = [str(s) for s in DRIVER.config.bot_admin]
 bot_helper: list[str] = [str(s) for s in DRIVER.config.bot_helper]
@@ -23,9 +23,9 @@ DATABASE = {
             "engine": "tortoise.backends.sqlite",
             "credentials": {"file_path": USER_BIND_DB_PATH},
         },
-        "sora_user_check_info": {
+        "sora_user_sign": {
             "engine": "tortoise.backends.sqlite",
-            "credentials": {"file_path": USER_CHECK_INFO_DB_PATH},
+            "credentials": {"file_path": USER_SIGN_DB_PATH},
         }
         # 'memory_db': 'sqlite://:memory:'
     },
@@ -38,9 +38,9 @@ DATABASE = {
             "models": [bind.__name__],
             "default_connection": "sora_user_bind",
         },
-        "sora_user_check_info": {
-            "models": [check_in.__name__],
-            "default_connection": "sora_user_check_info",
+        "sora_user_sign": {
+            "models": [sign.__name__],
+            "default_connection": "sora_user_sign",
         },
         # 'memory_db':            {
         #     'models':             [memory_db.__name__],
@@ -87,10 +87,13 @@ async def connect():
                     user_name=f"None{user_id[-2:]}",
                     password=password,
                     permission="bot_admin",
+                    level=1,
+                    exp=0,
                     coin=50,
                     jrrp=20,
                 )
                 await UserBind.update_or_create(user_id=user_id)
+                await UserSign.update_or_create(user_id=user_id, total_days=0, continuous_days=0)
                 Sogger.success("Bot 配置", f"已自动设置用户ID: {user_id} 为 Bot管理员。登录密码：{password}")
         for user_id in bot_helper:
             password = generate_password()
@@ -101,10 +104,13 @@ async def connect():
                     user_name=f"None{user_id[-2:]}",
                     password=password,
                     permission="bot_helper",
+                    level=1,
+                    exp=0,
                     coin=50,
                     jrrp=20,
                 )
                 await UserBind.update_or_create(user_id=user_id)
+                await UserSign.update_or_create(user_id=user_id, total_days=0, continuous_days=0)
                 Sogger.success("Bot 配置", f"已自动设置用户ID: {user_id} 为 Bot协助者。登录密码：{password}")
 
     except Exception as e:

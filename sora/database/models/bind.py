@@ -6,19 +6,19 @@ class UserBind(Model):
     id: int = fields.IntField(pk=True, generated=True, auto_increment=True)
     user_id = fields.CharField(max_length=10)
     """用户ID"""
-    user_qq_id = fields.CharField(max_length=20, null=True)
+    qq_id = fields.CharField(max_length=20, null=True, unique=True)
     """用户QQ ID"""
-    user_qqguild_id = fields.CharField(max_length=50, null=True)
+    qqguild_id = fields.CharField(max_length=50, null=True, unique=True)
     """用户QQ频道 ID"""
-    discord_id = fields.CharField(max_length=20, null=True)
+    discord_id = fields.CharField(max_length=20, null=True, unique=True)
     """Discord ID"""
-    telegram_id = fields.CharField(max_length=20, null=True)
+    telegram_id = fields.CharField(max_length=20, null=True, unique=True)
     """Telegram ID"""
-    bilibili_id = fields.CharField(max_length=20, null=True)
+    bilibili_id = fields.CharField(max_length=20, null=True, unique=True)
     """Bilibili ID"""
-    arcaea_id = fields.CharField(max_length=20, null=True)
+    arcaea_id = fields.CharField(max_length=20, null=True, unique=True)
     """Arcaea ID"""
-    phigros_id = fields.CharField(max_length=20, null=True)
+    phigros_id = fields.CharField(max_length=20, null=True, unique=True)
     """Phigros ID"""
 
     class Meta:

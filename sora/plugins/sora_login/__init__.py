@@ -12,8 +12,9 @@ require("nonebot_plugin_saa")
 from nonebot_plugin_saa import MessageFactory
 from tortoise.exceptions import DoesNotExist, ValidationError
 
-from sora.database import UserBind, UserInfo
-from sora.utils.user import generate_id, get_user_login_list
+from sora import config
+from sora.database import UserBind, UserInfo, UserSign
+from sora.utils.user import generate_id, get_user_id, get_user_login_list
 
 __sora_plugin_meta__ = PluginMetadata(
     name="登录",
@@ -21,7 +22,7 @@ __sora_plugin_meta__ = PluginMetadata(
     usage="/注册\n/登录",
     extra={"author": "KomoriDev", "priority": 1},
 )
-
+award = config.Award
 
 register = on_command(
     cmd="注册",
@@ -110,26 +111,39 @@ async def register_user_info_(event: V11MessageEvent | GuildMessageEvent | TGMes
             user_name=user_name,
             password=password,
             permission="user",
-            coin=50,
-            jrrp=20,
+            level=1,
+            exp=award.Exp.register,
+            coin=award.Coin.register,
+            jrrp=award.Jrrp.register,
         )
-        match platform:
-            case "QQ":
-                await UserBind.update_or_create(user_id=user_id, user_qq_id=event.get_user_id())
-            case "QQ频道":
-                await UserBind.update_or_create(user_id=user_id, user_qqguild_id=event.get_user_id())
-            case "Telegram":
-                await UserBind.update_or_create(user_id=user_id, telegram_id=event.get_user_id())
-        await MessageFactory(
-            f"注册成功！\n > 用户名：{user_name}\n > ID：{user_id}\n奖励您50枚硬币，好感度增加20%\n"  # noqa: E501
-            f"『提示』我们已自动将 您的账户与 您的 {platform}ID 绑定。您可以通过发送 [/登录信息] 查询自己的绑定信息。"  # noqa: E501
-        ).send(at_sender=True)
-
     except ValidationError:
         await MessageFactory("注册失败。用户名不可大于10位").send(at_sender=True)
-
+        await register.finish()
     except DoesNotExist:
         await MessageFactory("注册失败。该用户名已被注册").send(at_sender=True)
+        await register.finish()
+
+    try:
+        match platform:
+            case "QQ":
+                await UserBind.update_or_create(user_id=user_id, qq_id=event.get_user_id())
+            case "QQ频道":
+                await UserBind.update_or_create(user_id=user_id, qqguild_id=event.get_user_id())
+            case "Telegram":
+                await UserBind.update_or_create(user_id=user_id, telegram_id=event.get_user_id())
+    except DoesNotExist:
+        await MessageFactory("注册失败。不可重复注册").send(at_sender=True)
+        await register.finish()
+
+    await UserSign.update_or_create(user_id=user_id, total_days=0, continuous_days=0)
+    await MessageFactory(
+        f"""
+            注册成功\n
+             > 用户名：{user_name}（Lv.1）\n
+             > ID：{user_id}\n
+            奖励您 {award.Coin.register}枚 硬币，好感度增加 {award.Jrrp.register}%\n
+           『提示』我们已自动将 您的账户与 您的 {platform}ID 绑定。您可以通过发送 [/登录信息] 查询自己的绑定信息。"""
+    ).send(at_sender=True)
 
     await register.finish()
 
@@ -163,9 +177,11 @@ async def login_platform_(event: V11MessageEvent | GuildMessageEvent | TGMessage
     input_user_id = state.get("user_id")
     input_password = state.get("password")
 
-    user_info = await UserInfo.get_or_none(user_id=input_user_id).values("user_id", "password")
+    user_info = await UserInfo.get_or_none(user_id=input_user_id).values("user_id", "user_name", "password", "level")
     user_id = user_info["user_id"]
+    user_name = user_info["user_name"]
     password = user_info["password"]
+    level = user_info["level"]
 
     if input_user_id != user_id or input_password != password:
         await MessageFactory("账号或密码错误，请重新输入").send(at_sender=True)
@@ -181,9 +197,9 @@ async def login_platform_(event: V11MessageEvent | GuildMessageEvent | TGMessage
     try:
         match platform:
             case "QQ":
-                await UserBind.filter(user_id=user_id).update(user_qq_id=str(event.get_user_id()))
+                await UserBind.filter(user_id=user_id).update(qq_id=str(event.get_user_id()))
             case "QQ频道":
-                await UserBind.filter(user_id=user_id).update(user_qqguild_id=str(event.get_user_id()))
+                await UserBind.filter(user_id=user_id).update(qqguild_id=str(event.get_user_id()))
             case "Telegram":
                 await UserBind.filter(user_id=user_id).update(telegram_id=str(event.get_user_id()))
     except ValidationError:
@@ -193,7 +209,11 @@ async def login_platform_(event: V11MessageEvent | GuildMessageEvent | TGMessage
         await MessageFactory("注册失败。该用户名已被注册").send(at_sender=True)
 
     msg = f"""
-    登录成功！\n > ID：{user_id}\n > 登录平台：{platform}\n提示』您可以通过发送 [/登录信息] 查询自己的绑定信息。
+    登录成功！\n
+     > 用户名：{user_name}（Lv.{level}）\n
+     > ID：{user_id}\n
+     > 登录平台：{platform}\n
+   『提示』您可以通过发送 [/登录信息] 查询自己的绑定信息。
     """
     await MessageFactory(msg).send(at_sender=True)
     await login.finish()
@@ -201,16 +221,21 @@ async def login_platform_(event: V11MessageEvent | GuildMessageEvent | TGMessage
 
 @login_list.handle()
 async def get_login_list(event: V11MessageEvent | GuildMessageEvent | TGMessageEvent):
-    list = await get_user_login_list(event)
+    user_id = await get_user_id(event)
+    if user_id is None:
+        await MessageFactory("该账号暂未注册林汐账户，请先发送 [/注册] ").send(at_sender=True)
+        await login_list.finish()
+
+    user_login_list = await get_user_login_list(event)
     msg = f"""
     您的登录信息如下：
-      > QQ：{list[1] if list[1] is not None else "暂未绑定"}\n
-      > QQ频道：{list[2] if list[2] is not None else "暂未绑定"}\n
-      > Discord：{list[3] if list[3] is not None else "暂未绑定"}\n
-      > Telegram：{list[4] if list[4] is not None else "暂未绑定"}\n
-      > Bilibili：{list[5] if list[5] is not None else "暂未绑定"}\n
-      > Arcaea：{list[6] if list[6] is not None else "暂未绑定"}\n
-      > Phigros：{list[7] if list[7] is not None else "暂未绑定"}
+      > QQ：{user_login_list[1] if user_login_list[1] is not None else "暂未绑定"}\n
+      > QQ频道：{user_login_list[2] if user_login_list[2] is not None else "暂未绑定"}\n
+      > Discord：{user_login_list[3] if user_login_list[3] is not None else "暂未绑定"}\n
+      > Telegram：{user_login_list[4] if user_login_list[4] is not None else "暂未绑定"}\n
+      > Bilibili：{user_login_list[5] if user_login_list[5] is not None else "暂未绑定"}\n
+      > Arcaea：{user_login_list[6] if user_login_list[6] is not None else "暂未绑定"}\n
+      > Phigros：{user_login_list[7] if user_login_list[7] is not None else "暂未绑定"}
     """
 
     await MessageFactory(msg).send(at_sender=True)

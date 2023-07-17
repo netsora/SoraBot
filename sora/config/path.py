@@ -25,7 +25,7 @@ USER_INFO_DB_PATH = DATABASE_PATH / "user.db"
 # 用户绑定数据路径
 USER_BIND_DB_PATH = DATABASE_PATH / "bind.db"
 # 用户签到数据路径
-USER_CHECK_INFO_DB_PATH = DATABASE_PATH / "check_in.db"
+USER_SIGN_DB_PATH = DATABASE_PATH / "sign.db"
 
 
 def load_path():

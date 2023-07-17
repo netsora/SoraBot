@@ -1,0 +1,22 @@
+{
+	"Print to console": {
+		"scope": "python",
+		"prefix": "init",
+		"body": [
+            "from nonebot import on_command",
+            "from nonebot.adapters.onebot.v11 import MessageEvent as V11MessageEvent",
+            "from nonebot.adapters.qqguild import MessageEvent as GuildMessageEvent",
+            "from nonebot.adapters.telegram.event import MessageEvent as TGMessageEvent",
+            "$1 = on_command(cmd=$2, priority=$3, block=${4|True, False|}"
+		],
+		"description": "初始化插件"
+	},
+    "Use MessageFactory to send message": {
+		"scope": "python",
+		"prefix": ["MF", "MessageFactory"],
+		"body": [
+            "await MessageFactory($1).send(at_sender=${2|True, False|})"
+		],
+		"description": "使用 MessageFactory 发送消息"
+	}
+}

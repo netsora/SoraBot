@@ -1,3 +1,6 @@
+---
+title: 贡献
+---
 # SoraBot 贡献指南
 首先，感谢大家为 SoraBot 贡献代码
 本张旨在引导你更规范地向 SoraBot 提交贡献，请务必认真阅读。
@@ -104,7 +107,7 @@ SoraBot 文档并没有具体的行文风格规范，但我们建议你尽量写
 │   └── 📜 poetry.lock          // 依赖管理
 │   └── 📜 pyproject.toml       
 |   └── 📜 README.md       
-|   └── 📜 requirements.txt     // 依赖列表  
+|   └── 📜 requirements.txt     // 依赖列表   
 ```
 
 ### 参与开发

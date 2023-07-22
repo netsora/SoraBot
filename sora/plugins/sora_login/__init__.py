@@ -12,7 +12,7 @@ require("nonebot_plugin_saa")
 from nonebot_plugin_saa import MessageFactory
 from tortoise.exceptions import DoesNotExist, ValidationError
 
-from sora import config
+from sora.config import ConfigManager
 from sora.database import UserBind, UserInfo, UserSign
 from sora.utils.user import generate_id, get_user_id, get_user_login_list
 
@@ -22,7 +22,10 @@ __sora_plugin_meta__ = PluginMetadata(
     usage="/注册\n/登录",
     extra={"author": "KomoriDev", "priority": 1},
 )
-award = config.Award
+
+CoinRewards = ConfigManager.get_config("Award")["login"][0]
+JrrpRewards = ConfigManager.get_config("Award")["login"][1]
+ExpRewards = ConfigManager.get_config("Award")["login"][2]
 
 register = on_command(
     cmd="注册",
@@ -112,9 +115,9 @@ async def register_user_info_(event: V11MessageEvent | GuildMessageEvent | TGMes
             password=password,
             permission="user",
             level=1,
-            exp=award.Exp.login,
-            coin=award.Coin.login,
-            jrrp=award.Jrrp.login,
+            exp=ExpRewards,
+            coin=CoinRewards,
+            jrrp=JrrpRewards,
         )
     except ValidationError:
         await MessageFactory("注册失败。用户名不可大于10位").send(at_sender=True)
@@ -141,7 +144,7 @@ async def register_user_info_(event: V11MessageEvent | GuildMessageEvent | TGMes
             注册成功\n
              > 用户名：{user_name}（Lv.1）\n
              > ID：{user_id}\n
-            奖励您 {award.Coin.login}枚 硬币，好感度增加 {award.Jrrp.login}%\n
+            奖励您 {CoinRewards}枚 硬币，好感度增加 {JrrpRewards}%\n
            『提示』我们已自动将 您的账户与 您的 {platform}ID 绑定。您可以通过发送 [/登录信息] 查询自己的绑定信息。"""
     ).send(at_sender=True)
 
@@ -227,16 +230,18 @@ async def get_login_list(event: V11MessageEvent | GuildMessageEvent | TGMessageE
         await login_list.finish()
 
     user_login_list = await get_user_login_list(event)
-    msg = f"""
-    您的登录信息如下：
-      > QQ：{user_login_list[1] if user_login_list[1] is not None else "暂未绑定"}\n
-      > QQ频道：{user_login_list[2] if user_login_list[2] is not None else "暂未绑定"}\n
-      > Discord：{user_login_list[3] if user_login_list[3] is not None else "暂未绑定"}\n
-      > Telegram：{user_login_list[4] if user_login_list[4] is not None else "暂未绑定"}\n
-      > Bilibili：{user_login_list[5] if user_login_list[5] is not None else "暂未绑定"}\n
-      > Arcaea：{user_login_list[6] if user_login_list[6] is not None else "暂未绑定"}\n
-      > Phigros：{user_login_list[7] if user_login_list[7] is not None else "暂未绑定"}
-    """
+
+    login_info = [
+        f"> QQ：{user_login_list[1] if user_login_list[1] is not None else '暂未绑定'}\n",
+        f"> QQ频道：{user_login_list[2] if user_login_list[2] is not None else '暂未绑定'}\n",
+        f"> Discord：{user_login_list[3] if user_login_list[3] is not None else '暂未绑定'}\n",
+        f"> Telegram：{user_login_list[4] if user_login_list[4] is not None else '暂未绑定'}\n",
+        f"> Bilibili：{user_login_list[5] if user_login_list[5] is not None else '暂未绑定'}\n",
+        f"> Arcaea：{user_login_list[6] if user_login_list[6] is not None else '暂未绑定'}\n",
+        f"> Phigros：{user_login_list[7] if user_login_list[7] is not None else '暂未绑定'}\n",
+    ]
+
+    msg = "您的登录信息如下：\n" + "\n".join(login_info)
 
     await MessageFactory(msg).send(at_sender=True)
     await login_list.finish()

@@ -47,64 +47,34 @@ async def get_user_id(event: V11MessageEvent | GuildMessageEvent | TGMessageEven
     return user_id
 
 
-async def get_user_login_list(event: V11MessageEvent | GuildMessageEvent | TGMessageEvent):
+async def get_user_login_list(event):
     """
-    通过 用户ID 获取 登录信息
-
+    通过用户ID获取登录信息
     :param event:
-    :return: user_id
-
-    已支持的平台:
-
-    * onebot_v11
-    * qqguild
-    * telegram
-
-    可获取的平台：
-    * QQ
-    * QQ频道
-    * discord
-    * telegram
-    * bilibili
-    * arcaea
-    * phigros
+    :return: login_list
     """
-    if isinstance(event, V11MessageEvent):
-        event_user_id = event.get_user_id()
-        user_bind_info = await UserBind.get_or_none(qq_id=event_user_id).values_list(
-            "user_id",
-            "qq_id",
-            "qqguild_id",
-            "discord_id",
-            "telegram_id",
-            "bilibili_id",
-            "arcaea_id",
-            "phigros_id",
-        )
-    elif isinstance(event, GuildMessageEvent):
-        event_user_id = event.get_user_id()
-        user_bind_info = await UserBind.get_or_none(qqguild_id=event_user_id).values_list(
-            "user_id",
-            "qq_id",
-            "qqguild_id",
-            "discord_id",
-            "telegram_id",
-            "bilibili_id",
-            "arcaea_id",
-            "phigros_id",
-        )
-    else:
-        event_user_id = event.get_user_id()
-        user_bind_info = await UserBind.get_or_none(telegram_id=event_user_id).values_list(
-            "user_id",
-            "qq_id",
-            "qqguild_id",
-            "discord_id",
-            "telegram_id",
-            "bilibili_id",
-            "arcaea_id",
-            "phigros_id",
-        )
+    platforms = {
+        V11MessageEvent: {"event_user_id": event.get_user_id(), "platform_id": "qq_id"},
+        GuildMessageEvent: {"event_user_id": event.get_user_id(), "platform_id": "qqguild_id"},
+        TGMessageEvent: {"event_user_id": event.get_user_id(), "platform_id": "telegram_id"},
+    }
+
+    platform = next((p for p in platforms.keys() if isinstance(event, p)), None)
+    if not platform:
+        return []
+
+    user_bind_info = await UserBind.get_or_none(
+        **{platforms[platform]["platform_id"]: platforms[platform]["event_user_id"]}
+    ).values_list(
+        "user_id",
+        "qq_id",
+        "qqguild_id",
+        "discord_id",
+        "telegram_id",
+        "bilibili_id",
+        "arcaea_id",
+        "phigros_id",
+    )
     login_list = user_bind_info
 
     return login_list

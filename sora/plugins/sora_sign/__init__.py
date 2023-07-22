@@ -14,11 +14,14 @@ from nonebot.adapters.telegram.event import MessageEvent as TGMessageEvent
 require("nonebot_plugin_saa")
 from nonebot_plugin_saa import MessageFactory
 
-from sora import config
+from sora.config import ConfigManager
 from sora.utils.user import get_user_id
 from sora.database.models import UserInfo, UserSign
 
-config = config.Award
+CoinRewards = ConfigManager.get_config("Award")["sign"][0]
+JrrpRewards = ConfigManager.get_config("Award")["sign"][1]
+ExpRewards = ConfigManager.get_config("Award")["sign"][2]
+
 
 sign = on_command(
     cmd="签到",
@@ -62,9 +65,9 @@ async def sign_(event: V11MessageEvent | GuildMessageEvent | TGMessageEvent):
     coin: int = user_info["coin"]
     jrrp: int = user_info["jrrp"]
 
-    sign_coin: int = random.randint(config.Coin.sign[0], config.Coin.sign[1])
-    sign_jrrp = config.Jrrp.sign
-    sign_exp = config.Exp.sign
+    sign_coin: int = random.randint(CoinRewards[0], CoinRewards[1]) if CoinRewards is not None else 0
+    sign_jrrp: int = JrrpRewards if JrrpRewards is not None else 0
+    sign_exp: int = ExpRewards if ExpRewards is not None else 0
 
     total_days: int = user_sign["total_days"]
     last_sign_date: date = user_sign["last_day"]

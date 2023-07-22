@@ -144,7 +144,6 @@ data/
 .idea
 .ruff_cache
 accounts/
-config.yaml
 
 ### Node ###
 

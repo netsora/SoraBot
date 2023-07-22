@@ -20,10 +20,5 @@ nonebot.load_from_toml("pyproject.toml")
 nonebot.load_plugin("sora")
 
 
-from sora import config
-
-if config.WithGoCQHTTP.enabled:
-    nonebot.load_plugin("nonebot_plugin_gocqhttp")
-
 if __name__ == "__main__":
     nonebot.run()

@@ -154,13 +154,13 @@ servers:
 ### Windows 标准启动方法
 1. 双击go-cqhttp_*.exe，根据提示生成运行脚本
 2. 双击运行脚本
-```log
+```txt
 [WARNING]: 尝试加载配置文件 config.yml 失败: 文件不存在
 [INFO]: 默认配置文件已生成,请编辑 config.yml 后重启程序.
 ```
 3. 参照 [config.md](https://github.com/ishkong/go-cqhttp-docs/blob/main/docs/guide/config.md) 和你所用到的插件的 `README` 填入参数
 4. 再次双击运行脚本
-```log
+```txt
 [INFO]: 登录成功 欢迎使用: 林汐ᴮᴼᵀ
 ```
 如出现需要认证的信息, 请自行认证设备。
@@ -171,13 +171,13 @@ servers:
 1. 通过 SSH 连接到服务器
 2. `cd` 到解压目录
 3. 输入 `./go-cqhttp`, Enter运行 , 此时将提示
-```log
+```txt
 [WARNING]: 尝试加载配置文件 config.yml 失败: 文件不存在
 [INFO]: 默认配置文件已生成,请编辑 config.yml 后重启程序.
 ```
 4. 参照 [config.md](https://github.com/ishkong/go-cqhttp-docs/blob/main/docs/guide/config.md) 和你所用到的插件的 `README` 填入参数
 5. 再次输入 ./go-cqhttp, Enter运行
-```log
+```txt
 [INFO]: 登录成功 欢迎使用: 林汐ᴮᴼᵀ
 ```
 如出现需要认证的信息, 请自行认证设备。

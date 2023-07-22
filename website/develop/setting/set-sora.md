@@ -55,7 +55,8 @@ telegram_bots = [{"token": "1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHI"}]
 :::
 如果运行 林汐 的服务器位于中国大陆，那么你可能需要配置代理，否则将无法调用 Telegram 提供的任何 API。
 ```py
-telegram_proxy = "···"
+# .dev.prod
+PROXY = "···"
 ```
 
 ## 配置详细
@@ -87,7 +88,6 @@ QQGUILD_BOTS='
 
 # Telegram 机器人账号
 telegram_bots = [{"token": "1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHI"}]
-telegram_proxy = "http://127.0.0.1:7890"
 ```
 
 
@@ -111,75 +111,34 @@ BOT_ADMIN=["231010"]
 # 启动后，林汐会分别创建ID为 666666、233333的 Bot协助者账号，并设置密码。您需要输入 /登录 231010 [密码] 来绑定协助者账户
 BOT_HELPER=["666666","233333"]
 
+# 如果使用 Telegram 适配器，请务必填写！
 PROXY=""
 ```
 
 ### config.yaml
 ```yaml 
-# 设置参考文档: https://sorabot.netlify.app/blogs/develop/set/set-sora.html
-ConfigVersion: "1.0.0"
-
 Award:
-  # 金币奖励
-  Coin:
-    login: 50      
-    sign: [20, 60]
-  # 好感度奖励
-  Jrrp:
-    login: 20
-    sign: 10
-  # 经验值奖励
-  Exp:
-    login: 0
-    sign: 10
-
-
-WithGoCQHTTP:
-  enabled: false
-  accounts: []
-
-  download_domain: "{download_domain}"
-  download_version: "v1.1.0"
-
-  gocqhttp_webui_username: "Sora"
-  gocqhttp_webui_password: "Sora231010"
+  login:        # ---> [20, 10, 0]
+    - 20        # 硬币奖励
+    - 10        # 好感度奖励
+    - 0         # 经验值奖励
+  sign:         # ---> [[30, 60], 5, 100]
+    - [30, 60]  
+    - 5
+    - 100
 
 ```
 
 * [Award](#award) 为 林汐 奖励机制相关设置
-* [WithGoCQHTTP](#withgocqhttp) 为内置 gocqhttp 相关设置
 
 ## 解析配置
 
 ### Award
-* Coin：硬币奖励
-    - login：注册
-    - sign：签到
-* Jrrp：好感度奖励
-    - login：注册
-    - sign：签到
-* Exp：经验值奖励
-    - login：注册
-    - sign：签到
-
-### WithGoCQHTTP
-* enabled：是否启用。
-* accounts：需要登陆的账号，如不会填写，启用后前往：http://{host}:{port}/go-cqhttp/ 配置即可。
-    - uin：🐧账号。
-    - password：登录密码。
-    - protocol：登录设备类型。
-* download_domain：gocqhttp 下载域名，可选：github.com、download.fastgit.org、ghdown.obfs.dev。
-* download_version：gocqhttp 下载版本。
-* gocq_webui_username：内置 gocqhttp WebUI 的登录凭证：账号。
-* gocq_webui_password：内置 gocqhttp WebUI 的登录凭证：密码。
-::: details protocol
-| 值 | 类型 | 限制 |
-| :---: | :---: | :---: |
-| 0 | Default/Unset | 当前版本下默认为iPad |
-| 1 | Android Phone | 无 |
-| 2 | Android Watch | 无法接收 notify 事件、无法接收口令红包、无法接收撤回消息 |
-| 3 | MacOS | 无 |
-| 4 | 企点 | 只能登录企点账号或企点子账号 |
-| 5 | iPad | 无 |
-| 6 | aPad | 无 |
-:::
+* login：       注册奖励
+    - 20        硬币奖励
+    - 10        好感度奖励
+    - 0         经验值奖励
+* sign：        注册奖励
+    - [30, 60]  硬币奖励 (最小值: 30, 最大值: 60)
+    - 5         好感度奖励
+    - 100       经验值奖励

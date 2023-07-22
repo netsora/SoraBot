@@ -1,7 +1,7 @@
 from pathlib import Path
 
 # 配置路径
-SORA_CONFIG = Path() / "config.yaml"
+SORA_CONFIG = Path() / "sora" / "config" / "config.yaml"
 
 # 图片路径
 IMAGE_PATH = Path() / "resources" / "image"
@@ -35,6 +35,7 @@ def load_path():
     FONT_PATH.mkdir(parents=True, exist_ok=True)
     TEMPLATE_PATH.mkdir(parents=True, exist_ok=True)
     DATABASE_PATH.mkdir(parents=True, exist_ok=True)
+    PLUGIN_PATH.mkdir(parents=True, exist_ok=True)
 
 
 load_path()

@@ -63,7 +63,7 @@ class BotAdminUser:
 
     async def __call__(self, event: V11MessageEvent | GuildMessageEvent | TGMessageEvent) -> bool:
         try:
-            user_id: str = await get_user_id(event)
+            user_id = await get_user_id(event)
         except Exception:
             return False
 
@@ -84,7 +84,7 @@ class BotHelperUser:
 
     async def __call__(self, event: V11MessageEvent | GuildMessageEvent | TGMessageEvent) -> bool:
         try:
-            user_id: str = await get_user_id(event)
+            user_id = await get_user_id(event)
         except Exception:
             return False
 

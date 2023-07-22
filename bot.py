@@ -12,18 +12,13 @@ driver = nonebot.get_driver()
 driver.register_adapter(ONEBOT_V11Adapter)
 driver.register_adapter(ONEBOT_V12Adapter)
 driver.register_adapter(QQGUILD_Adapter)
-driver.register_adapter(TG_Adapter)
+driver.register_adapter(TG_Adapter, telegram_proxy=driver.config.proxy)
 
 nonebot.load_builtin_plugins("echo")
 
 nonebot.load_from_toml("pyproject.toml")
 nonebot.load_plugin("sora")
 
-
-from sora import config
-
-if config.WithGoCQHTTP.enabled:
-    nonebot.load_plugin("nonebot_plugin_gocqhttp")
 
 if __name__ == "__main__":
     nonebot.run()

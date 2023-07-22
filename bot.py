@@ -12,7 +12,7 @@ driver = nonebot.get_driver()
 driver.register_adapter(ONEBOT_V11Adapter)
 driver.register_adapter(ONEBOT_V12Adapter)
 driver.register_adapter(QQGUILD_Adapter)
-driver.register_adapter(TG_Adapter)
+driver.register_adapter(TG_Adapter, telegram_proxy=driver.config.proxy)
 
 nonebot.load_builtin_plugins("echo")
 

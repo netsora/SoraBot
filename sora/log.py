@@ -34,3 +34,11 @@ class logger:
     @staticmethod
     def debug(command: str, info: str):
         nb_logger.opt(colors=True).debug(f"<u><y>[{command}]</y></u>{escape_tag(info)}")
+
+    @staticmethod
+    def error(command: str, info: str):
+        nb_logger.opt(colors=True).error(f"<u><y>[{command}]</y></u>{escape_tag(info)}")
+
+    @staticmethod
+    def exception(command: str, info: str):
+        nb_logger.opt(colors=True).exception(f"<u><y>[{command}]</y></u>{escape_tag(info)}")

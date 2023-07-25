@@ -6,7 +6,7 @@
 <div align="center">
 
 # SoraBot
-_✨ 基于 Nonebot2 和 go-cqhttp 开发，超可爱的林汐酱 ✨_
+_✨ 基于 Nonebot2，互通多平台，超可爱的林汐酱 ✨_
 </div>
 
 
@@ -14,15 +14,38 @@ _✨ 基于 Nonebot2 和 go-cqhttp 开发，超可爱的林汐酱 ✨_
 <a href="https://raw.githubusercontent.com/netsora/SoraBot/master/LICENSE">
     <img src="https://img.shields.io/github/license/netsora/SoraBot" alt="license">
 </a>
-<img src="https://img.shields.io/badge/python-3.10+-blue" alt="python">
-<a href="https://github.com/netsora/SoraBot/releases">
-  <img src="https://img.shields.io/github/v/release/netsora/SoraBot" alt="release"/>
+<img src="https://img.shields.io/badge/python-3.10+-blue?logo=python&logoColor=edb641" alt="python">
+<a href="https://github.com/psf/black">
+    <img src="https://img.shields.io/badge/code%20style-black-000000.svg?logo=python&logoColor=edb641" alt="black">
 </a>
-<a href="https://results.pre-commit.ci/latest/github/netsora/SoraBot/master">
-  <img src="https://results.pre-commit.ci/badge/github/netsora/SoraBot/nonebot2/master.svg" alt="pre-commit" />
+<a href="https://github.com/Microsoft/pyright">
+    <img src="https://img.shields.io/badge/types-pyright-797952.svg?logo=python&logoColor=edb641" alt="pyright">
 </a>
 <a href="https://github.com/astral-sh/ruff">
-  <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json" alt="ruff">
+    <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json" alt="ruff">
+</a>
+<br />
+<a href="https://github.com/netsora/SoraBot/actions/workflows/website-deploy.yml">
+    <img src="https://github.com/netsora/SoraBot/actions/workflows/website-deploy.yml/badge.svg?branch=master&event=push" alt="site"/>
+</a>
+<a href="https://results.pre-commit.ci/latest/github/netsora/SoraBot/master">
+    <img src="https://results.pre-commit.ci/badge/github/netsora/SoraBot/master.svg" alt="pre-commit" />
+</a>
+<a href="https://github.com/netsora/SoraBot/actions/workflows/pyright.yml">
+    <img src="https://github.com/netsora/SoraBot/actions/workflows/pyright.yml/badge.svg?branch=master&event=push" alt="pyright">
+</a>
+<a href="https://github.com/netsora/SoraBot/actions/workflows/ruff.yml">
+    <img src="https://github.com/netsora/SoraBot/actions/workflows/ruff.yml/badge.svg?branch=master&event=push" alt="ruff">
+</a>
+<br />
+<a href="https://onebot.dev/">
+    <img src="https://img.shields.io/badge/OneBot-v11-black?style=social&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABABAMAAABYR2ztAAAAIVBMVEUAAAAAAAADAwMHBwceHh4UFBQNDQ0ZGRkoKCgvLy8iIiLWSdWYAAAAAXRSTlMAQObYZgAAAQVJREFUSMftlM0RgjAQhV+0ATYK6i1Xb+iMd0qgBEqgBEuwBOxU2QDKsjvojQPvkJ/ZL5sXkgWrFirK4MibYUdE3OR2nEpuKz1/q8CdNxNQgthZCXYVLjyoDQftaKuniHHWRnPh2GCUetR2/9HsMAXyUT4/3UHwtQT2AggSCGKeSAsFnxBIOuAggdh3AKTL7pDuCyABcMb0aQP7aM4AnAbc/wHwA5D2wDHTTe56gIIOUA/4YYV2e1sg713PXdZJAuncdZMAGkAukU9OAn40O849+0ornPwT93rphWF0mgAbauUrEOthlX8Zu7P5A6kZyKCJy75hhw1Mgr9RAUvX7A3csGqZegEdniCx30c3agAAAABJRU5ErkJggg==" alt="onebot">
+</a>
+<a href="https://core.telegram.org/bots/api">
+    <img src="https://img.shields.io/badge/telegram-Bot-lightgrey?style=social&logo=telegram" alt="telegram">
+</a>
+<a href="https://bot.q.qq.com/wiki/">
+    <img src="https://img.shields.io/badge/QQ%E9%A2%91%E9%81%93-Bot-lightgrey?style=social&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTIuODIgMTMwLjg5Ij48ZyBkYXRhLW5hbWU9IuWbvuWxgiAyIj48ZyBkYXRhLW5hbWU9IuWbvuWxgiAxIj48cGF0aCBkPSJNNTUuNjMgMTMwLjhjLTcgMC0xMy45LjA4LTIwLjg2IDAtMTkuMTUtLjI1LTMxLjcxLTExLjQtMzQuMjItMzAuMy00LjA3LTMwLjY2IDE0LjkzLTU5LjIgNDQuODMtNjYuNjQgMi0uNTEgNS4yMS0uMzEgNS4yMS0xLjYzIDAtMi4xMy4xNC0yLjEzLjE0LTUuNTcgMC0uODktMS4zLTEuNDYtMi4yMi0yLjMxLTYuNzMtNi4yMy03LjY3LTEzLjQxLTEtMjAuMTggNS40LTUuNTIgMTEuODctNS40IDE3LjgtLjU5IDYuNDkgNS4yNiA2LjMxIDEzLjA4LS44NiAyMS0uNjguNzQtMS43OCAxLjYtMS43OCAyLjY3djQuMjFjMCAxLjM1IDIuMiAxLjYyIDQuNzkgMi4zNSAzMS4wOSA4LjY1IDQ4LjE3IDM0LjEzIDQ1IDY2LjM3LTEuNzYgMTguMTUtMTQuNTYgMzAuMjMtMzIuNyAzMC42My04LjAyLjE5LTE2LjA3LS4wMS0yNC4xMy0uMDF6IiBmaWxsPSIjMDI5OWZlIi8+PHBhdGggZD0iTTMxLjQ2IDExOC4zOGMtMTAuNS0uNjktMTYuOC02Ljg2LTE4LjM4LTE3LjI3LTMtMTkuNDIgMi43OC0zNS44NiAxOC40Ni00Ny44MyAxNC4xNi0xMC44IDI5Ljg3LTEyIDQ1LjM4LTMuMTkgMTcuMjUgOS44NCAyNC41OSAyNS44MSAyNCA0NS4yOS0uNDkgMTUuOS04LjQyIDIzLjE0LTI0LjM4IDIzLjUtNi41OS4xNC0xMy4xOSAwLTE5Ljc5IDAiIGZpbGw9IiNmZWZlZmUiLz48cGF0aCBkPSJNNDYuMDUgNzkuNThjLjA5IDUgLjIzIDkuODItNyA5Ljc3LTcuODItLjA2LTYuMS01LjY5LTYuMjQtMTAuMTktLjE1LTQuODItLjczLTEwIDYuNzMtOS44NHM2LjM3IDUuNTUgNi41MSAxMC4yNnoiIGZpbGw9IiMxMDlmZmUiLz48cGF0aCBkPSJNODAuMjcgNzkuMjdjLS41MyAzLjkxIDEuNzUgOS42NC01Ljg4IDEwLTcuNDcuMzctNi44MS00LjgyLTYuNjEtOS41LjItNC4zMi0xLjgzLTEwIDUuNzgtMTAuNDJzNi41OSA0Ljg5IDYuNzEgOS45MnoiIGZpbGw9IiMwODljZmUiLz48L2c+PC9nPjwvc3ZnPg==" alt="QQ频道">
 </a>
 </br>
 <a href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=A9oTio04Frz8oX0WgbPWM9OszLcF5RHT&authKey=D84U3cnB2Lax1qgww4psT1OgEU1iOOKW4evsdhnQuHtV3QFedQGNNLm1kK2Mfj15&noverify=0&group_code=817451732">
@@ -37,18 +60,20 @@ _✨ 基于 Nonebot2 和 go-cqhttp 开发，超可爱的林汐酱 ✨_
 </p>
 
 <p align="center">
-  <a href="#">文档</a>
+  <a href="https://bot.netsora.info/">文档</a>
+  · 
+  <a href="https://bot.netsora.info/module/">服务列表</a>
   ·
-  <a href="#">服务列表</a>
+  <a href="https://bot.netsora.info/develop/forward/prepare.html">安装文档</a>
   ·
-  <a href="#">安装文档</a>
+  <a href="https://sorabot.netlify.app/">文档打不开?</a>
 </p>
 
 ## 简介
 > **Note**  
 > 一切开发旨在学习，请勿用于非法用途
 
-林汐（SoraBot）基于 Nonebot2 和 go-cqhttp 开发，以 sqlite3 作为数据库的功能型机器人
+林汐（SoraBot）基于 Nonebot2 开发，互通多平台，以 sqlite3 作为数据库的功能型机器人
 
 ## 特色
 * 使用 NoneBot2 进行项目底层构建.
@@ -120,7 +145,7 @@ reboot_cmd = on_command(
 
 ## 鸣谢
 感谢以下 开发者 和 Github项目 对 SoraBot 作出的贡献：（排名不分先后）
-* [`nonebot/noenbot2`](https://github.com/nonebot/nonebot2)：跨平台Python异步机器人框架  
+* [`nonebot/noenbot2`](https://github.com/netsora/SoraBot)：跨平台Python异步机器人框架  
 * [`Mrs4s/go-cqhttp`](https://github.com/Mrs4s/go-cqhttp)：cqhttp的golang实现，轻量、原生跨平台.  
 * [`Kyomotoi/ATRI`](https://github.com/Kyomotoi/ATRI)：高性能文爱萝卜子
 * [`CMHopeSunshine/LittlePaimon`](https://github.com/CMHopeSunshine/LittlePaimon)：原神Q群机器人

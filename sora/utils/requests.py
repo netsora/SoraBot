@@ -10,9 +10,8 @@ from httpx import Response, ConnectTimeout
 from rich.progress import Progress, BarColumn, TextColumn, DownloadColumn, TransferSpeedColumn
 
 from sora.log import logger
+from sora.utils.utils import get_local_proxy
 from sora.utils.user_agent import get_user_agent
-
-from .utils import get_local_proxy
 
 
 class AsyncHttpx:

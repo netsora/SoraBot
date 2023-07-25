@@ -1,15 +1,16 @@
 [project]
 name = "sorabot"
 version = "1.0.0"
-description = "基于 Nonebot2 和 go-cqhttp 开发，超可爱的林汐酱"
+description = "基于 Nonebot2，互通多平台，超可爱的林汐酱"
 readme = "README.md"
 requires-python = ">=3.10, <4.0"
 
 [tool.nonebot]
 adapters = [
     { name = "OneBot V11", module_name = "nonebot.adapters.onebot.v11" },
+    { name = "OneBot V12", module_name = "nonebot.adapters.onebot.v12" },
     { name = "QQ 频道", module_name = "nonebot.adapters.qqguild" },
-    { name = "OneBot V12", module_name = "nonebot.adapters.onebot.v12" }
+    { name = "Telegram", module_name = "nonebot.adapters.telegram"}
 ]
 plugins = []
 plugin_dirs = ["sorabot/plugins"]
@@ -18,7 +19,7 @@ builtin_plugins = ["echo"]
 [tool.poetry]
 name = "sorabot"
 version = "1.0.0"
-description = "基于 Nonebot2 和 go-cqhttp 开发，超可爱的林汐酱"
+description = "基于 Nonebot2，互通多平台，超可爱的林汐酱"
 authors = ["KomoriDev <mute231010@gmail.com>"]
 readme = "README.md"
 
@@ -33,7 +34,6 @@ emoji = "^2.6.0"
 aiosqlite = "0.17.0"
 strenum = "^0.4.15"
 pygments = "^2.15.1"
-pycln = "^2.1.5"
 nonebot-adapter-telegram = "^0.1.0b14"
 nonebot-adapter-onebot = "^2.2.3"
 nonebot-adapter-qqguild = "^0.2.3"
@@ -47,9 +47,8 @@ ruamel-yaml = "^0.17.32"
 tqdm = "^4.65.0"
 bbcode = "^1.1.0"
 pil-utils = "^0.1.7"
-codecov = "^2.1.13"
-isort = "^5.12.0"
 gitpython = "^3.1.32"
+ujson = "^5.8.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.276"
@@ -77,13 +76,22 @@ extra_standard_library = ["typing_extensions"]
 [tool.ruff]
 select = ["E", "W", "F", "UP", "C", "T", "PYI", "PT", "Q"]
 ignore = ["E402", "C901"]
-
 line-length = 120
 target-version = "py310"
 
 [tool.ruff.flake8-pytest-style]
 fixture-parentheses = false
 mark-parentheses = false
+
+[tool.pyright]
+pythonVersion = "3.10"
+pythonPlatform = "All"
+executionEnvironments = [
+    { root = "./tests", extraPaths = ["./"] },
+    { root = "./" },
+]
+typeCheckingMode = "basic"
+reportShadowedImports = false
 
 [build-system]
 requires = ["poetry-core"]

@@ -163,7 +163,7 @@ class AsyncHttpx:
                         ).content
                         async with aiofiles.open(path, "wb") as wf:
                             await wf.write(content)
-                            logger.info(f"下载 {url} 成功.. Path：{path.absolute()}")
+                            logger.info("请求", f"下载 {url} 成功.. Path：{path.absolute()}")
                         return True
                     except (TimeoutError, ConnectTimeout):
                         pass
@@ -182,7 +182,7 @@ class AsyncHttpx:
                                 timeout=timeout,
                                 **kwargs,
                             ) as response:
-                                logger.info(f"开始下载 {path.name}.. Path: {path.absolute()}")
+                                logger.info("请求", f"开始下载 {path.name}.. Path: {path.absolute()}")
                                 async with aiofiles.open(path, "wb") as wf:
                                     total = int(response.headers["Content-Length"])
                                     with Progress(
@@ -200,14 +200,14 @@ class AsyncHttpx:
                                                 download_task,
                                                 completed=response.num_bytes_downloaded,
                                             )
-                                    logger.info(f"下载 {url} 成功.. Path：{path.absolute()}")
+                                    logger.info("请求", f"下载 {url} 成功.. Path：{path.absolute()}")
                         return True
                     except (TimeoutError, ConnectTimeout):
                         pass
             else:
-                logger.error("", f"下载 {url} 下载超时.. Path：{path.absolute()}")
+                logger.error("请求", f"下载 {url} 下载超时.. Path：{path.absolute()}")
         except Exception as e:
-            logger.error(" ", f"下载 {url} 未知错误 {type(e)}：{e}.. Path：{path.absolute()}")
+            logger.error("请求", f"下载 {url} 未知错误 {type(e)}：{e}.. Path：{path.absolute()}")
         return False
 
     @classmethod

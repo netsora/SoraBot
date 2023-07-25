@@ -3,7 +3,7 @@ from tortoise.models import Model
 
 
 class UserBind(Model):
-    id: int = fields.IntField(pk=True, generated=True, auto_increment=True)
+    id = fields.IntField(pk=True, generated=True, auto_increment=True)
     user_id = fields.CharField(max_length=10)
     """用户ID"""
     qq_id = fields.CharField(max_length=20, null=True, unique=True)

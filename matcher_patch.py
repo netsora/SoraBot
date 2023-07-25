@@ -58,7 +58,7 @@ def on_command_(cmd: str | tuple[str, ...], state: dict = {}, *args, **kwargs):
         state = {}
     if "name" not in state:
         state["name"] = cmd if isinstance(cmd, str) else cmd[0]
-    return on_command(cmd=cmd, state=state, _depth=1, *args, **kwargs)
+    return on_command(cmd=cmd, state=state, _depth=1, *args, **kwargs)  # type: ignore
 
 
 def on_endswith_(msg: str | tuple[str, ...], state: dict = {}, *args, **kwargs):
@@ -66,7 +66,7 @@ def on_endswith_(msg: str | tuple[str, ...], state: dict = {}, *args, **kwargs):
         state = {}
     if "name" not in state:
         state["name"] = msg if isinstance(msg, str) else msg[0]
-    return on_endswith(msg=msg, state=state, _depth=1, *args, **kwargs)
+    return on_endswith(msg=msg, state=state, _depth=1, *args, **kwargs)  # type: ignore
 
 
 def on_startswith_(msg: str | tuple[str, ...], state: dict = {}, *args, **kwargs):
@@ -74,7 +74,7 @@ def on_startswith_(msg: str | tuple[str, ...], state: dict = {}, *args, **kwargs
         state = {}
     if "name" not in state:
         state["name"] = msg if isinstance(msg, str) else msg[0]
-    return on_startswith(msg=msg, state=state, _depth=1, *args, **kwargs)
+    return on_startswith(msg=msg, state=state, _depth=1, *args, **kwargs)  # type: ignore
 
 
 def on_regex_(pattern: str, state: dict = {}, *args, **kwargs):
@@ -82,7 +82,7 @@ def on_regex_(pattern: str, state: dict = {}, *args, **kwargs):
         state = {}
     if "name" not in state:
         state["name"] = pattern
-    return on_regex(pattern=pattern, state=state, _depth=1, *args, **kwargs)
+    return on_regex(pattern=pattern, state=state, _depth=1, *args, **kwargs)  # type: ignore
 
 
 def on_keyword_(keywords: set[str], state: dict = {}, *args, **kwargs):
@@ -90,7 +90,7 @@ def on_keyword_(keywords: set[str], state: dict = {}, *args, **kwargs):
         state = {}
     if "name" not in state:
         state["name"] = list(keywords)[0]
-    return on_keyword(keywords=keywords, state=state, _depth=1, *args, **kwargs)
+    return on_keyword(keywords=keywords, state=state, _depth=1, *args, **kwargs)  # type: ignore
 
 
 Matcher.simple_run = simple_run

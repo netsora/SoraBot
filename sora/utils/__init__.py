@@ -8,6 +8,8 @@ __version__ = "1.0.0"
 
 DRIVER = get_driver()
 
+PROXY = DRIVER.config.proxy
+
 try:
     bot_admin: list[str] = [str(s) for s in DRIVER.config.bot_admin]
 except Exception:

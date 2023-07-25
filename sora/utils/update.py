@@ -8,7 +8,7 @@ from git.exc import GitCommandError, InvalidGitRepositoryError
 
 from sora.log import logger
 
-from .requests import aiorequests
+from .requests import AsyncHttpx
 from . import NICKNAME, __version__
 
 
@@ -22,9 +22,7 @@ def update():
     origin = repo.remotes.origin
     try:
         origin.pull()
-        msg = f"""更新完成，版本：{__version__}\n最新更新日志为：\n
-        {repo.head.commit.message.replace(":bug:", "🐛").replace(b":sparkles:", "✨").replace(":memo:", "📝")}\n
-        可使用命令 [@bot /重启] 重启{NICKNAME[1]}"""
+        msg = f"""更新完成，版本：{__version__}\n可使用命令 [@bot /重启] 重启{NICKNAME[1]}"""
     except GitCommandError as e:
         if "timeout" in e.stderr or "unable to access" in e.stderr:
             msg = "更新失败，连接git仓库超时，请重试或修改源为代理源后再重试。"
@@ -39,9 +37,7 @@ def update():
             pyproject_file.write_text(pyproject_new_content, encoding="utf-8")
             try:
                 origin.pull()
-                msg = f"""更新完成，版本：{__version__}\n最新更新日志为：\n
-                {repo.head.commit.message.replace(":bug:", "🐛").replace(":sparkles:", "✨").replace(":memo:", "📝")}\n
-                可使用命令 [@bot /重启] 重启{NICKNAME[1]}"""
+                msg = f"""更新完成，版本：{__version__}\n可使用命令 [@bot /重启] 重启{NICKNAME[1]}"""
             except GitCommandError as e:
                 if "timeout" in e.stderr or "unable to access" in e.stderr:
                     msg = "更新失败，连接git仓库超时，请重试或修改源为代理源后再重试。"
@@ -65,7 +61,7 @@ def update():
 
 
 async def check_update():
-    resp = await aiorequests.get("https://api.github.com/repos/netsora/SoraBot/commits")
+    resp = await AsyncHttpx.get("https://api.github.com/repos/netsora/SoraBot/commits")
     data = resp.json()
     if not isinstance(data, list):
         return "检查更新失败，可能是网络问题，请稍后再试"

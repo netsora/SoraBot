@@ -49,6 +49,8 @@ bbcode = "^1.1.0"
 pil-utils = "^0.1.7"
 gitpython = "^3.1.32"
 ujson = "^5.8.0"
+aiofiles = "^23.1.0"
+retrying = "^1.3.4"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.276"

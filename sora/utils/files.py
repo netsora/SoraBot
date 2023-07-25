@@ -8,7 +8,7 @@ from ssl import SSLCertVerificationError
 
 from ruamel import yaml
 
-from .requests import aiorequests
+from .requests import AsyncHttpx
 
 
 def load_json(path: Path | str, encoding: str = "utf-8"):
@@ -38,9 +38,9 @@ async def load_json_from_url(url: str, path: Path | str | None = None, force_ref
     if path and Path(path).exists() and not force_refresh:
         return load_json(path=path)
     try:
-        resp = await aiorequests.get(url)
+        resp = await AsyncHttpx.get(url)
     except SSLCertVerificationError:
-        resp = await aiorequests.get(url.replace("https", "http"))
+        resp = await AsyncHttpx.get(url.replace("https", "http"))
     data = resp.json()
     if path and not Path(path).exists():
         save_json(data=data, path=path)

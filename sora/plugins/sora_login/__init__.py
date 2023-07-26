@@ -3,7 +3,10 @@ from nonebot.typing import T_State
 from nonebot import require, on_command
 from nonebot.plugin import PluginMetadata
 from nonebot.internal.adapter import Message
-from nonebot.params import ArgStr, CommandArg
+from nonebot.params import Arg, ArgStr, CommandArg
+from nonebot.adapters.qqguild import Bot as GuildBot
+from nonebot.adapters.onebot.v11 import Bot as V11Bot
+from nonebot.adapters.telegram.bot import Bot as TGBot
 from nonebot.adapters.qqguild import MessageEvent as GuildMessageEvent
 from nonebot.adapters.onebot.v11 import MessageEvent as V11MessageEvent
 from nonebot.adapters.telegram.event import MessageEvent as TGMessageEvent
@@ -13,6 +16,10 @@ from nonebot_plugin_saa import MessageFactory
 from tortoise.exceptions import DoesNotExist, ValidationError
 
 from sora.config import ConfigManager
+from sora.config.path import DATABASE_PATH
+from sora.utils.requests import AsyncHttpx
+from sora.utils.utils import get_message_img
+from sora.utils.helpers import HandleCancellation
 from sora.database import UserBind, UserInfo, UserSign
 from sora.utils.user import generate_id, get_user_id, get_user_login_list
 
@@ -66,6 +73,32 @@ login_list = on_command(
         "priority": 1,
     },
 )
+change_name = on_command(
+    cmd="改名",
+    aliases={"修改昵称", "更改昵称", "修改用户名", "更改用户名"},
+    priority=1,
+    block=True,
+    rule=to_me(),
+    state={
+        "name": "change_name",
+        "description": "修改用户名",
+        "usage": "@bot /改名",
+        "priority": 1,
+    },
+)
+set_avatar = on_command(
+    cmd="设置头像",
+    aliases={"更改头像", "上传头像"},
+    priority=1,
+    block=True,
+    rule=to_me(),
+    state={
+        "name": "set_avatar",
+        "description": "设置头像",
+        "usage": "@bot /设置头像",
+        "priority": 1,
+    },
+)
 
 
 @register.handle()
@@ -85,12 +118,12 @@ async def register_user_info(state: T_State, msg: Message = CommandArg()):
                 state["user_name"] = message[0]
 
 
-@register.got("user_name", prompt="请输入用户名")
+@register.got("user_name", prompt="请输入用户名", parameterless=[HandleCancellation("已取消")])
 async def get_user_name(state: T_State, user_name: str = ArgStr("user_name")):
     state["user_name"] = user_name
 
 
-@register.got("password", prompt="请输入密码")
+@register.got("password", prompt="请输入密码", parameterless=[HandleCancellation("已取消")])
 async def get_user_password(state: T_State, password: str = ArgStr("password")):
     state["password"] = password
 
@@ -145,7 +178,8 @@ async def register_user_info_(event: V11MessageEvent | GuildMessageEvent | TGMes
              > 用户名：{user_name}（Lv.1）\n
              > ID：{user_id}\n
             奖励您 {CoinRewards}枚 硬币，好感度增加 {JrrpRewards}%\n
-           『提示』我们已自动将 您的账户与 您的 {platform}ID 绑定。您可以通过发送 [/登录信息] 查询自己的绑定信息。"""
+           『提示』我们已自动将 您的账户与 您的 {platform}ID 绑定。您可以通过发送 [/登录信息] 查询自己的绑定信息。\n
+           （请不要忘记 /设置头像 ！）"""
     ).send(at_sender=True)
 
     await register.finish()
@@ -165,12 +199,12 @@ async def login_platform(state: T_State, msg: Message = CommandArg()):
                 state["user_id"] = message[0]
 
 
-@login.got("user_id", prompt="请输入您的ID")
+@login.got("user_id", prompt="请输入您的ID", parameterless=[HandleCancellation("已取消")])
 async def get_user_id_(state: T_State, user_id: str = ArgStr("user_id")):
     state["user_id"] = user_id
 
 
-@login.got("password", prompt="请输入密码")
+@login.got("password", prompt="请输入密码", parameterless=[HandleCancellation("已取消")])
 async def get_user_password_(state: T_State, password: str = ArgStr("password")):
     state["password"] = password
 
@@ -245,3 +279,83 @@ async def get_login_list(event: V11MessageEvent | GuildMessageEvent | TGMessageE
 
     await MessageFactory(msg).send(at_sender=True)
     await login_list.finish()
+
+
+@change_name.handle()
+async def change_name_(state: T_State, msg: Message = CommandArg()):
+    message = msg.extract_plain_text().split()[0]
+    state["user_name"] = message
+
+
+@change_name.got("user_name", prompt="请输入更改后的用户名", parameterless=[HandleCancellation("已取消")])
+async def get_changed_name(state: T_State, user_name: str = ArgStr("user_name")):
+    state["user_name"] = user_name
+
+
+@change_name.handle()
+async def change_name__(event: V11MessageEvent | GuildMessageEvent | TGMessageEvent, state: T_State):
+    user_id = await get_user_id(event)
+    if user_id is None:
+        await MessageFactory("该账号暂未注册林汐账户，请先发送 [/注册] ").send(at_sender=True)
+        await login_list.finish()
+
+    user_name = state.get("user_name")
+    await UserInfo.filter(user_id=user_id).update(user_name=user_name)
+
+    await MessageFactory(f"更改用户名成功！\n你现在的用户名为：{user_name}").send(at_sender=True)
+    await change_name.finish()
+
+
+@set_avatar.handle()
+async def set_avatar_(event: V11MessageEvent | GuildMessageEvent | TGMessageEvent, state: T_State):
+    if isinstance(event, V11MessageEvent):
+        message = reply.message if (reply := event.reply) else event.message
+        if img := message["image"]:
+            state["url"] = await get_message_img(img)
+    elif isinstance(event, GuildMessageEvent):
+        if img := event.get_message()["attachment"]:
+            state["url"] = await get_message_img(img)
+    else:
+        if img := event.get_message()["photo"]:
+            state["url"] = await get_message_img(img)
+
+
+@set_avatar.got("url", prompt="请发送图片", parameterless=[HandleCancellation("已取消")])
+async def get_avatar_img(state: T_State, avatar: Message = Arg("url")):
+    url = await get_message_img(avatar)
+    if not url:
+        await set_avatar.reject("没有找到图片, 请重新发送")
+    state["url"] = url
+
+
+@set_avatar.handle()
+async def set_avatar__(
+    bot: V11Bot | GuildBot | TGBot, event: V11MessageEvent | GuildMessageEvent | TGMessageEvent, state: T_State
+):
+    user_id = await get_user_id(event)
+    if user_id is None:
+        await MessageFactory("该账号暂未注册林汐账户，请先发送 [/注册] ").send(at_sender=True)
+        await set_avatar.finish()
+
+    url = state.get("url")
+    path = DATABASE_PATH / "user" / f"{user_id}"
+    if not path.exists():
+        path.mkdir(parents=True, exist_ok=True)
+
+    if url:
+        if isinstance(event, TGMessageEvent) and isinstance(bot, TGBot):
+            try:
+                await AsyncHttpx.download_telegram_file(url[0], path / "avatar.jpg", bot)
+                await MessageFactory("头像设置成功！").send(at_sender=True)
+            except Exception:
+                await MessageFactory("头像设置失败...").send(at_sender=True)
+        elif isinstance(event, GuildMessageEvent):
+            try:
+                await AsyncHttpx.download_file(f"https://{url[0]}", path / "avatar.jpg")
+                await MessageFactory("头像设置成功！").send(at_sender=True)
+            except Exception:
+                await MessageFactory("头像设置失败...").send(at_sender=True)
+        await set_avatar.finish()
+    else:
+        await MessageFactory("头像设置失败...").send(at_sender=True)
+        await set_avatar.finish()

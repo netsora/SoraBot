@@ -5,9 +5,8 @@ from datetime import date
 from nonebot.rule import to_me
 from tortoise.expressions import F
 from nonebot import require, on_command
+from nonebot.plugin import PluginMetadata
 from nonebot.adapters.qqguild import MessageEvent as GuildMessageEvent
-
-# from nonebot.plugin import PluginMetadata
 from nonebot.adapters.onebot.v11 import MessageEvent as V11MessageEvent
 from nonebot.adapters.telegram.event import MessageEvent as TGMessageEvent
 
@@ -15,12 +14,24 @@ require("nonebot_plugin_saa")
 from nonebot_plugin_saa import MessageFactory
 
 from sora.config import ConfigManager
-from sora.utils.user import get_user_id
 from sora.database.models import UserInfo, UserSign
+from sora.utils.user import get_user_id, get_user_exp, get_user_coin, get_user_name, get_user_level
+
+from .utils import generate_progress_bar
 
 CoinRewards = ConfigManager.get_config("Award")["sign"][0]
 JrrpRewards = ConfigManager.get_config("Award")["sign"][1]
 ExpRewards = ConfigManager.get_config("Award")["sign"][2]
+
+__sora_plugin_meta__ = PluginMetadata(
+    name="签到",
+    description="今天有想林汐嘛?",
+    usage="""
+    签到：/签到
+    个人信息：/我的信息
+    """,
+    extra={"author": "KomoriDev", "priority": 20},
+)
 
 
 sign = on_command(
@@ -53,6 +64,7 @@ info = on_command(
 
 @sign.handle()
 async def sign_(event: V11MessageEvent | GuildMessageEvent | TGMessageEvent):
+    sign.finish
     user_id = await get_user_id(event)
     user_info = await UserInfo.get_or_none(user_id=user_id).values("level", "exp", "coin", "jrrp")
     user_sign = await UserSign.get_or_none(user_id=user_id).values("total_days", "continuous_days", "last_day")
@@ -107,4 +119,22 @@ async def sign_(event: V11MessageEvent | GuildMessageEvent | TGMessageEvent):
     ۞≡==——☚◆☛——==≡۞\n
     —————————————
     """
+    ).send(at_sender=True)
+
+
+@info.handle()
+async def info_(event: V11MessageEvent | GuildMessageEvent | TGMessageEvent):
+    user_id = await get_user_id(event)
+    if user_id is None:
+        await MessageFactory("该账号未注册，请先发送 [/注册] 注册林汐账户").send(at_sender=True)
+        await info.finish()
+
+    user_name = await get_user_name(user_id)
+    user_level = await get_user_level(user_id)
+    user_exp = await get_user_exp(user_id)
+    user_coin = await get_user_coin(user_id)
+    progress_bar, progress_text = generate_progress_bar(user_level=user_level, user_exp=user_exp)
+
+    await MessageFactory(
+        f"个人信息\n用户名：{user_name}\nLv.{str(user_level)}: {progress_bar}\n ↳ {progress_text}\n硬币：{user_coin} 个"
     ).send(at_sender=True)

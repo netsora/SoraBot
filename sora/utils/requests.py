@@ -1,12 +1,13 @@
 import asyncio
-from typing import Any
 from pathlib import Path
+from typing import Any, cast
 from asyncio.exceptions import TimeoutError
 
 import httpx
 import aiofiles
 from retrying import retry
 from httpx import Response, ConnectTimeout
+from nonebot.adapters.telegram import Bot as TGBot
 from rich.progress import Progress, BarColumn, TextColumn, DownloadColumn, TransferSpeedColumn
 
 from sora.log import logger
@@ -162,7 +163,7 @@ class AsyncHttpx:
                         ).content
                         async with aiofiles.open(path, "wb") as wf:
                             await wf.write(content)
-                            logger.info("请求", f"下载 {url} 成功.. Path：{path.absolute()}")
+                            logger.info("请求", f"下载 {url} 成功 | Path：{path.absolute()}")
                         return True
                     except (TimeoutError, ConnectTimeout):
                         pass
@@ -181,7 +182,7 @@ class AsyncHttpx:
                                 timeout=timeout,
                                 **kwargs,
                             ) as response:
-                                logger.info("请求", f"开始下载 {path.name}.. Path: {path.absolute()}")
+                                logger.info("请求", f"开始下载 {path.name} | Path: {path.absolute()}")
                                 async with aiofiles.open(path, "wb") as wf:
                                     total = int(response.headers["Content-Length"])
                                     with Progress(
@@ -199,14 +200,14 @@ class AsyncHttpx:
                                                 download_task,
                                                 completed=response.num_bytes_downloaded,
                                             )
-                                    logger.info("请求", f"下载 {url} 成功.. Path：{path.absolute()}")
+                                    logger.info("请求", f"下载 {url} 成功 | Path：{path.absolute()}")
                         return True
                     except (TimeoutError, ConnectTimeout):
                         pass
             else:
-                logger.error("请求", f"下载 {url} 下载超时.. Path：{path.absolute()}")
+                logger.error("请求", f"下载 {url} 下载超时 | Path：{path.absolute()}")
         except Exception as e:
-            logger.error("请求", f"下载 {url} 未知错误 {type(e)}：{e}.. Path：{path.absolute()}")
+            logger.error("请求", f"下载 {url} 未知错误 {type(e)}：{e} | Path：{path.absolute()}")
         return False
 
     @classmethod
@@ -280,6 +281,19 @@ class AsyncHttpx:
             result_ = result_ + list(_x)
             tasks.clear()
         return result_
+
+    @classmethod
+    async def download_telegram_file(
+        cls,
+        url: str,
+        path: str | Path,
+        bot: TGBot,
+    ) -> bool:
+        res = await bot.get_file(file_id=url)
+        file_path = cast(str, res.file_path)
+
+        turl = f"{bot.bot_config.api_server}file/bot{bot.bot_config.token}/{file_path}"
+        return await cls.download_file(turl, path)
 
 
 class UrlPathNumberNotEqual(Exception):

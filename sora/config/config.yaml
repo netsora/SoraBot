@@ -7,3 +7,11 @@ Award:
     - [30, 60]  
     - 5
     - 100
+
+Level:
+  # 初始经验阈值
+  base_exp: 150
+  # 经验系数
+  cardinality: 1.2
+  # 最大等级
+  max_level: 60

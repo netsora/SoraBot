@@ -60,8 +60,10 @@ Bot管理员是最高权限， 拥有 Bot协助者 的权限，所以我们便�
 :::
 为了让 Sora 稳定运行，我们使用了虚拟环境（[Poetry](https://python-poetry.org/)）
 ```bash
-# 安装 poetry
+# 使用 pip 安装 poetry
 pip install poetry
+# 在隔离环境中安装 poetry
+pipx install poetry
 ```
 ```bash
 # 安装 python 依赖

@@ -60,10 +60,19 @@ Bot管理员是最高权限， 拥有 Bot协助者 的权限，所以我们便�
 :::
 为了让 Sora 稳定运行，我们使用了虚拟环境（[Poetry](https://python-poetry.org/)）
 ```bash
+# 安装 poetry
+pip install poetry
+```
+```bash
 # 安装 python 依赖
 poetry install
 # 安装 pre-commit git hook
 pre-commit install
+```
+使用 poetry 指令之前请先 cd 到 bot 目录下
+```bash
+# 以下仅为实例，请自行修改路径
+cd C:\Users\Administrator\Desktop\SoraBot
 ```
 
 ## 本体准备

@@ -66,7 +66,7 @@ pipx install poetry
 poetry shell
 # 安装 python 依赖
 poetry install
-# 安装 pre-commit git hool
+# 安装 pre-commit git hook
 pre-commit install
 ```
 

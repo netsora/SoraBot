@@ -42,7 +42,9 @@ async def get_user_name(user_id: str) -> str:
     return user_name
 
 
-async def get_user_id(event: V11MessageEvent | GuildMessageEvent | TGMessageEvent) -> str | None:
+async def get_user_id(
+    event: V11MessageEvent | GuildMessageEvent | TGMessageEvent,
+) -> str | None:
     """
     通过 平台ID 获取 用户ID
 
@@ -64,15 +66,17 @@ async def get_user_id(event: V11MessageEvent | GuildMessageEvent | TGMessageEven
     return str(user_id)
 
 
-def get_user_avatar(user_id: str) -> Path:
+def get_user_avatar(user_id: str) -> Path | None:
     """
     获取用户头像
     :param event:
     :param user_id: ID
-    :return: avatar_path
+    :return: avatar_path or None
     """
     avatar_path = DATABASE_PATH / "user" / user_id / "avatar.jpg"
-    return avatar_path
+    if avatar_path.exists():
+        return avatar_path
+    return None
 
 
 async def get_user_login_list(event):
@@ -82,9 +86,18 @@ async def get_user_login_list(event):
     :return: login_list
     """
     platforms = {
-        V11MessageEvent: {"event_user_id": event.get_user_id(), "platform_id": "qq_id"},
-        GuildMessageEvent: {"event_user_id": event.get_user_id(), "platform_id": "qqguild_id"},
-        TGMessageEvent: {"event_user_id": event.get_user_id(), "platform_id": "telegram_id"},
+        V11MessageEvent: {
+            "event_user_id": event.get_user_id(),
+            "platform_id": "qq_id",
+        },
+        GuildMessageEvent: {
+            "event_user_id": event.get_user_id(),
+            "platform_id": "qqguild_id",
+        },
+        TGMessageEvent: {
+            "event_user_id": event.get_user_id(),
+            "platform_id": "telegram_id",
+        },
     }
 
     platform = next((p for p in platforms.keys() if isinstance(event, p)), None)
@@ -92,7 +105,11 @@ async def get_user_login_list(event):
         return []
 
     login_list = await UserBind.get_or_none(
-        **{platforms[platform]["platform_id"]: platforms[platform]["event_user_id"]}
+        **{
+            platforms[platform]["platform_id"]: platforms[platform][
+                "event_user_id"
+            ]
+        }
     ).values_list(
         "user_id",
         "qq_id",

@@ -1,9 +1,8 @@
+from nonebot import require
 from nonebot.rule import to_me
+from nonebot.params import ArgStr
 from nonebot.typing import T_State
-from nonebot import require, on_command
 from nonebot.plugin import PluginMetadata
-from nonebot.internal.adapter import Message
-from nonebot.params import Arg, ArgStr, CommandArg
 from nonebot.adapters.qqguild import Bot as GuildBot
 from nonebot.adapters.onebot.v11 import Bot as V11Bot
 from nonebot.adapters.telegram.bot import Bot as TGBot
@@ -12,13 +11,24 @@ from nonebot.adapters.onebot.v11 import MessageEvent as V11MessageEvent
 from nonebot.adapters.telegram.event import MessageEvent as TGMessageEvent
 
 require("nonebot_plugin_saa")
+require("nonebot_plugin_alconna")
+from arclet.alconna.args import Args
+from arclet.alconna.core import Alconna
+from arclet.alconna.typing import CommandMeta
 from nonebot_plugin_saa import MessageFactory
+from nonebot_plugin_alconna.adapters import Image
 from tortoise.exceptions import DoesNotExist, ValidationError
+from nonebot_plugin_alconna import (
+    Match,
+    AlconnaArg,
+    AlconnaMatch,
+    AlconnaMatcher,
+    on_alconna,
+)
 
 from sora.config import ConfigManager
 from sora.config.path import DATABASE_PATH
 from sora.utils.requests import AsyncHttpx
-from sora.utils.utils import get_message_img
 from sora.utils.helpers import HandleCancellation
 from sora.database import UserBind, UserInfo, UserSign
 from sora.utils.user import generate_id, get_user_id, get_user_login_list
@@ -34,102 +44,108 @@ CoinRewards = ConfigManager.get_config("Award")["login"][0]
 JrrpRewards = ConfigManager.get_config("Award")["login"][1]
 ExpRewards = ConfigManager.get_config("Award")["login"][2]
 
-register = on_command(
-    cmd="注册",
-    aliases={"register"},
+register = on_alconna(
+    Alconna(
+        "注册",
+        Args["user_name?", str]["password?", str],
+        meta=CommandMeta(
+            description="注册您的林汐账户",
+            usage="@bot /注册 [用户名] [密码]",
+            example="@bot /注册 Komorebi xxx",
+            compact=True,
+        ),
+    ),
     priority=1,
     block=True,
     rule=to_me(),
-    state={
-        "name": "register",
-        "description": "注册 SoraBot 账号",
-        "usage": "@bot /注册 [用户名] [密码]",
-        "priority": 1,
-    },
 )
-login = on_command(
-    cmd="登录",
-    aliases={"绑定", "login", "bind"},
+login = on_alconna(
+    Alconna(
+        "登录",
+        Args["user_id?", str]["password?", str],
+        meta=CommandMeta(
+            description="登录您的林汐账户",
+            usage="@bot /登录 [ID] [密码]",
+            example="@bot /登录 231010 xxx",
+            compact=True,
+        ),
+    ),
     priority=1,
     block=True,
     rule=to_me(),
-    state={
-        "name": "login",
-        "description": "登录 SoraBot 账号",
-        "usage": "@bot /登录 [用户名] [密码]",
-        "priority": 1,
-    },
 )
-login_list = on_command(
-    cmd="登录信息",
+login_list = on_alconna(
+    command="登录信息",
     aliases={"绑定信息"},
     priority=1,
     block=True,
     rule=to_me(),
-    state={
-        "name": "login_list",
-        "description": "查询 SoraBot 绑定列表",
-        "usage": "@bot /登录信息",
-        "priority": 1,
-    },
 )
-change_name = on_command(
-    cmd="改名",
+change_name = on_alconna(
+    Alconna(
+        "改名",
+        Args["changed_name?", str],
+        meta=CommandMeta(
+            description="设置头像",
+            usage="@bot /改名 [新用户名]",
+            example="@bot /改名 Komorebi",
+            compact=True,
+        ),
+    ),
     aliases={"修改昵称", "更改昵称", "修改用户名", "更改用户名"},
     priority=1,
     block=True,
     rule=to_me(),
-    state={
-        "name": "change_name",
-        "description": "修改用户名",
-        "usage": "@bot /改名",
-        "priority": 1,
-    },
 )
-set_avatar = on_command(
-    cmd="设置头像",
-    aliases={"更改头像", "上传头像"},
+set_avatar = on_alconna(
+    Alconna(
+        "设置头像",
+        Args["img?", Image],
+        meta=CommandMeta(
+            description="设置头像",
+            usage="@bot /设置头像 [图片]",
+            example="@bot /设置头像",
+            compact=True,
+        ),
+    ),
     priority=1,
     block=True,
     rule=to_me(),
-    state={
-        "name": "set_avatar",
-        "description": "设置头像",
-        "usage": "@bot /设置头像",
-        "priority": 1,
-    },
 )
 
 
 @register.handle()
-async def register_user_info(state: T_State, msg: Message = CommandArg()):
-    message = msg.extract_plain_text().split()
+async def register_user_info(
+    state: T_State,
+    user_name: Match[str] = AlconnaMatch("user_name"),
+    password: Match[str] = AlconnaMatch("password"),
+):
+    state["user_id"] = generate_id()
 
-    user_id = generate_id()
-    state["user_id"] = user_id
-
-    match len(message):
-        case 2:
-            state["user_name"] = message[0]
-            state["password"] = message[1]
-
-        case _:
-            if len(message) == 1:
-                state["user_name"] = message[0]
+    if user_name.available:
+        state["user_name"] = user_name.result
+    if password.available:
+        state["password"] = password.result
 
 
-@register.got("user_name", prompt="请输入用户名", parameterless=[HandleCancellation("已取消")])
+@register.got(
+    "user_name", prompt="请输入用户名", parameterless=[HandleCancellation("已取消")]
+)
 async def get_user_name(state: T_State, user_name: str = ArgStr("user_name")):
     state["user_name"] = user_name
 
 
-@register.got("password", prompt="请输入密码", parameterless=[HandleCancellation("已取消")])
+@register.got(
+    "password", prompt="请输入密码", parameterless=[HandleCancellation("已取消")]
+)
 async def get_user_password(state: T_State, password: str = ArgStr("password")):
     state["password"] = password
 
 
 @register.handle()
-async def register_user_info_(event: V11MessageEvent | GuildMessageEvent | TGMessageEvent, state: T_State):
+async def register_user_info_(
+    event: V11MessageEvent | GuildMessageEvent | TGMessageEvent, state: T_State
+):
     user_id = state.get("user_id")
     user_name = state.get("user_name")
     password = state.get("password")
@@ -162,16 +178,24 @@ async def register_user_info_(event: V11MessageEvent | GuildMessageEvent | TGMes
     try:
         match platform:
             case "QQ":
-                await UserBind.update_or_create(user_id=user_id, qq_id=event.get_user_id())
+                await UserBind.update_or_create(
+                    user_id=user_id, qq_id=event.get_user_id()
+                )
             case "QQ频道":
-                await UserBind.update_or_create(user_id=user_id, qqguild_id=event.get_user_id())
+                await UserBind.update_or_create(
+                    user_id=user_id, qqguild_id=event.get_user_id()
+                )
             case "Telegram":
-                await UserBind.update_or_create(user_id=user_id, telegram_id=event.get_user_id())
+                await UserBind.update_or_create(
+                    user_id=user_id, telegram_id=event.get_user_id()
+                )
     except DoesNotExist:
         await MessageFactory("注册失败。不可重复注册").send(at_sender=True)
         await register.finish()
 
-    await UserSign.update_or_create(user_id=user_id, total_days=0, continuous_days=0)
+    await UserSign.update_or_create(
+        user_id=user_id, total_days=0, continuous_days=0
+    )
     await MessageFactory(
         f"""
             注册成功\n
@@ -186,35 +210,46 @@ async def register_user_info_(event: V11MessageEvent | GuildMessageEvent | TGMes
 
 
 @login.handle()
-async def login_platform(state: T_State, msg: Message = CommandArg()):
-    message = msg.extract_plain_text().split()
-
-    match len(message):
-        case 2:
-            state["user_id"] = message[0]
-            state["password"] = message[1]
-
-        case _:
-            if len(message) == 1:
-                state["user_id"] = message[0]
+async def login_platform(
+    state: T_State,
+    user_id: Match[str] = AlconnaMatch("user_id"),
+    password: Match[str] = AlconnaMatch("password"),
+):
+    if user_id.available:
+        state["user_id"] = user_id.result
+    if password.available:
+        state["password"] = password.result
 
 
-@login.got("user_id", prompt="请输入您的ID", parameterless=[HandleCancellation("已取消")])
+@login.got(
+    "user_id", prompt="请输入您的ID", parameterless=[HandleCancellation("已取消")]
+)
 async def get_user_id_(state: T_State, user_id: str = ArgStr("user_id")):
     state["user_id"] = user_id
 
 
-@login.got("password", prompt="请输入密码", parameterless=[HandleCancellation("已取消")])
-async def get_user_password_(state: T_State, password: str = ArgStr("password")):
+@login.got(
+    "password", prompt="请输入密码", parameterless=[HandleCancellation("已取消")]
+)
+async def get_user_password_(
+    state: T_State, password: str = ArgStr("password")
+):
     state["password"] = password
 
 
 @login.handle()
-async def login_platform_(event: V11MessageEvent | GuildMessageEvent | TGMessageEvent, state: T_State):
+async def login_platform_(
+    event: V11MessageEvent | GuildMessageEvent | TGMessageEvent, state: T_State
+):
     input_user_id = state.get("user_id")
     input_password = state.get("password")
 
-    user_info = await UserInfo.get_or_none(user_id=input_user_id).values("user_id", "user_name", "password", "level")
+    user_info = await UserInfo.get_or_none(user_id=input_user_id).values(
+        "user_id", "user_name", "password", "level"
+    )
+    if user_info is None:
+        await MessageFactory("ID 不合法！").send(at_sender=True)
+        await login.finish()
     user_id = user_info["user_id"]
     user_name = user_info["user_name"]
     password = user_info["password"]
@@ -234,11 +269,17 @@ async def login_platform_(event: V11MessageEvent | GuildMessageEvent | TGMessage
     try:
         match platform:
             case "QQ":
-                await UserBind.filter(user_id=user_id).update(qq_id=str(event.get_user_id()))
+                await UserBind.filter(user_id=user_id).update(
+                    qq_id=str(event.get_user_id())
+                )
             case "QQ频道":
-                await UserBind.filter(user_id=user_id).update(qqguild_id=str(event.get_user_id()))
+                await UserBind.filter(user_id=user_id).update(
+                    qqguild_id=str(event.get_user_id())
+                )
             case "Telegram":
-                await UserBind.filter(user_id=user_id).update(telegram_id=str(event.get_user_id()))
+                await UserBind.filter(user_id=user_id).update(
+                    telegram_id=str(event.get_user_id())
+                )
     except ValidationError:
         await MessageFactory("注册失败。用户名不可大于10位").send(at_sender=True)
 
@@ -257,7 +298,9 @@ async def login_platform_(event: V11MessageEvent | GuildMessageEvent | TGMessage
 
 
 @login_list.handle()
-async def get_login_list(event: V11MessageEvent | GuildMessageEvent | TGMessageEvent):
+async def get_login_list(
+    event: V11MessageEvent | GuildMessageEvent | TGMessageEvent,
+):
     user_id = await get_user_id(event)
     if user_id is None:
         await MessageFactory("该账号暂未注册林汐账户，请先发送 [/注册] ").send(at_sender=True)
@@ -282,62 +325,73 @@ async def get_login_list(event: V11MessageEvent | GuildMessageEvent | TGMessageE
 
 
 @change_name.handle()
-async def change_name_(state: T_State, msg: Message = CommandArg()):
-    message = msg.extract_plain_text().split()[0]
-    state["user_name"] = message
+async def change_name_(
+    state: T_State, msg: Match[str] = AlconnaMatch("changed_name")
+):
+    if msg.available:
+        state["changed_name"] = msg.result
 
 
-@change_name.got("user_name", prompt="请输入更改后的用户名", parameterless=[HandleCancellation("已取消")])
-async def get_changed_name(state: T_State, user_name: str = ArgStr("user_name")):
-    state["user_name"] = user_name
+@change_name.got(
+    "changed_name",
+    prompt="请输入更改后的用户名",
+    parameterless=[HandleCancellation("已取消")],
+)
+async def get_changed_name(
+    state: T_State, changed_name: str = ArgStr("changed_name")
+):
+    state["changed_name"] = changed_name
 
 
 @change_name.handle()
-async def change_name__(event: V11MessageEvent | GuildMessageEvent | TGMessageEvent, state: T_State):
+async def change_name__(
+    event: V11MessageEvent | GuildMessageEvent | TGMessageEvent, state: T_State
+):
     user_id = await get_user_id(event)
     if user_id is None:
         await MessageFactory("该账号暂未注册林汐账户，请先发送 [/注册] ").send(at_sender=True)
         await login_list.finish()
 
-    user_name = state.get("user_name")
-    await UserInfo.filter(user_id=user_id).update(user_name=user_name)
+    changed_name = state.get("changed_name")
+    await UserInfo.filter(user_id=user_id).update(user_name=changed_name)
 
-    await MessageFactory(f"更改用户名成功！\n你现在的用户名为：{user_name}").send(at_sender=True)
+    await MessageFactory(f"更改用户名成功！\n你现在的用户名为：{changed_name}").send(
+        at_sender=True
+    )
     await change_name.finish()
 
 
 @set_avatar.handle()
-async def set_avatar_(event: V11MessageEvent | GuildMessageEvent | TGMessageEvent, state: T_State):
-    if isinstance(event, V11MessageEvent):
-        message = reply.message if (reply := event.reply) else event.message
-        if img := message["image"]:
-            state["url"] = await get_message_img(img)
-    elif isinstance(event, GuildMessageEvent):
-        if img := event.get_message()["attachment"]:
-            state["url"] = await get_message_img(img)
+async def set_avatar_(
+    matcher: AlconnaMatcher, image: Match[Image] = AlconnaMatch("img")
+):
+    if image.available:
+        matcher.set_path_arg("img", image.result)
+
+
+@set_avatar.got_path(
+    "img", prompt="请发送图片", parameterless=[HandleCancellation("已取消")]
+)
+async def get_avatar_img(state: T_State, image: Image = AlconnaArg("img")):
+    if image.url:
+        state["img"] = image.url
     else:
-        if img := event.get_message()["photo"]:
-            state["url"] = await get_message_img(img)
-
-
-@set_avatar.got("url", prompt="请发送图片", parameterless=[HandleCancellation("已取消")])
-async def get_avatar_img(state: T_State, avatar: Message = Arg("url")):
-    url = await get_message_img(avatar)
-    if not url:
-        await set_avatar.reject("没有找到图片, 请重新发送")
-    state["url"] = url
+        state["img"] = image.id
 
 
 @set_avatar.handle()
 async def set_avatar__(
-    bot: V11Bot | GuildBot | TGBot, event: V11MessageEvent | GuildMessageEvent | TGMessageEvent, state: T_State
+    bot: V11Bot | GuildBot | TGBot,
+    event: V11MessageEvent | GuildMessageEvent | TGMessageEvent,
+    state: T_State,
 ):
     user_id = await get_user_id(event)
     if user_id is None:
         await MessageFactory("该账号暂未注册林汐账户，请先发送 [/注册] ").send(at_sender=True)
         await set_avatar.finish()
 
-    url = state.get("url")
+    url = state.get("img")
+
     path = DATABASE_PATH / "user" / f"{user_id}"
     if not path.exists():
         path.mkdir(parents=True, exist_ok=True)
@@ -345,13 +399,23 @@ async def set_avatar__(
     if url:
         if isinstance(event, TGMessageEvent) and isinstance(bot, TGBot):
             try:
-                await AsyncHttpx.download_telegram_file(url[0], path / "avatar.jpg", bot)
+                await AsyncHttpx.download_telegram_file(
+                    url, path / "avatar.jpg", bot
+                )
                 await MessageFactory("头像设置成功！").send(at_sender=True)
             except Exception:
                 await MessageFactory("头像设置失败...").send(at_sender=True)
         elif isinstance(event, GuildMessageEvent):
             try:
-                await AsyncHttpx.download_file(f"https://{url[0]}", path / "avatar.jpg")
+                await AsyncHttpx.download_file(
+                    f"https://{url}", path / "avatar.jpg"
+                )
+                await MessageFactory("头像设置成功！").send(at_sender=True)
+            except Exception:
+                await MessageFactory("头像设置失败...").send(at_sender=True)
+        else:
+            try:
+                await AsyncHttpx.download_file(f"{url}", path / "avatar.jpg")
                 await MessageFactory("头像设置成功！").send(at_sender=True)
             except Exception:
                 await MessageFactory("头像设置失败...").send(at_sender=True)

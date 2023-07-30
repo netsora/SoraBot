@@ -8,7 +8,13 @@ import aiofiles
 from retrying import retry
 from httpx import Response, ConnectTimeout
 from nonebot.adapters.telegram import Bot as TGBot
-from rich.progress import Progress, BarColumn, TextColumn, DownloadColumn, TransferSpeedColumn
+from rich.progress import (
+    Progress,
+    BarColumn,
+    TextColumn,
+    DownloadColumn,
+    TransferSpeedColumn,
+)
 
 from sora.log import logger
 from sora.utils.utils import get_local_proxy
@@ -163,14 +169,18 @@ class AsyncHttpx:
                         ).content
                         async with aiofiles.open(path, "wb") as wf:
                             await wf.write(content)
-                            logger.info("请求", f"下载 {url} 成功 | Path：{path.absolute()}")
+                            logger.success(
+                                "请求", f"下载 {url} 成功！Path：{path.absolute()}"
+                            )
                         return True
                     except (TimeoutError, ConnectTimeout):
                         pass
                 else:
                     if not headers:
                         headers = get_user_agent()
-                    proxy_ = proxy if proxy else cls.proxy if use_proxy else None
+                    proxy_ = (
+                        proxy if proxy else cls.proxy if use_proxy else None
+                    )
                     try:
                         async with httpx.AsyncClient(proxies=proxy_, verify=verify) as client:  # type: ignore
                             async with client.stream(
@@ -182,9 +192,14 @@ class AsyncHttpx:
                                 timeout=timeout,
                                 **kwargs,
                             ) as response:
-                                logger.info("请求", f"开始下载 {path.name} | Path: {path.absolute()}")
+                                logger.info(
+                                    "请求",
+                                    f"开始下载 {path.name} 到 Path: {path.absolute()}",
+                                )
                                 async with aiofiles.open(path, "wb") as wf:
-                                    total = int(response.headers["Content-Length"])
+                                    total = int(
+                                        response.headers["Content-Length"]
+                                    )
                                     with Progress(
                                         TextColumn(path.name),
                                         "[progress.percentage]{task.percentage:>3.0f}%",
@@ -192,7 +207,9 @@ class AsyncHttpx:
                                         DownloadColumn(),
                                         TransferSpeedColumn(),
                                     ) as progress:
-                                        download_task = progress.add_task("Download", total=total)
+                                        download_task = progress.add_task(
+                                            "Download", total=total
+                                        )
                                         async for chunk in response.aiter_bytes():
                                             await wf.write(chunk)
                                             await wf.flush()
@@ -200,14 +217,19 @@ class AsyncHttpx:
                                                 download_task,
                                                 completed=response.num_bytes_downloaded,
                                             )
-                                    logger.info("请求", f"下载 {url} 成功 | Path：{path.absolute()}")
+                                    logger.success(
+                                        "请求",
+                                        f"下载 {url} 成功！Path：{path.absolute()}",
+                                    )
                         return True
                     except (TimeoutError, ConnectTimeout):
                         pass
             else:
-                logger.error("请求", f"下载 {url} 下载超时 | Path：{path.absolute()}")
+                logger.error("请求", f"下载 {url} 下载超时！Path：{path.absolute()}")
         except Exception as e:
-            logger.error("请求", f"下载 {url} 未知错误 {type(e)}：{e} | Path：{path.absolute()}")
+            logger.error(
+                "请求", f"下载 {url} 未知错误 {type(e)}：{e} | Path：{path.absolute()}"
+            )
         return False
 
     @classmethod
@@ -240,7 +262,9 @@ class AsyncHttpx:
             :param timeout: 超时时间
         """
         if n := len(url_list) != len(path_list):
-            raise UrlPathNumberNotEqual(f"Url数量与Path数量不对等，Url：{len(url_list)}，Path：{len(path_list)}")
+            raise UrlPathNumberNotEqual(
+                f"Url数量与Path数量不对等，Url：{len(url_list)}，Path：{len(path_list)}"
+            )
         if limit_async_number and n > limit_async_number:
             m = float(n) / limit_async_number
             x = 0

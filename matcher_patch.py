@@ -6,7 +6,13 @@ from nonebot.internal.adapter import Bot, Event
 from nonebot.typing import T_State, T_DependencyCache
 from nonebot.exception import StopPropagation, SkippedException
 from nonebot import on_regex, on_command, on_keyword, on_endswith, on_startswith
-from nonebot.matcher import Matcher, current_bot, current_event, current_handler, current_matcher
+from nonebot.matcher import (
+    Matcher,
+    current_bot,
+    current_event,
+    current_handler,
+    current_matcher,
+)
 
 """
 通过猴子补丁，干掉一些log，并为nonebot的部分matcher注入其命令到默认state中
@@ -21,7 +27,10 @@ async def simple_run(
     stack: AsyncExitStack | None = None,
     dependency_cache: T_DependencyCache | None = None,
 ):
-    logger.debug(f"{self} run with incoming args: " f"bot={bot}, event={event!r}, state={state!r}")
+    logger.debug(
+        f"{self} run with incoming args: "
+        f"bot={bot}, event={event!r}, state={state!r}"
+    )
     b_t = current_bot.set(bot)
     e_t = current_event.set(event)
     m_t = current_matcher.set(self)
@@ -69,7 +78,9 @@ def on_endswith_(msg: str | tuple[str, ...], state: dict = {}, *args, **kwargs):
     return on_endswith(msg=msg, state=state, _depth=1, *args, **kwargs)  # type: ignore
 
 
-def on_startswith_(msg: str | tuple[str, ...], state: dict = {}, *args, **kwargs):
+def on_startswith_(
+    msg: str | tuple[str, ...], state: dict = {}, *args, **kwargs
+):
     if state is None:
         state = {}
     if "name" not in state:

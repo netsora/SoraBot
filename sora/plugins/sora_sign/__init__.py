@@ -2,20 +2,31 @@ import random
 import datetime
 from datetime import date
 
+from nonebot import require
 from nonebot.rule import to_me
 from tortoise.expressions import F
-from nonebot import require, on_command
 from nonebot.plugin import PluginMetadata
 from nonebot.adapters.qqguild import MessageEvent as GuildMessageEvent
 from nonebot.adapters.onebot.v11 import MessageEvent as V11MessageEvent
 from nonebot.adapters.telegram.event import MessageEvent as TGMessageEvent
 
 require("nonebot_plugin_saa")
-from nonebot_plugin_saa import MessageFactory
+require("nonebot_plugin_alconna")
+from arclet.alconna.core import Alconna
+from arclet.alconna.typing import CommandMeta
+from nonebot_plugin_alconna import on_alconna
+from nonebot_plugin_saa import Text, Image, MessageFactory
 
 from sora.config import ConfigManager
 from sora.database.models import UserInfo, UserSign
-from sora.utils.user import get_user_id, get_user_exp, get_user_coin, get_user_name, get_user_level
+from sora.utils.user import (
+    get_user_id,
+    get_user_exp,
+    get_user_coin,
+    get_user_name,
+    get_user_level,
+    get_user_avatar,
+)
 
 from .utils import generate_progress_bar
 
@@ -34,40 +45,47 @@ __sora_plugin_meta__ = PluginMetadata(
 )
 
 
-sign = on_command(
-    cmd="签到",
+sign = on_alconna(
+    Alconna(
+        "签到",
+        meta=CommandMeta(
+            description="每日打卡",
+            usage="@bot /签到",
+            example="@bot /签到",
+            compact=True,
+        ),
+    ),
     rule=to_me(),
     priority=20,
     block=True,
-    state={
-        "name": "sign",
-        "description": "签到",
-        "usage": "@bot /签到",
-        "priority": 20,
-    },
 )
 
-info = on_command(
-    cmd="我的信息",
+info = on_alconna(
+    Alconna(
+        "我的信息",
+        meta=CommandMeta(
+            description="查询我的等级经验信息。",
+            usage="@bot /我的信息",
+            example="@bot /我的信息",
+            compact=True,
+        ),
+    ),
     aliases={"i"},
     rule=to_me(),
     priority=20,
     block=True,
-    state={
-        "name": "my_info",
-        "description": "签到",
-        "usage": "@bot /i",
-        "priority": 20,
-    },
 )
 
 
 @sign.handle()
 async def sign_(event: V11MessageEvent | GuildMessageEvent | TGMessageEvent):
-    sign.finish
     user_id = await get_user_id(event)
-    user_info = await UserInfo.get_or_none(user_id=user_id).values("level", "exp", "coin", "jrrp")
-    user_sign = await UserSign.get_or_none(user_id=user_id).values("total_days", "continuous_days", "last_day")
+    user_info = await UserInfo.get_or_none(user_id=user_id).values(
+        "level", "exp", "coin", "jrrp"
+    )
+    user_sign = await UserSign.get_or_none(user_id=user_id).values(
+        "total_days", "continuous_days", "last_day"
+    )
     if user_id is None:
         await MessageFactory("该账号暂未注册林汐账户，请先发送 [/注册] ").send(at_sender=True)
         await sign.finish()
@@ -77,7 +95,11 @@ async def sign_(event: V11MessageEvent | GuildMessageEvent | TGMessageEvent):
     coin: int = user_info["coin"]
     jrrp: int = user_info["jrrp"]
 
-    sign_coin: int = random.randint(CoinRewards[0], CoinRewards[1]) if CoinRewards is not None else 0
+    sign_coin: int = (
+        random.randint(CoinRewards[0], CoinRewards[1])
+        if CoinRewards is not None
+        else 0
+    )
     sign_jrrp: int = JrrpRewards if JrrpRewards is not None else 0
     sign_exp: int = ExpRewards if ExpRewards is not None else 0
 
@@ -96,13 +118,19 @@ async def sign_(event: V11MessageEvent | GuildMessageEvent | TGMessageEvent):
     if last_sign_date is None or (current_date - last_sign_date).days == 1:
         msg = f"你当前连续签到 {str(continuous_days + 1)} 天，额外奖励 5 枚硬币。"
         sign_coin += 5
-        await UserSign.filter(user_id=user_id).update(continuous_days=F("continuous_days") + 1)
+        await UserSign.filter(user_id=user_id).update(
+            continuous_days=F("continuous_days") + 1
+        )
     else:
         msg = "你当前连续签到 0 天，"
         await UserSign.filter(user_id=user_id).update(continuous_days=0)
 
-    await UserSign.filter(user_id=user_id).update(total_days=total_days + 1, last_day=current_date)
-    await UserInfo.filter(user_id=user_id).update(exp=exp + sign_exp, coin=coin + sign_coin, jrrp=jrrp + sign_jrrp)
+    await UserSign.filter(user_id=user_id).update(
+        total_days=total_days + 1, last_day=current_date
+    )
+    await UserInfo.filter(user_id=user_id).update(
+        exp=exp + sign_exp, coin=coin + sign_coin, jrrp=jrrp + sign_jrrp
+    )
 
     await MessageFactory(
         f"""
@@ -129,12 +157,27 @@ async def info_(event: V11MessageEvent | GuildMessageEvent | TGMessageEvent):
         await MessageFactory("该账号未注册，请先发送 [/注册] 注册林汐账户").send(at_sender=True)
         await info.finish()
 
+    user_avatar = get_user_avatar(user_id)
     user_name = await get_user_name(user_id)
     user_level = await get_user_level(user_id)
     user_exp = await get_user_exp(user_id)
     user_coin = await get_user_coin(user_id)
-    progress_bar, progress_text = generate_progress_bar(user_level=user_level, user_exp=user_exp)
+    progress_bar, progress_text = generate_progress_bar(
+        user_level=user_level, user_exp=user_exp
+    )
 
-    await MessageFactory(
-        f"个人信息\n用户名：{user_name}\nLv.{str(user_level)}: {progress_bar}\n ↳ {progress_text}\n硬币：{user_coin} 个"
-    ).send(at_sender=True)
+    if user_avatar is None:
+        msg = MessageFactory(
+            f"个人信息\n用户名：{user_name}\nLv.{str(user_level)}: {progress_bar}\n ↳ {progress_text}\n硬币：{user_coin} 个"  # noqa: E501
+        )
+    else:
+        msg = MessageFactory(
+            [
+                Image(user_avatar),
+                Text(
+                    f"\n个人信息\n用户名：{user_name}\nLv.{str(user_level)}: {progress_bar}\n ↳ {progress_text}\n硬币：{user_coin} 个"  # noqa: E501
+                ),
+            ]
+        )
+    await msg.send(at_sender=True)
+    await info.finish()

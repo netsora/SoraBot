@@ -14,7 +14,11 @@ def extract_image_urls(message: Message) -> list[str]:
     返回:
         图片链接列表
     """
-    return [segment.data["url"] for segment in message if (segment.type == "image") and ("url" in segment.data)]
+    return [
+        segment.data["url"]
+        for segment in message
+        if (segment.type == "image") and ("url" in segment.data)
+    ]
 
 
 CHINESE_CANCELLATION_WORDS = {"算", "别", "不", "停", "取消"}
@@ -31,9 +35,14 @@ def is_cancellation(message: Message | str) -> bool:
     返回:
         是否表示取消的布尔值
     """ """"""
-    text = message.extract_plain_text() if isinstance(message, Message) else message
+    text = (
+        message.extract_plain_text()
+        if isinstance(message, Message)
+        else message
+    )
     return any(kw in text for kw in CHINESE_CANCELLATION_WORDS) and bool(
-        CHINESE_CANCELLATION_REGEX_1.match(text) or CHINESE_CANCELLATION_REGEX_2.match(text)
+        CHINESE_CANCELLATION_REGEX_1.match(text)
+        or CHINESE_CANCELLATION_REGEX_2.match(text)
     )
 
 
@@ -44,7 +53,9 @@ def HandleCancellation(cancel_prompt: str | None = None) -> bool:
         cancel_prompt: 当消息表示取消时发送给用户的取消消息
     """ """"""
 
-    async def dependency(matcher: Matcher, message: Message = EventMessage()) -> bool:
+    async def dependency(
+        matcher: Matcher, message: Message = EventMessage()
+    ) -> bool:
         cancelled = is_cancellation(message)
         if cancelled and cancel_prompt:
             await matcher.finish(cancel_prompt)

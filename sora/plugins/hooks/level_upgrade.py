@@ -13,7 +13,12 @@ require("nonebot_plugin_saa")
 from nonebot_plugin_saa import MessageFactory, PlatformTarget, extract_target
 
 from sora.database import UserInfo
-from sora.utils.user import get_user_id, get_user_exp, get_user_level, calculate_exp_threshold
+from sora.utils.user import (
+    get_user_id,
+    get_user_exp,
+    get_user_level,
+    calculate_exp_threshold,
+)
 
 
 @event_postprocessor
@@ -30,7 +35,9 @@ async def level_up(
     exp_threshold = calculate_exp_threshold(user_level)
 
     if user_exp >= exp_threshold:
-        await UserInfo.filter(user_id=user_id).update(level=F("level") + 1, exp=F("exp") - exp_threshold)
+        await UserInfo.filter(user_id=user_id).update(
+            level=F("level") + 1, exp=F("exp") - exp_threshold
+        )
         await MessageFactory(
             f"🎉 经验值溢出，等级 + 1！\n当前等级：{user_level + 1}，经验值：{user_exp - exp_threshold}"
         ).send_to(  # noqa: E501(

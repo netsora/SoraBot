@@ -3,13 +3,19 @@ try:
 except ImportError:
     import json
 
-from nonebot.params import CommandArg
-from nonebot import require, on_command
+from typing import Any
+
+from nonebot import require
+from nonebot.rule import to_me
 from nonebot.plugin import PluginMetadata
-from nonebot.internal.adapter import Message
 
 require("nonebot_plugin_saa")
+require("nonebot_plugin_alconna")
+from arclet.alconna.args import Args
+from arclet.alconna.core import Alconna
+from arclet.alconna.typing import CommandMeta
 from nonebot_plugin_saa import MessageFactory
+from nonebot_plugin_alconna import Match, AlconnaMatch, on_alconna
 
 from sora.config import ConfigManager
 from sora.permission import BOT_ADMIN, BOT_HELPER
@@ -22,50 +28,62 @@ __plugin_meta__ = PluginMetadata(
 )
 
 
-getConfig = on_command(
-    cmd="读取配置",
+getConfig = on_alconna(
+    Alconna(
+        "读取配置",
+        Args["config", str],
+        meta=CommandMeta(
+            description="读取林汐配置项",
+            usage="@bot /读取配置 <键>",
+            example="@bot /读取配置 Login",
+            compact=True,
+        ),
+    ),
     priority=5,
     block=True,
+    rule=to_me(),
     permission=BOT_HELPER,
-    state={
-        "name": "getConfig",
-        "description": "读取林汐配置项",
-        "usage": "/读取配置 <键>",
-        "priority": 5,
-    },
 )
 
-addConfig = on_command(
-    cmd="增加配置",
+addConfig = on_alconna(
+    Alconna(
+        "增加配置",
+        Args["key", str]["value", Any],
+        meta=CommandMeta(
+            description="增加林汐配置项",
+            usage="@bot /增加配置 <键> <值>",
+            example="@bot /增加配置 <键> <值>",
+            compact=True,
+        ),
+    ),
     priority=5,
     block=True,
+    rule=to_me(),
     permission=BOT_ADMIN,
-    state={
-        "name": "addConfig",
-        "description": "增加林汐配置项",
-        "usage": "/增加配置 <键> <值>",
-        "priority": 5,
-    },
 )
 
-setConfig = on_command(
-    cmd="设置配置",
+setConfig = on_alconna(
+    Alconna(
+        "设置配置",
+        Args["key", str]["value", Any],
+        meta=CommandMeta(
+            description="设置林汐配置项",
+            usage="@bot /设置配置 <键> <值>",
+            example="@bot /增加配置 <键> <值>",
+            compact=True,
+        ),
+    ),
     aliases={"修改配置"},
     priority=5,
     block=True,
+    rule=to_me(),
     permission=BOT_ADMIN,
-    state={
-        "name": "setConfig",
-        "description": "设置林汐配置项",
-        "usage": "/设置配置 <键> <值>",
-        "priority": 5,
-    },
 )
 
 
 @getConfig.handle()
-async def get_(msg: Message = CommandArg()):
-    key = msg.extract_plain_text().strip()
+async def get_(config: Match[str] = AlconnaMatch("config")):
+    key = config.result
     value = ConfigManager.get_config(key)
     value = json.dumps(value, indent=4)
     if value is not None:
@@ -77,10 +95,12 @@ async def get_(msg: Message = CommandArg()):
 
 
 @addConfig.handle()
-async def add_(msg: Message = CommandArg()):
-    message = msg.extract_plain_text().split(" ", 1)
-    key = message[0]
-    value = message[1]
+async def add_(
+    config_key: Match[str] = AlconnaMatch("key"),
+    config_value: Match[Any] = AlconnaMatch("value"),
+):
+    key = config_key.result
+    value = config_value.result
     try:
         ConfigManager.add_config(key, value)
         await MessageFactory("配置项增加成功！").send(at_sender=True)
@@ -91,10 +111,12 @@ async def add_(msg: Message = CommandArg()):
 
 
 @setConfig.handle()
-async def set_(msg: Message = CommandArg()):
-    message = msg.extract_plain_text().split(" ", 1)
-    key = message[0]
-    value = message[1]
+async def set_(
+    config_key: Match[str] = AlconnaMatch("key"),
+    config_value: Match[Any] = AlconnaMatch("value"),
+):
+    key = config_key.result
+    value = config_value.result
     try:
         ConfigManager.set_config(key, value)
         await MessageFactory("配置项设置成功！").send(at_sender=True)

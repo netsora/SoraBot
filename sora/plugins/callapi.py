@@ -61,14 +61,19 @@ class Codeblock:
 
 
 def item_to_plain_text(item: str | Codeblock) -> str:
-    parsed: list[tuple[int, str | None, dict | None, str]] = bbcode_parser.tokenize(
-        f"```{item.lang or ''}\n{item.content}\n```" if isinstance(item, Codeblock) else item,
+    parsed: list[
+        tuple[int, str | None, dict | None, str]
+    ] = bbcode_parser.tokenize(
+        f"```{item.lang or ''}\n{item.content}\n```"
+        if isinstance(item, Codeblock)
+        else item,
     )
     return "".join(
         [
             data
             for b_type, _, _, data in parsed
-            if b_type == BBCodeParser.TOKEN_DATA or b_type == BBCodeParser.TOKEN_NEWLINE
+            if b_type == BBCodeParser.TOKEN_DATA
+            or b_type == BBCodeParser.TOKEN_NEWLINE
         ],
     )
 
@@ -149,7 +154,9 @@ async def send_return(items: list[str | Codeblock]):
     adapter = bot.adapter.get_name()
 
     if adapter == "QQ Guild":
-        logger.warning("CallAPI", "Error sending image to channel, fallback to plain text")
+        logger.warning(
+            "CallAPI", "Error sending image to channel, fallback to plain text"
+        )
         await bot.send(event, format_plain_text(items))
     else:
         try:
@@ -158,7 +165,10 @@ async def send_return(items: list[str | Codeblock]):
             await MessageFactory(SAAImage(image)).send(reply=True)
             await bot.send(event, format_plain_text(items))
         except Exception:
-            logger.warning("CallAPI", "Error when sending image via saa, fallback to plain text")
+            logger.warning(
+                "CallAPI",
+                "Error when sending image via saa, fallback to plain text",
+            )
             await bot.send(event, format_plain_text(items))
 
 
@@ -206,7 +216,8 @@ HELP_ITEMS = [
     Codeblock(
         lang=None,
         content=(
-            "callapi get_stranger_info\n" "[color=#008000][b]user_id[/b][/color]=[color=#666666]3076823485[/color]"
+            "callapi get_stranger_info\n"
+            "[color=#008000][b]user_id[/b][/color]=[color=#666666]3076823485[/color]"
         ),
     ),
     "使用 JSON（可以多行）：",
@@ -238,7 +249,10 @@ call_api_matcher = on_command(
 @call_api_matcher.handle()
 async def _(matcher: Matcher, bot: Bot, args: Message = CommandArg()):
     arg_txt = "".join(
-        [txt if x.is_text() and (txt := x.data.get("text")) else str(x) for x in cast(Iterable[MessageSegment], args)],
+        [
+            txt if x.is_text() and (txt := x.data.get("text")) else str(x)
+            for x in cast(Iterable[MessageSegment], args)
+        ],
     ).strip()
 
     if not arg_txt:

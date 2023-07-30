@@ -39,7 +39,9 @@ async def get_admin_list():
     """
     获取权限为 `Bot管理员` 的所有用户ID
     """
-    admin_list = await UserInfo.filter(permission="bot_admin").values_list("user_id", flat=True)
+    admin_list = await UserInfo.filter(permission="bot_admin").values_list(
+        "user_id", flat=True
+    )
     return admin_list
 
 
@@ -48,7 +50,9 @@ async def get_helper_list():
     获取所有拥有 Bot协助者 权限的用户ID
     """
     admin_list = await get_admin_list()
-    helper_list = await UserInfo.filter(permission="bot_helper").values_list("user_id", flat=True)
+    helper_list = await UserInfo.filter(permission="bot_helper").values_list(
+        "user_id", flat=True
+    )
     helper_list = admin_list + helper_list
     return helper_list
 
@@ -61,7 +65,9 @@ class BotAdminUser:
     def __repr__(self) -> str:
         return "BotAdminUser()"
 
-    async def __call__(self, event: V11MessageEvent | GuildMessageEvent | TGMessageEvent) -> bool:
+    async def __call__(
+        self, event: V11MessageEvent | GuildMessageEvent | TGMessageEvent
+    ) -> bool:
         try:
             user_id = await get_user_id(event)
         except Exception:
@@ -82,7 +88,9 @@ class BotHelperUser:
     def __repr__(self) -> str:
         return "BotHelperUser()"
 
-    async def __call__(self, event: V11MessageEvent | GuildMessageEvent | TGMessageEvent) -> bool:
+    async def __call__(
+        self, event: V11MessageEvent | GuildMessageEvent | TGMessageEvent
+    ) -> bool:
         try:
             user_id = await get_user_id(event)
         except Exception:

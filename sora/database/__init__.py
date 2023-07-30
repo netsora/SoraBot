@@ -6,7 +6,11 @@ from nonebot.log import logger
 from sora.log import logger as Sogger
 from sora.utils import DRIVER, scheduler
 from sora.utils.user import generate_password
-from sora.config.path import USER_BIND_DB_PATH, USER_INFO_DB_PATH, USER_SIGN_DB_PATH
+from sora.config.path import (
+    USER_BIND_DB_PATH,
+    USER_INFO_DB_PATH,
+    USER_SIGN_DB_PATH,
+)
 
 from .models import UserBind, UserInfo, UserSign, bind, sign, user
 
@@ -93,8 +97,12 @@ async def connect():
                     jrrp=20,
                 )
                 await UserBind.update_or_create(user_id=user_id)
-                await UserSign.update_or_create(user_id=user_id, total_days=0, continuous_days=0)
-                Sogger.success("Bot 配置", f"已自动设置用户ID: {user_id} 为 Bot管理员。登录密码：{password}")
+                await UserSign.update_or_create(
+                    user_id=user_id, total_days=0, continuous_days=0
+                )
+                Sogger.success(
+                    "Bot 配置", f"已自动设置用户ID: {user_id} 为 Bot管理员。登录密码：{password}"
+                )
         for user_id in bot_helper:
             password = generate_password()
             user = await UserInfo.filter(user_id=user_id).first()
@@ -110,8 +118,12 @@ async def connect():
                     jrrp=20,
                 )
                 await UserBind.update_or_create(user_id=user_id)
-                await UserSign.update_or_create(user_id=user_id, total_days=0, continuous_days=0)
-                Sogger.success("Bot 配置", f"已自动设置用户ID: {user_id} 为 Bot协助者。登录密码：{password}")
+                await UserSign.update_or_create(
+                    user_id=user_id, total_days=0, continuous_days=0
+                )
+                Sogger.success(
+                    "Bot 配置", f"已自动设置用户ID: {user_id} 为 Bot协助者。登录密码：{password}"
+                )
 
     except Exception as e:
         logger.opt(colors=True).warning(f"<u><y>[数据库]</y></u><r>连接失败:{e}</r>")

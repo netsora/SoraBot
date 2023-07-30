@@ -18,7 +18,9 @@ async def remind(bot: V11Bot | GuildBot | TGBot):
         if not restart.exists():
             with open(restart, "w", encoding="utf8") as f:
                 f.write(
-                    "pid=$(netstat -tunlp | grep " + str(bot.config.port) + " | awk '{print $7}')\n"
+                    "pid=$(netstat -tunlp | grep "
+                    + str(bot.config.port)
+                    + " | awk '{print $7}')\n"
                     "pid=${pid%/*}\n"
                     "kill -9 $pid\n"
                     "sleep 3\n"
@@ -29,8 +31,12 @@ async def remind(bot: V11Bot | GuildBot | TGBot):
     is_restart_file = Path() / "is_restart"
     if is_restart_file.exists():
         if isinstance(bot, V11Bot):
-            admin_list = await UserInfo.filter(permission="bot_admin").values_list("user_id", "qq_id", flat=True)
-            await bot.send_private_msg(user_id=int(str(admin_list[1])), message=f"{NICKNAME}重启完毕...")
+            admin_list = await UserInfo.filter(
+                permission="bot_admin"
+            ).values_list("user_id", "qq_id", flat=True)
+            await bot.send_private_msg(
+                user_id=int(str(admin_list[1])), message=f"{NICKNAME}重启完毕..."
+            )
         # elif isinstance(bot, TGBot):
         #     await bot.get_chat
         # is_restart_file.unlink()

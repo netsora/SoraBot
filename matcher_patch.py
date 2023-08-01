@@ -78,9 +78,7 @@ def on_endswith_(msg: str | tuple[str, ...], state: dict = {}, *args, **kwargs):
     return on_endswith(msg=msg, state=state, _depth=1, *args, **kwargs)  # type: ignore
 
 
-def on_startswith_(
-    msg: str | tuple[str, ...], state: dict = {}, *args, **kwargs
-):
+def on_startswith_(msg: str | tuple[str, ...], state: dict = {}, *args, **kwargs):
     if state is None:
         state = {}
     if "name" not in state:

@@ -23,9 +23,7 @@ def load_json(path: Path | str, encoding: str = "utf-8"):
         path = Path(path)
     if not path.name.endswith(".json"):
         path = path.with_suffix(".json")
-    return (
-        json.loads(path.read_text(encoding=encoding)) if path.exists() else {}
-    )
+    return json.loads(path.read_text(encoding=encoding)) if path.exists() else {}
 
 
 async def load_json_from_url(
@@ -51,9 +49,7 @@ async def load_json_from_url(
     return data
 
 
-def save_json(
-    data: dict, path: Path | str | None = None, encoding: str = "utf-8"
-):
+def save_json(data: dict, path: Path | str | None = None, encoding: str = "utf-8"):
     """
     保存json文件
 
@@ -87,9 +83,7 @@ def load_yaml(path: Path | str, encoding: str = "utf-8"):
     )
 
 
-def save_yaml(
-    data: dict, path: Path | str | None = None, encoding: str = "utf-8"
-):
+def save_yaml(data: dict, path: Path | str | None = None, encoding: str = "utf-8"):
     """
     保存yaml文件
 

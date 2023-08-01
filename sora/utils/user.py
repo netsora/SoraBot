@@ -105,11 +105,7 @@ async def get_user_login_list(event):
         return []
 
     login_list = await UserBind.get_or_none(
-        **{
-            platforms[platform]["platform_id"]: platforms[platform][
-                "event_user_id"
-            ]
-        }
+        **{platforms[platform]["platform_id"]: platforms[platform]["event_user_id"]}
     ).values_list(
         "user_id",
         "qq_id",

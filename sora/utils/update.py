@@ -51,9 +51,7 @@ def update():
                     msg = f"更新失败，错误信息：{e.stderr}，请尝试手动进行更新"
             finally:
                 if raw_plugins_load:
-                    pyproject_new_content = pyproject_file.read_text(
-                        encoding="utf-8"
-                    )
+                    pyproject_new_content = pyproject_file.read_text(encoding="utf-8")
                     pyproject_new_content = re.sub(
                         r"^plugins = \[.*]$",
                         raw_plugins_load.group(),
@@ -62,9 +60,7 @@ def update():
                     pyproject_new_content = pyproject_new_content.replace(
                         "plugins = []", raw_plugins_load.group()
                     )
-                    pyproject_file.write_text(
-                        pyproject_new_content, encoding="utf-8"
-                    )
+                    pyproject_file.write_text(pyproject_new_content, encoding="utf-8")
                     logger.info("林汐更新", f"更新结束，还原插件：{raw_plugins_load.group()}")
             return msg
         else:
@@ -73,9 +69,7 @@ def update():
 
 
 async def check_update():
-    resp = await AsyncHttpx.get(
-        "https://api.github.com/repos/netsora/SoraBot/commits"
-    )
+    resp = await AsyncHttpx.get("https://api.github.com/repos/netsora/SoraBot/commits")
     data = resp.json()
     if not isinstance(data, list):
         return "检查更新失败，可能是网络问题，请稍后再试"

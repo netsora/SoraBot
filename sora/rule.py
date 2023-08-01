@@ -17,9 +17,7 @@ command_start = list(DRIVER.config.command_start)
 def command_rule(commands: list[str]) -> Rule:
     for command in commands:
         for start in command_start:
-            TrieRule.add_prefix(
-                f"{start}{command}", TRIE_VALUE(start, (command,))
-            )
+            TrieRule.add_prefix(f"{start}{command}", TRIE_VALUE(start, (command,)))
 
     def checker(
         state: T_State,
@@ -67,9 +65,7 @@ def regex_rule(patterns: list[str]) -> Rule:
             return False
 
         segment_text = str(message_seg).lstrip()
-        matched = re.match(
-            rf"(?:{start}){pattern}", segment_text, re.IGNORECASE
-        )
+        matched = re.match(rf"(?:{start}){pattern}", segment_text, re.IGNORECASE)
         if not matched:
             return False
 

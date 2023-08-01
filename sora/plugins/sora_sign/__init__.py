@@ -96,9 +96,7 @@ async def sign_(event: V11MessageEvent | GuildMessageEvent | TGMessageEvent):
     jrrp: int = user_info["jrrp"]
 
     sign_coin: int = (
-        random.randint(CoinRewards[0], CoinRewards[1])
-        if CoinRewards is not None
-        else 0
+        random.randint(CoinRewards[0], CoinRewards[1]) if CoinRewards is not None else 0
     )
     sign_jrrp: int = JrrpRewards if JrrpRewards is not None else 0
     sign_exp: int = ExpRewards if ExpRewards is not None else 0

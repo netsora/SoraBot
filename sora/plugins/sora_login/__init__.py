@@ -128,16 +128,12 @@ async def register_user_info(
         state["password"] = password.result
 
 
-@register.got(
-    "user_name", prompt="请输入用户名", parameterless=[HandleCancellation("已取消")]
-)
+@register.got("user_name", prompt="请输入用户名", parameterless=[HandleCancellation("已取消")])
 async def get_user_name(state: T_State, user_name: str = ArgStr("user_name")):
     state["user_name"] = user_name
 
 
-@register.got(
-    "password", prompt="请输入密码", parameterless=[HandleCancellation("已取消")]
-)
+@register.got("password", prompt="请输入密码", parameterless=[HandleCancellation("已取消")])
 async def get_user_password(state: T_State, password: str = ArgStr("password")):
     state["password"] = password
 
@@ -193,9 +189,7 @@ async def register_user_info_(
         await MessageFactory("注册失败。不可重复注册").send(at_sender=True)
         await register.finish()
 
-    await UserSign.update_or_create(
-        user_id=user_id, total_days=0, continuous_days=0
-    )
+    await UserSign.update_or_create(user_id=user_id, total_days=0, continuous_days=0)
     await MessageFactory(
         f"""
             注册成功\n
@@ -221,19 +215,13 @@ async def login_platform(
         state["password"] = password.result
 
 
-@login.got(
-    "user_id", prompt="请输入您的ID", parameterless=[HandleCancellation("已取消")]
-)
+@login.got("user_id", prompt="请输入您的ID", parameterless=[HandleCancellation("已取消")])
 async def get_user_id_(state: T_State, user_id: str = ArgStr("user_id")):
     state["user_id"] = user_id
 
 
-@login.got(
-    "password", prompt="请输入密码", parameterless=[HandleCancellation("已取消")]
-)
-async def get_user_password_(
-    state: T_State, password: str = ArgStr("password")
-):
+@login.got("password", prompt="请输入密码", parameterless=[HandleCancellation("已取消")])
+async def get_user_password_(state: T_State, password: str = ArgStr("password")):
     state["password"] = password
 
 
@@ -325,9 +313,7 @@ async def get_login_list(
 
 
 @change_name.handle()
-async def change_name_(
-    state: T_State, msg: Match[str] = AlconnaMatch("changed_name")
-):
+async def change_name_(state: T_State, msg: Match[str] = AlconnaMatch("changed_name")):
     if msg.available:
         state["changed_name"] = msg.result
 
@@ -337,9 +323,7 @@ async def change_name_(
     prompt="请输入更改后的用户名",
     parameterless=[HandleCancellation("已取消")],
 )
-async def get_changed_name(
-    state: T_State, changed_name: str = ArgStr("changed_name")
-):
+async def get_changed_name(state: T_State, changed_name: str = ArgStr("changed_name")):
     state["changed_name"] = changed_name
 
 
@@ -355,9 +339,7 @@ async def change_name__(
     changed_name = state.get("changed_name")
     await UserInfo.filter(user_id=user_id).update(user_name=changed_name)
 
-    await MessageFactory(f"更改用户名成功！\n你现在的用户名为：{changed_name}").send(
-        at_sender=True
-    )
+    await MessageFactory(f"更改用户名成功！\n你现在的用户名为：{changed_name}").send(at_sender=True)
     await change_name.finish()
 
 
@@ -369,9 +351,7 @@ async def set_avatar_(
         matcher.set_path_arg("img", image.result)
 
 
-@set_avatar.got_path(
-    "img", prompt="请发送图片", parameterless=[HandleCancellation("已取消")]
-)
+@set_avatar.got_path("img", prompt="请发送图片", parameterless=[HandleCancellation("已取消")])
 async def get_avatar_img(state: T_State, image: Image = AlconnaArg("img")):
     if image.url:
         state["img"] = image.url
@@ -399,17 +379,13 @@ async def set_avatar__(
     if url:
         if isinstance(event, TGMessageEvent) and isinstance(bot, TGBot):
             try:
-                await AsyncHttpx.download_telegram_file(
-                    url, path / "avatar.jpg", bot
-                )
+                await AsyncHttpx.download_telegram_file(url, path / "avatar.jpg", bot)
                 await MessageFactory("头像设置成功！").send(at_sender=True)
             except Exception:
                 await MessageFactory("头像设置失败...").send(at_sender=True)
         elif isinstance(event, GuildMessageEvent):
             try:
-                await AsyncHttpx.download_file(
-                    f"https://{url}", path / "avatar.jpg"
-                )
+                await AsyncHttpx.download_file(f"https://{url}", path / "avatar.jpg")
                 await MessageFactory("头像设置成功！").send(at_sender=True)
             except Exception:
                 await MessageFactory("头像设置失败...").send(at_sender=True)

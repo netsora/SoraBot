@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
+  - name: 📝 文档改进
+    url: https://github.com/netsora/SoraBot-website/issues/new?assignees=&labels=documentation&projects=&template=document.yml&title=Docs%3A+
+    about: 文档错误及改进意见反馈
   - name: SoraBot 论坛
     url: https://github.com/orgs/netsora/discussions
     about: 前往 SoraBot 论坛提问

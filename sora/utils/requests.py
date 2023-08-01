@@ -169,18 +169,14 @@ class AsyncHttpx:
                         ).content
                         async with aiofiles.open(path, "wb") as wf:
                             await wf.write(content)
-                            logger.success(
-                                "请求", f"下载 {url} 成功！Path：{path.absolute()}"
-                            )
+                            logger.success("请求", f"下载 {url} 成功！Path：{path.absolute()}")
                         return True
                     except (TimeoutError, ConnectTimeout):
                         pass
                 else:
                     if not headers:
                         headers = get_user_agent()
-                    proxy_ = (
-                        proxy if proxy else cls.proxy if use_proxy else None
-                    )
+                    proxy_ = proxy if proxy else cls.proxy if use_proxy else None
                     try:
                         async with httpx.AsyncClient(proxies=proxy_, verify=verify) as client:  # type: ignore
                             async with client.stream(
@@ -197,9 +193,7 @@ class AsyncHttpx:
                                     f"开始下载 {path.name} 到 Path: {path.absolute()}",
                                 )
                                 async with aiofiles.open(path, "wb") as wf:
-                                    total = int(
-                                        response.headers["Content-Length"]
-                                    )
+                                    total = int(response.headers["Content-Length"])
                                     with Progress(
                                         TextColumn(path.name),
                                         "[progress.percentage]{task.percentage:>3.0f}%",
@@ -227,9 +221,7 @@ class AsyncHttpx:
             else:
                 logger.error("请求", f"下载 {url} 下载超时！Path：{path.absolute()}")
         except Exception as e:
-            logger.error(
-                "请求", f"下载 {url} 未知错误 {type(e)}：{e} | Path：{path.absolute()}"
-            )
+            logger.error("请求", f"下载 {url} 未知错误 {type(e)}：{e} | Path：{path.absolute()}")
         return False
 
     @classmethod

@@ -18,9 +18,7 @@ class logger:
         result_type: bool = True,
     ):
         param_str = (
-            " ".join(
-                [f"{k}<m>{escape_tag(str(v))}</m>" for k, v in param.items()]
-            )
+            " ".join([f"{k}<m>{escape_tag(str(v))}</m>" for k, v in param.items()])
             if param
             else ""
         )
@@ -40,9 +38,7 @@ class logger:
         command: str, info: str = "", param: typing.Any = None, result: str = ""
     ):
         param_str = (
-            " ".join(
-                [f"{k}<m>{escape_tag(str(v))}</m>" for k, v in param.items()]
-            )
+            " ".join([f"{k}<m>{escape_tag(str(v))}</m>" for k, v in param.items()])
             if param
             else ""
         )
@@ -59,15 +55,11 @@ class logger:
 
     @staticmethod
     def debug(command: str, info: str):
-        nb_logger.opt(colors=True).debug(
-            f"<u><y>[{command}]</y></u>{escape_tag(info)}"
-        )
+        nb_logger.opt(colors=True).debug(f"<u><y>[{command}]</y></u>{escape_tag(info)}")
 
     @staticmethod
     def error(command: str, info: str):
-        nb_logger.opt(colors=True).error(
-            f"<u><y>[{command}]</y></u>{escape_tag(info)}"
-        )
+        nb_logger.opt(colors=True).error(f"<u><y>[{command}]</y></u>{escape_tag(info)}")
 
     @staticmethod
     def exception(command: str, info: str):

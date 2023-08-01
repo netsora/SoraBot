@@ -26,4 +26,4 @@ class UserInfo(Model):
     permission = fields.CharField(max_length=10)
 
     class Meta:
-        table = "user_info"
+        table = "userInfo"

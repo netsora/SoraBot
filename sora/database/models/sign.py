@@ -14,4 +14,4 @@ class UserSign(Model):
     """上次签到日期"""
 
     class Meta:
-        table = "user_sign"
+        table = "signInfo"

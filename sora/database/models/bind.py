@@ -22,4 +22,4 @@ class UserBind(Model):
     """Phigros ID"""
 
     class Meta:
-        table = "user_bind"
+        table = "userBind"

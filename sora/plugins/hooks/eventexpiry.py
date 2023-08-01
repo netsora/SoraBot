@@ -1,11 +1,11 @@
 import time
 
-from nonebot import get_driver
 from nonebot.plugin import PluginMetadata
 from nonebot.exception import IgnoredException
 from nonebot.message import event_preprocessor
 from nonebot.adapters.qqguild import Event as GuildEvent
 from nonebot.adapters.onebot.v11 import Event as V11Event
+from nonebot.adapters.telegram import Event as TGEvent
 
 eventexpiry_expire: int = 30
 
@@ -16,11 +16,9 @@ __sora_plugin_meta__ = PluginMetadata(
     extra={"author": "A-kirami"},
 )
 
-driver = get_driver()
-
 
 @event_preprocessor
-def event_expiry_handler(event: V11Event | GuildEvent) -> None:
+def event_expiry_handler(event: V11Event | GuildEvent | TGEvent) -> None:
     if isinstance(event, V11Event):
         event_time: int = event.time
 

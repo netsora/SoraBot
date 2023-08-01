@@ -12,7 +12,10 @@ from sora.config.path import (
     USER_SIGN_DB_PATH,
 )
 
-from .models import UserBind, UserInfo, UserSign, bind, sign, user
+from .models import UserBind as UserBind
+from .models import UserInfo as UserInfo
+from .models import UserSign as UserSign
+from .models import bind, sign, user
 
 bot_admin: list[str] = [str(s) for s in DRIVER.config.bot_admin]
 bot_helper: list[str] = [str(s) for s in DRIVER.config.bot_helper]

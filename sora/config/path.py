@@ -19,7 +19,7 @@ TEMPLATE_PATH = Path() / "resources" / "template"
 PLUGIN_PATH = Path() / "data" / "plugin"
 
 # 数据库路径
-DATABASE_PATH = Path().cwd() / "data" / "database"
+DATABASE_PATH = Path() / "data" / "database"
 # 用户数据路径
 USER_INFO_DB_PATH = DATABASE_PATH / "user.db"
 # 用户绑定数据路径

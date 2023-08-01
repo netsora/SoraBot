@@ -25,8 +25,8 @@ _✨ 基于 Nonebot2，互通多平台，超可爱的林汐酱 ✨_
     <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json" alt="ruff">
 </a>
 <br />
-<a href="https://github.com/netsora/SoraBot/actions/workflows/website-deploy.yml">
-    <img src="https://github.com/netsora/SoraBot/actions/workflows/website-deploy.yml/badge.svg?branch=master&event=push" alt="site"/>
+<a href="https://github.com/netsora/SoraBot-website/actions/workflows/website-deploy.yml">
+    <img src="https://github.com/netsora/SoraBot-website/actions/workflows/website-deploy.yml/badge.svg?branch=master&event=push" alt="site"/>
 </a>
 <a href="https://results.pre-commit.ci/latest/github/netsora/SoraBot/master">
     <img src="https://results.pre-commit.ci/badge/github/netsora/SoraBot/master.svg" alt="pre-commit" />

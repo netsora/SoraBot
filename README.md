@@ -1,5 +1,5 @@
 <div align="center">
-  <a href="https://bot.netsora.info/"><img src="https://raw.githubusercontent.com/netsora/SoraBot/master/resources/logo.jpg" width="200" height="200" 
+  <a href="https://bot.netsora.info/"><img src="https://ghproxy.com/https://raw.githubusercontent.com/netsora/SoraBot/master/resources/logo.jpg" width="200" height="200" 
   style="border-radius: 100px" alt="SoraBot"></a>
 </div>
 

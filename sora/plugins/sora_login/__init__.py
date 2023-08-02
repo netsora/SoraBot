@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from nonebot import require
 from nonebot.rule import to_me
 from nonebot.params import ArgStr
@@ -15,15 +17,17 @@ require("nonebot_plugin_alconna")
 from arclet.alconna.args import Args
 from arclet.alconna.core import Alconna
 from arclet.alconna.typing import CommandMeta
+from arclet.alconna.base import Option
+
 from nonebot_plugin_saa import MessageFactory
 from nonebot_plugin_alconna.adapters import Image
 from tortoise.exceptions import DoesNotExist, ValidationError
 from nonebot_plugin_alconna import (
     Match,
+    on_alconna,
     AlconnaArg,
     AlconnaMatch,
     AlconnaMatcher,
-    on_alconna,
 )
 
 from sora.config import ConfigManager
@@ -31,7 +35,7 @@ from sora.config.path import DATABASE_PATH
 from sora.utils.requests import AsyncHttpx
 from sora.utils.helpers import HandleCancellation
 from sora.database import UserBind, UserInfo, UserSign
-from sora.utils.user import generate_id, get_user_id, get_user_login_list
+from sora.utils.user import generate_id, get_user_id, getUserInfo, get_bind_info
 
 __sora_plugin_meta__ = PluginMetadata(
     name="登录",
@@ -63,6 +67,7 @@ login = on_alconna(
     Alconna(
         "登录",
         Args["user_id?", str]["password?", str],
+        Option("-r|--recall"),
         meta=CommandMeta(
             description="登录您的林汐账户",
             usage="@bot /登录 [ID] [密码]",
@@ -75,7 +80,15 @@ login = on_alconna(
     rule=to_me(),
 )
 login_list = on_alconna(
-    command="登录信息",
+    Alconna(
+        "登录信息",
+        meta=CommandMeta(
+            description="查询自己已登录的账号列表",
+            usage="@bot /登录信息",
+            example="@bot /登录信息",
+            compact=True,
+        ),
+    ),
     aliases={"绑定信息"},
     priority=1,
     block=True,
@@ -193,14 +206,29 @@ async def register_user_info_(
     await MessageFactory(
         f"""
             注册成功\n
-             > 用户名：{user_name}（Lv.1）\n
-             > ID：{user_id}\n
+              > 用户名：{user_name}（Lv.1）\n
+              > ID：{user_id}\n
             奖励您 {CoinRewards}枚 硬币，好感度增加 {JrrpRewards}%\n
            『提示』我们已自动将 您的账户与 您的 {platform}ID 绑定。您可以通过发送 [/登录信息] 查询自己的绑定信息。\n
            （请不要忘记 /设置头像 ！）"""
     ).send(at_sender=True)
 
     await register.finish()
+
+
+@login.assign("recall")
+async def loginout(event: V11MessageEvent | GuildMessageEvent | TGMessageEvent):
+    user_id = await get_user_id(event)
+
+    if isinstance(event, V11MessageEvent):
+        await UserBind.filter(user_id=user_id).update(qq_id=None)
+    elif isinstance(event, GuildMessageEvent):
+        await UserBind.filter(user_id=user_id).update(qqguild_id=None)
+    else:
+        await UserBind.filter(user_id=user_id).update(telegram_id=None)
+
+    await MessageFactory("已在当前平台退出林汐账号").send(at_sender=True)
+    await login.finish()
 
 
 @login.handle()
@@ -227,21 +255,20 @@ async def get_user_password_(state: T_State, password: str = ArgStr("password"))
 
 @login.handle()
 async def login_platform_(
-    event: V11MessageEvent | GuildMessageEvent | TGMessageEvent, state: T_State
+    event: V11MessageEvent | GuildMessageEvent | TGMessageEvent,
+    state: T_State,
+    userInfo: Annotated[UserInfo, getUserInfo()],
 ):
     input_user_id = state.get("user_id")
     input_password = state.get("password")
 
-    user_info = await UserInfo.get_or_none(user_id=input_user_id).values(
-        "user_id", "user_name", "password", "level"
-    )
-    if user_info is None:
+    if userInfo is None:
         await MessageFactory("ID 不合法！").send(at_sender=True)
         await login.finish()
-    user_id = user_info["user_id"]
-    user_name = user_info["user_name"]
-    password = user_info["password"]
-    level = user_info["level"]
+    user_id = userInfo.user_id
+    user_name = userInfo.user_name
+    password = userInfo.password
+    level = userInfo.level
 
     if input_user_id != user_id or input_password != password:
         await MessageFactory("账号或密码错误，请重新输入").send(at_sender=True)
@@ -268,11 +295,8 @@ async def login_platform_(
                 await UserBind.filter(user_id=user_id).update(
                     telegram_id=str(event.get_user_id())
                 )
-    except ValidationError:
-        await MessageFactory("注册失败。用户名不可大于10位").send(at_sender=True)
-
-    except DoesNotExist:
-        await MessageFactory("注册失败。该用户名已被注册").send(at_sender=True)
+    except Exception:
+        await MessageFactory("登录失败").send(at_sender=True)
 
     msg = f"""
     登录成功！\n
@@ -292,23 +316,21 @@ async def get_login_list(
     user_id = await get_user_id(event)
     if user_id is None:
         await MessageFactory("该账号暂未注册林汐账户，请先发送 [/注册] ").send(at_sender=True)
-        await login_list.finish()
 
-    user_login_list = await get_user_login_list(event)
+    user_login_list = await get_bind_info(event)
+    if user_login_list:
+        login_info = [
+            f"> QQ：{user_login_list.qq_id if user_login_list.qq_id is not None else '暂未绑定'}\n",
+            f"> QQ频道：{user_login_list.qqguild_id if user_login_list.qqguild_id is not None else '暂未绑定'}\n",
+            f"> Discord：{user_login_list.discord_id if user_login_list.discord_id is not None else '暂未绑定'}\n",
+            f"> Telegram：{user_login_list.telegram_id if user_login_list.telegram_id is not None else '暂未绑定'}\n",
+            f"> Bilibili：{user_login_list.bilibili_id if user_login_list.bilibili_id is not None else '暂未绑定'}\n",
+            f"> Arcaea：{user_login_list.arcaea_id if user_login_list.arcaea_id is not None else '暂未绑定'}\n",
+            f"> Phigros：{user_login_list.phigros_id if user_login_list.phigros_id is not None else '暂未绑定'}\n",
+        ]
+        msg = "您的登录信息如下：\n" + "\n".join(login_info)
+        await MessageFactory(msg).send(at_sender=True)
 
-    login_info = [
-        f"> QQ：{user_login_list[1] if user_login_list[1] is not None else '暂未绑定'}\n",
-        f"> QQ频道：{user_login_list[2] if user_login_list[2] is not None else '暂未绑定'}\n",
-        f"> Discord：{user_login_list[3] if user_login_list[3] is not None else '暂未绑定'}\n",
-        f"> Telegram：{user_login_list[4] if user_login_list[4] is not None else '暂未绑定'}\n",
-        f"> Bilibili：{user_login_list[5] if user_login_list[5] is not None else '暂未绑定'}\n",
-        f"> Arcaea：{user_login_list[6] if user_login_list[6] is not None else '暂未绑定'}\n",
-        f"> Phigros：{user_login_list[7] if user_login_list[7] is not None else '暂未绑定'}\n",
-    ]
-
-    msg = "您的登录信息如下：\n" + "\n".join(login_info)
-
-    await MessageFactory(msg).send(at_sender=True)
     await login_list.finish()
 
 

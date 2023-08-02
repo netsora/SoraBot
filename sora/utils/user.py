@@ -3,6 +3,7 @@ import string
 import datetime
 from pathlib import Path
 
+from nonebot.params import Depends
 from nonebot.adapters.qqguild import MessageEvent as GuildMessageEvent
 from nonebot.adapters.onebot.v11 import MessageEvent as V11MessageEvent
 from nonebot.adapters.telegram.event import MessageEvent as TGMessageEvent
@@ -28,42 +29,22 @@ def generate_password(length=10, chars=string.ascii_letters + string.digits):
     return "".join([random.choice(chars) for i in range(length)])
 
 
-async def get_user_name(user_id: str) -> str:
-    """
-    通过 用户ID 获取 用户名
-
-    :param event:
-    :return: user_name
-
-    """
-
-    user_info = await UserInfo.get(user_id=user_id)
-    user_name = user_info.user_name
-    return user_name
-
-
 async def get_user_id(
     event: V11MessageEvent | GuildMessageEvent | TGMessageEvent,
 ) -> str | None:
     """
-    通过 平台ID 获取 用户ID
+    通过 event.userid 获取 ID
 
     :param event:
     :return: user_id
-
-    已支持的平台:
-
-    * onebot_v11
-    * qqguild
-    * telegram
     """
-    login_list = await get_user_login_list(event)
+    login_list = await get_bind_info(event)
     if login_list is None:
         user_id = None
     else:
-        user_id = login_list[0]
+        user_id = login_list.user_id
 
-    return str(user_id)
+    return user_id
 
 
 def get_user_avatar(user_id: str) -> Path | None:
@@ -79,78 +60,49 @@ def get_user_avatar(user_id: str) -> Path | None:
     return None
 
 
-async def get_user_login_list(event):
+def getUserInfo():
     """
-    通过用户ID获取登录信息
+    获取用户信息
+
+    get_user_info 的依赖注入版本
+    :param user_id:
+    :return: userInfo
+    """
+
+    async def dependency(
+        event: V11MessageEvent | GuildMessageEvent | TGMessageEvent,
+    ) -> UserInfo | None:
+        return await get_user_info(event)
+
+    return Depends(dependency)
+
+
+async def get_user_info(event) -> UserInfo | None:
+    """
+    获取用户信息
     :param event:
-    :return: login_list
+    :return: userInfo
     """
-    platforms = {
-        V11MessageEvent: {
-            "event_user_id": event.get_user_id(),
-            "platform_id": "qq_id",
-        },
-        GuildMessageEvent: {
-            "event_user_id": event.get_user_id(),
-            "platform_id": "qqguild_id",
-        },
-        TGMessageEvent: {
-            "event_user_id": event.get_user_id(),
-            "platform_id": "telegram_id",
-        },
-    }
-
-    platform = next((p for p in platforms.keys() if isinstance(event, p)), None)
-    if not platform:
-        return []
-
-    login_list = await UserBind.get_or_none(
-        **{platforms[platform]["platform_id"]: platforms[platform]["event_user_id"]}
-    ).values_list(
-        "user_id",
-        "qq_id",
-        "qqguild_id",
-        "discord_id",
-        "telegram_id",
-        "bilibili_id",
-        "arcaea_id",
-        "phigros_id",
-    )
-
-    return login_list
+    user_id = await get_user_id(event)
+    user_info = await UserInfo.get_or_none(user_id=user_id)
+    return user_info
 
 
-async def get_user_coin(user_id: str) -> int:
+async def get_bind_info(event) -> UserBind | None:
     """
-    获取用户硬币
+    获取用户绑定信息
     :param user_id:
-    :return: coin
+    :return: userBind
     """
-    user_info = await UserInfo.get(user_id=user_id)
-    coin = user_info.coin
-    return coin
-
-
-async def get_user_level(user_id: str) -> int:
-    """
-    获取用户等级
-    :param user_id:
-    :return: user_level
-    """
-    user_info = await UserInfo.get(user_id=user_id)
-    user_level = user_info.level
-    return user_level
-
-
-async def get_user_exp(user_id: str) -> int:
-    """
-    获取用户经验
-    :param user_id:
-    :return: user_exp
-    """
-    user_info = await UserInfo.get(user_id=user_id)
-    user_exp = user_info.exp
-    return user_exp
+    if isinstance(event, V11MessageEvent):
+        user_bind = await UserBind.get_or_none(qq_id=event.get_user_id())
+    elif isinstance(event, GuildMessageEvent):
+        user_bind = await UserBind.get_or_none(qqguild_id=event.get_user_id())
+    elif isinstance(event, TGMessageEvent):
+        user_bind = await UserBind.get_or_none(telegram_id=event.get_user_id())
+    else:
+        user_bind = None
+    return user_bind
 
 
 def calculate_exp_threshold(level: int) -> int:

@@ -1,4 +1,6 @@
 import httpx
+from typing import Any
+from pathlib import Path
 
 try:
     import ujson as json
@@ -7,7 +9,9 @@ except ImportError:
 
 from nonebot.internal.adapter import Message
 
+from sora.log import logger
 from sora.utils import PROXY
+from sora.config.path import DATABASE_PATH
 
 
 def get_message_at(data: str) -> list:
@@ -137,3 +141,67 @@ async def get_user_avatar(qq: int) -> bytes | None:
             except TimeoutError:
                 pass
     return None
+
+
+def get_setting_path(user_id: Any):
+    path = Path(f"{DATABASE_PATH}/user/{user_id}/setting.toml")
+    return path
+
+
+def is_number(s: int | str) -> bool:
+    """
+    说明:
+        检测 s 是否为数字
+    参数:
+        * s: 文本
+    """
+    if isinstance(s, int):
+        return True
+    try:
+        float(s)
+        return True
+    except ValueError:
+        pass
+    try:
+        import unicodedata
+
+        unicodedata.numeric(s)
+        return True
+    except (TypeError, ValueError):
+        pass
+    return False
+
+
+async def translate(content: str, type: str = "AUTO") -> str:
+    """
+    说明：
+        翻译（有道）
+    参数：
+        * type: 类型
+        * content: 内容
+
+    type的类型有：
+        * ZH_CN2EN 中文　»　英语
+        * ZH_CN2JA 中文　»　日语
+        * ZH_CN2KR 中文　»　韩语
+        * ZH_CN2FR 中文　»　法语
+        * ZH_CN2RU 中文　»　俄语
+        * ZH_CN2SP 中文　»　西语
+        * EN2ZH_CN 英语　»　中文
+        * JA2ZH_CN 日语　»　中文
+        * KR2ZH_CN 韩语　»　中文
+        * FR2ZH_CN 法语　»　中文
+        * RU2ZH_CN 俄语　»　中文
+        * SP2ZH_CN 西语　»　中文
+    """
+    url = f"https://fanyi.youdao.com/translate?&doctype=json&type={type}&i={content}"
+    logger.info("翻译", f"正在翻译{content}")
+    async with httpx.AsyncClient() as client:
+        try:
+            json_data = (await client.get(url)).json()
+            result = json_data["translateResult"][0][0]["tgt"]
+            logger.success("翻译", f"翻译成功：{result}")
+        except TimeoutError:
+            result = content
+            logger.error("翻译", "翻译失败，已返回原文")
+    return result

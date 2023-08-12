@@ -1,6 +1,5 @@
 import random
 import string
-import datetime
 from pathlib import Path
 
 from nonebot.params import Depends
@@ -8,19 +7,9 @@ from nonebot.adapters.qqguild import MessageEvent as GuildMessageEvent
 from nonebot.adapters.onebot.v11 import MessageEvent as V11MessageEvent
 from nonebot.adapters.telegram.event import MessageEvent as TGMessageEvent
 
-from sora.config import ConfigManager
+from sora.config import Config
 from sora.config.path import DATABASE_PATH
-from sora.database.models import UserBind, UserInfo
-
-
-def generate_id():
-    """生成用户ID"""
-    current_time = datetime.datetime.now().strftime("%Y%m%d")  # 获取当前日期
-    random_number = random.randint(10, 99)  # 生成一个随机数
-    if random_number < 10:
-        random_number = "0" + str(random_number)
-    user_id: str = f"{current_time}{random_number}"  # 结合日期和随机数生成ID
-    return user_id
+from sora.database import UserInfo, UserBind
 
 
 def generate_password(length=10, chars=string.ascii_letters + string.digits):
@@ -45,6 +34,20 @@ async def get_user_id(
         user_id = login_list.user_id
 
     return user_id
+
+
+async def get_bind_info(
+    event: V11MessageEvent | GuildMessageEvent | TGMessageEvent, account=None
+) -> UserBind:
+    if account is not None:
+        user = await UserBind.get(account=account)
+    else:
+        user = await UserBind.get(account=event.get_user_id())
+    user_id = user.user_id
+    user_info = await UserBind.filter(user_id=user_id).first()
+    if user_info is None:
+        raise Exception("User not found")
+    return user_info
 
 
 def get_user_avatar(user_id: str) -> Path | None:
@@ -77,32 +80,18 @@ def getUserInfo():
     return Depends(dependency)
 
 
-async def get_user_info(event) -> UserInfo | None:
+async def get_user_info(event, user_id: str | None = None) -> UserInfo:
     """
     获取用户信息
     :param event:
     :return: userInfo
     """
-    user_id = await get_user_id(event)
-    user_info = await UserInfo.get_or_none(user_id=user_id)
-    return user_info
-
-
-async def get_bind_info(event) -> UserBind | None:
-    """
-    获取用户绑定信息
-    :param user_id:
-    :return: userBind
-    """
-    if isinstance(event, V11MessageEvent):
-        user_bind = await UserBind.get_or_none(qq_id=event.get_user_id())
-    elif isinstance(event, GuildMessageEvent):
-        user_bind = await UserBind.get_or_none(qqguild_id=event.get_user_id())
-    elif isinstance(event, TGMessageEvent):
-        user_bind = await UserBind.get_or_none(telegram_id=event.get_user_id())
+    if user_id is not None:
+        user_id = user_id
     else:
-        user_bind = None
-    return user_bind
+        user_id = await get_user_id(event)
+    user_info = await UserInfo.get(user_id=user_id)
+    return user_info
 
 
 def calculate_exp_threshold(level: int) -> int:
@@ -111,8 +100,8 @@ def calculate_exp_threshold(level: int) -> int:
     :param level:用户当前的等级
     :return: threshold
     """
-    base_exp = ConfigManager.get_config("Level")["base_exp"]
-    cardinality = ConfigManager.get_config("Level")["cardinality"]
+    base_exp = Config.get_config("Level", "base_exp", 150)
+    cardinality = Config.get_config("Level", "cardinality", 1.2)
     threshold = round(int(base_exp * (cardinality**level)) / 10) * 10
     return threshold
 

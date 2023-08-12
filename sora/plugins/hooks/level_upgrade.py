@@ -3,10 +3,19 @@ from typing import Annotated
 from nonebot import require
 from nonebot.params import Depends
 from tortoise.expressions import F
-from nonebot.message import event_postprocessor
+from nonebot.message import run_postprocessor
 from nonebot.adapters.qqguild import Bot as GuildBot
 from nonebot.adapters.onebot.v11 import Bot as V11Bot
 from nonebot.adapters.telegram.bot import Bot as TGBot
+from nonebot.adapters.qqguild import MessageCreateEvent, AtMessageCreateEvent
+from nonebot.adapters.onebot.v11 import (
+    GroupMessageEvent as V11GroupMessageEvent,
+    PrivateMessageEvent as V11PrivateMessageEvent,
+)
+from nonebot.adapters.telegram.event import (
+    GroupMessageEvent as TGroupMessageEvent,
+    PrivateMessageEvent as TGPrivateMessageEvent,
+)
 
 require("nonebot_plugin_saa")
 from nonebot_plugin_saa import MessageFactory, PlatformTarget, extract_target
@@ -17,10 +26,16 @@ from sora.utils.user import (
     calculate_exp_threshold,
 )
 
+AllBot = V11Bot | GuildBot | TGBot
+V11MessageEvent = V11GroupMessageEvent | V11PrivateMessageEvent
+GuildMessageEvent = MessageCreateEvent | AtMessageCreateEvent
+TGMessageEvent = TGroupMessageEvent | TGPrivateMessageEvent
+AllEvent = V11MessageEvent | GuildMessageEvent | TGMessageEvent
 
-@event_postprocessor
+
+@run_postprocessor
 async def level_up(
-    bot: V11Bot | GuildBot | TGBot,
+    bot: AllBot,
     userInfo: Annotated[UserInfo, getUserInfo()],
     target: PlatformTarget = Depends(extract_target),
 ):

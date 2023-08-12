@@ -54,6 +54,7 @@ amis-python = "^1.0.8.post2"
 toml = "^0.10.2"
 nonebot-plugin-alconna = "^0.13.0"
 nonebot-plugin-send-anything-anywhere = "^0.3.0"
+pandas = "^2.0.3"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.276"

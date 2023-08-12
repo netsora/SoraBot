@@ -1,6 +1,15 @@
-from sora.utils.files import load_yaml
-from sora.config.path import SORA_CONFIG
+import platform
 
-from .utils import ConfigManager as ConfigManager
+from .path import SORA_CONFIG
+from .utils import ConfigsManager
 
-load_yaml(SORA_CONFIG)
+if platform.system() == "Linux":
+    import os
+
+    hostip = (
+        os.popen("cat /etc/resolv.conf | grep nameserver | awk '{ print $2 }'")
+        .read()
+        .replace("\n", "")
+    )
+
+Config = ConfigsManager(SORA_CONFIG)

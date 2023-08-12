@@ -15,15 +15,24 @@ from arclet.alconna.typing import CommandMeta
 from nonebot_plugin_alconna import on_alconna
 from nonebot_plugin_saa import Text, Image, MessageFactory
 
-from sora.config import ConfigManager
 from sora.database.models import UserInfo, UserSign
 from sora.utils.user import getUserInfo, get_user_avatar
+from sora.database.rewards import Exp, Coin, Favor, EventReward
 
 from .utils import generate_progress_bar
+from .config import (
+    base_exp as base_exp,
+    max_level as max_level,
+    cardinality as cardinality,
+)
 
-CoinRewards = ConfigManager.get_config("Award")["sign"][0]
-JrrpRewards = ConfigManager.get_config("Award")["sign"][1]
-ExpRewards = ConfigManager.get_config("Award")["sign"][2]
+signEvent = EventReward(
+    name="签到事件",
+    description="第一次使用林汐",
+    coin_reward=Coin(amount=[30, 60]),
+    exp_reward=Exp(amount=100),
+    favor_reward=Favor(amount=20),
+)
 
 __sora_plugin_meta__ = PluginMetadata(
     name="签到",
@@ -81,13 +90,11 @@ async def sign_(userInfo: Annotated[UserInfo, getUserInfo()]):
 
     exp: int = userInfo.exp
     coin: int = userInfo.coin
-    jrrp: int = userInfo.jrrp
+    favor: int = userInfo.favor
 
-    sign_coin: int = (
-        random.randint(CoinRewards[0], CoinRewards[1]) if CoinRewards is not None else 0
-    )
-    sign_jrrp: int = JrrpRewards if JrrpRewards is not None else 0
-    sign_exp: int = ExpRewards if ExpRewards is not None else 0
+    sign_coin = random.randint(signEvent.coin_reward[0], signEvent.coin_reward[1])
+    sign_favor = signEvent.favor_reward.amount
+    sign_exp = signEvent.exp_reward.amount
 
     total_days: int = user_sign["total_days"]
     last_sign_date: date = user_sign["last_day"]
@@ -115,7 +122,7 @@ async def sign_(userInfo: Annotated[UserInfo, getUserInfo()]):
         total_days=total_days + 1, last_day=current_date
     )
     await UserInfo.filter(user_id=user_id).update(
-        exp=exp + sign_exp, coin=coin + sign_coin, jrrp=jrrp + sign_jrrp
+        exp=exp + sign_exp, coin=coin + sign_coin, favor=favor + sign_favor
     )
 
     await MessageFactory(
@@ -126,8 +133,8 @@ async def sign_(userInfo: Annotated[UserInfo, getUserInfo()]):
     ۞≡==——☚◆☛——==≡۞\n
     ➢[金币+{sign_coin}]\n
             —— Now: {coin + sign_coin}\n
-    ➢[好感+{sign_jrrp}]\n
-            —— Now: {jrrp + sign_jrrp}\n
+    ➢[好感+{sign_favor}]\n
+            —— Now: {favor + sign_favor}\n
     ➢[经验+{sign_exp}]\n
             —— Now: {exp + sign_exp}\n
     ۞≡==——☚◆☛——==≡۞\n
@@ -154,14 +161,14 @@ async def info_(userInfo: Annotated[UserInfo, getUserInfo()]):
 
     if user_avatar is None:
         msg = MessageFactory(
-            f"个人信息\n用户名：{user_name}\nLv.{str(user_level)}: {progress_bar}\n ↳ {progress_text}\n硬币：{user_coin} 个"  # noqa: E501
+            f"个人信息\nID：{user_id}\n用户名：{user_name}\nLv.{str(user_level)}: {progress_bar}\n ↳ {progress_text}\n硬币：{user_coin} 个"  # noqa: E501
         )
     else:
         msg = MessageFactory(
             [
                 Image(user_avatar),
                 Text(
-                    f"\n个人信息\n用户名：{user_name}\nLv.{str(user_level)}: {progress_bar}\n ↳ {progress_text}\n硬币：{user_coin} 个"  # noqa: E501
+                    f"\n个人信息\nID：{user_id}\n用户名：{user_name}\nLv.{str(user_level)}: {progress_bar}\n ↳ {progress_text}\n硬币：{user_coin} 个"  # noqa: E501
                 ),
             ]
         )

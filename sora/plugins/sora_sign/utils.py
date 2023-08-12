@@ -1,12 +1,7 @@
-from sora.config import ConfigManager
 from sora.utils.user import (
     calculate_exp_threshold,
     calculate_next_exp_threshold,
 )
-
-base_exp = ConfigManager.get_config("Level")["base_exp"]
-max_level = ConfigManager.get_config("Level")["max_level"]
-cardinality = ConfigManager.get_config("Level")["cardinality"]
 
 
 def generate_progress_bar(user_level: int, user_exp: int, bar_length: int = 20):

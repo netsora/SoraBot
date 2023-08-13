@@ -92,16 +92,18 @@ async def analysis_handle(
             else:
                 url = f"https://{img}"
             result = await savor_image(url)
+
+            msg = ", ".join(
+                i["label"] for i in result if not i["label"].startswith("rating:")
+            )
+            translation_msg = await translate(msg, type="EN2ZH_CN")
+            await MessageFactory(translation_msg).send(reply=True)
+
         except Exception as e:
             logger.error("图像鉴赏", f"分析图像失败：{e}")
             await MessageFactory("分析失败, 请稍后重试").send(reply=True)
             await analysis.finish()
 
-        msg = ", ".join(
-            i["label"] for i in result if not i["label"].startswith("rating:")
-        )
-        translation_msg = await translate(msg, type="EN2ZH_CN")
-        await MessageFactory(translation_msg).send(reply=True)
     await analysis.finish()
 
 

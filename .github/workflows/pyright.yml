@@ -19,7 +19,7 @@ jobs:
       - name: Setup Python environment
         uses: ./.github/actions/setup-python
 
-      - run: echo "$(poetry env info --path)/bin" >> $GITHUB_PATH
+      - run: echo "$(pdm venv --path)/bin" >> $GITHUB_PATH
 
       - name: Run Pyright
         uses: jakebailey/pyright-action@v1

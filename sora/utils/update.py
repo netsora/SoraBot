@@ -72,11 +72,15 @@ async def check_update():
     resp = await AsyncHttpx.get("https://api.github.com/repos/netsora/SoraBot/commits")
     data = resp.json()
     if not isinstance(data, list):
-        return "检查更新失败，可能是网络问题，请稍后再试"
+        result = "检查更新失败，可能是网络问题，请稍后再试"
+        logger.info("检查更新", result)
+        return result
     try:
         repo = Repo(Path().absolute())
     except InvalidGitRepositoryError:
-        return "没有发现git仓库，无法通过git检查更新"
+        result = "没有发现git仓库，无法通过git检查更新"
+        logger.info("检查更新", result)
+        return result
     local_commit = repo.head.commit
     remote_commit = []
     for commit in data:
@@ -84,7 +88,9 @@ async def check_update():
             break
         remote_commit.append(commit)
     if not remote_commit:
-        return f"当前已是最新版本：{__version__}"
+        result = f"当前已是最新版本：{__version__}"
+        logger.info("检查更新", result)
+        return result
     result = "检查到更新，日志如下：\n"
     for i, commit in enumerate(remote_commit, start=1):
         time_str = (
@@ -101,4 +107,5 @@ async def check_update():
             .replace(":memo:", "📝")
             + "\n"
         )
+    logger.info("检查更新", result)
     return result

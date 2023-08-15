@@ -6,6 +6,7 @@ from tortoise.connection import ConnectionHandler
 
 from sora import database
 from sora.utils import DRIVER
+from sora.utils.update import check_update
 
 DBConfigType = dict[str, Any]
 
@@ -33,6 +34,7 @@ logo = r"""<g>
 async def startup():
     logger.opt(colors=True).info(logo)
     await database.connect()
+    await check_update()
     # await PluginManager.init()
     # asyncio.ensure_future(check_resource())
 

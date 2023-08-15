@@ -5,19 +5,25 @@ from nonebot.log import logger
 
 from sora.utils import scheduler
 from sora.config.path import (
+    USER_BAN_DB_PATH,
     USER_BIND_DB_PATH,
     USER_INFO_DB_PATH,
     USER_SIGN_DB_PATH,
 )
 
+from .models import BanUser as BanUser
 from .models import UserBind as UserBind
 from .models import UserInfo as UserInfo
 from .models import UserSign as UserSign
-from .models import bind, sign, user
+from .models import ban, bind, sign, user
 
 
 DATABASE = {
     "connections": {
+        "ban_info": {
+            "engine": "tortoise.backends.sqlite",
+            "credentials": {"file_path": USER_BAN_DB_PATH},
+        },
         "user_info": {
             "engine": "tortoise.backends.sqlite",
             "credentials": {"file_path": USER_INFO_DB_PATH},
@@ -33,6 +39,10 @@ DATABASE = {
         # 'memory_db': 'sqlite://:memory:'
     },
     "apps": {
+        "ban_info": {
+            "models": [ban.__name__],
+            "default_connection": "ban_info",
+        },
         "user_info": {
             "models": [user.__name__],
             "default_connection": "user_info",

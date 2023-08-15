@@ -21,6 +21,8 @@ PLUGIN_PATH = Path() / "data" / "plugin"
 
 # 数据库路径
 DATABASE_PATH = Path() / "data" / "database"
+# 黑名单数据路径
+USER_BAN_DB_PATH = DATABASE_PATH / "ban.db"
 # 用户数据路径
 USER_INFO_DB_PATH = DATABASE_PATH / "user.db"
 # 用户绑定数据路径

@@ -3,9 +3,7 @@ import string
 from pathlib import Path
 
 from nonebot.params import Depends
-from nonebot.adapters.qqguild import MessageEvent as GuildMessageEvent
-from nonebot.adapters.onebot.v11 import MessageEvent as V11MessageEvent
-from nonebot.adapters.telegram.event import MessageEvent as TGMessageEvent
+from nonebot.internal.adapter import Event
 
 from sora.config import Config
 from sora.config.path import DATABASE_PATH
@@ -18,9 +16,7 @@ def generate_password(length=10, chars=string.ascii_letters + string.digits):
     return "".join([random.choice(chars) for i in range(length)])
 
 
-async def get_user_id(
-    event: V11MessageEvent | GuildMessageEvent | TGMessageEvent,
-) -> str | None:
+async def get_user_id(event: Event) -> str | None:
     """
     通过 event.userid 获取 ID
 
@@ -36,9 +32,7 @@ async def get_user_id(
     return user_id
 
 
-async def get_bind_info(
-    event: V11MessageEvent | GuildMessageEvent | TGMessageEvent, account=None
-) -> UserBind:
+async def get_bind_info(event: Event, account=None) -> UserBind:
     if account is not None:
         user = await UserBind.get(account=account)
     else:
@@ -72,9 +66,7 @@ def getUserInfo():
     :return: userInfo
     """
 
-    async def dependency(
-        event: V11MessageEvent | GuildMessageEvent | TGMessageEvent,
-    ) -> UserInfo | None:
+    async def dependency(event: Event) -> UserInfo | None:
         return await get_user_info(event)
 
     return Depends(dependency)

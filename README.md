@@ -64,7 +64,7 @@ _✨ 基于 Nonebot2，互通多平台，超可爱的林汐酱 ✨_
   · 
   <a href="https://bot.netsora.info/module/">服务列表</a>
   ·
-  <a href="https://bot.netsora.info/develop/forward/prepare.html">安装文档</a>
+  <a href="https://bot.netsora.info/guide/before/prepare">安装文档</a>
   ·
   <a href="https://sorabot.netlify.app/">文档打不开?</a>
 </p>

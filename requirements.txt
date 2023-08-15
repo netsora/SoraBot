@@ -13,12 +13,12 @@ anyio==3.7.1 \
 apscheduler==3.10.3 \
     --hash=sha256:1611d207b095ff52d97884e90736c192bdd94dbd44ce27eb92c3f1da24a400d3 \
     --hash=sha256:3f17fd3915f14f4bfa597f552130a14a9d1cc74a002fa1d95dd671cb48dba70e
-arclet-alconna==1.7.16 \
-    --hash=sha256:02a98193a6ed68ec59eb771a2cd54b315782ec864e393ec743fa8c1289d8e605 \
-    --hash=sha256:9db70a4aefac05f4af6ce792e54acd8a02bf3381ff06c4599b21464e96afb409
-arclet-alconna-tools==0.6.5 \
-    --hash=sha256:11e22e533a27a7b458a26afe30e1345da09492b53e034218966901ac9aded141 \
-    --hash=sha256:dcfa3529ca13d4f7496f588de1a98015ba5703e0ea586918e2d538477a8bec2b
+arclet-alconna==1.7.18 \
+    --hash=sha256:5de131122a4b80b6aceebbd4a2f7d990bb9de1d6d28baef99eb83ea2aa07e5e9 \
+    --hash=sha256:6f9f51bbaa1418c0323a29dac88c43df09d3766f611032a0ea4831ec06fbc41c
+arclet-alconna-tools==0.6.6 \
+    --hash=sha256:c955553a1a1e171efa5cd2563757c1e9fed0b5af9600a5c1c4ad3d149d7abba6 \
+    --hash=sha256:fd9918f40c4ead8ce189f7151b6fe1ad1501e73dc51b291cb2a063c18dbe38db
 atlastk==0.13.2 \
     --hash=sha256:1e805658930f2546fbedddd406ff27028f772b2ceb104887cc54ba1ab34ffad8 \
     --hash=sha256:387c3b644a8145e6efd1cf9ff7add9226743571420ce6218cae34ca62ed9c833
@@ -196,9 +196,9 @@ nonebot-adapter-qqguild==0.2.4 \
 nonebot-adapter-telegram==0.1.0b14 \
     --hash=sha256:2b8a1f8ee0833994b00d48ffb57833fc52fe43290b0e100cf9f81e01412872b1 \
     --hash=sha256:9e6f7b7b1b04eaac7af7e3fb496875d988be84a8a22bd67afde4e5b08be0fcbc
-nonebot-plugin-alconna==0.14.2 \
-    --hash=sha256:3e1597331255097f07ac769e28dc785a028b37f897706fcb9a0403e071c85fbc \
-    --hash=sha256:85a104c3f5c9a4fc7379e78f5870d43142254cebaf4e45140ed11480936e9486
+nonebot-plugin-alconna==0.16.0 \
+    --hash=sha256:0f9a752c4052fc647483731e1d6fea33972b626a05ff53ccbf704719709a4daf \
+    --hash=sha256:cbf34aaeffaf49c1f2abf95b3fa42c6c752a777e1aaed0bcb7476496d4e7710c
 nonebot-plugin-send-anything-anywhere==0.3.0 \
     --hash=sha256:1ec98b48c842cdc656fbc9d90ee44a60eb77761d94843cf03cc1327f1b04773c \
     --hash=sha256:30ed3346e9acd0b80f7be5306b70f581d6a20f90388e46ccc984303d4c4449be

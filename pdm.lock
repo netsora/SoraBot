@@ -6,7 +6,7 @@ groups = ["default", "dev"]
 cross_platform = true
 static_urls = false
 lock_version = "4.3"
-content_hash = "sha256:87a79b067a207bde9c1961f53a9e20e064b5d2444ca179cd910da5596a6322c6"
+content_hash = "sha256:c644739ab27d6d68ddd04c2fb663dc11c45284c9ae9363a5f281ab60b5d25468"
 
 [[package]]
 name = "aiofiles"
@@ -63,7 +63,7 @@ files = [
 
 [[package]]
 name = "arclet-alconna"
-version = "1.7.16"
+version = "1.7.18"
 requires_python = ">=3.8"
 summary = "A High-performance, Generality, Humane Command Line Arguments Parser Library."
 dependencies = [
@@ -72,22 +72,22 @@ dependencies = [
     "typing-extensions>=4.5.0",
 ]
 files = [
-    {file = "arclet_alconna-1.7.16-py3-none-any.whl", hash = "sha256:02a98193a6ed68ec59eb771a2cd54b315782ec864e393ec743fa8c1289d8e605"},
-    {file = "arclet_alconna-1.7.16.tar.gz", hash = "sha256:9db70a4aefac05f4af6ce792e54acd8a02bf3381ff06c4599b21464e96afb409"},
+    {file = "arclet_alconna-1.7.18-py3-none-any.whl", hash = "sha256:5de131122a4b80b6aceebbd4a2f7d990bb9de1d6d28baef99eb83ea2aa07e5e9"},
+    {file = "arclet_alconna-1.7.18.tar.gz", hash = "sha256:6f9f51bbaa1418c0323a29dac88c43df09d3766f611032a0ea4831ec06fbc41c"},
 ]
 
 [[package]]
 name = "arclet-alconna-tools"
-version = "0.6.5"
+version = "0.6.6"
 requires_python = ">=3.8"
 summary = "Builtin Tools for Alconna"
 dependencies = [
-    "arclet-alconna<2.0,>=1.7.15",
+    "arclet-alconna<2.0,>=1.7.18",
     "nepattern<0.6.0,>=0.5.13",
 ]
 files = [
-    {file = "arclet-alconna-tools-0.6.5.tar.gz", hash = "sha256:11e22e533a27a7b458a26afe30e1345da09492b53e034218966901ac9aded141"},
-    {file = "arclet_alconna_tools-0.6.5-py3-none-any.whl", hash = "sha256:dcfa3529ca13d4f7496f588de1a98015ba5703e0ea586918e2d538477a8bec2b"},
+    {file = "arclet-alconna-tools-0.6.6.tar.gz", hash = "sha256:fd9918f40c4ead8ce189f7151b6fe1ad1501e73dc51b291cb2a063c18dbe38db"},
+    {file = "arclet_alconna_tools-0.6.6-py3-none-any.whl", hash = "sha256:c955553a1a1e171efa5cd2563757c1e9fed0b5af9600a5c1c4ad3d149d7abba6"},
 ]
 
 [[package]]
@@ -549,18 +549,18 @@ files = [
 
 [[package]]
 name = "nonebot-plugin-alconna"
-version = "0.14.2"
+version = "0.16.0"
 requires_python = ">=3.8"
 summary = "Alconna Adapter for Nonebot"
 dependencies = [
-    "arclet-alconna-tools<0.7.0,>=0.6.3",
-    "arclet-alconna<2.0.0,>=1.7.13",
-    "nepattern<0.6.0,>=0.5.10",
+    "arclet-alconna-tools<0.7.0,>=0.6.6",
+    "arclet-alconna<2.0.0,>=1.7.18",
+    "nepattern<0.6.0,>=0.5.13",
     "nonebot2>=2.0.0rc4",
 ]
 files = [
-    {file = "nonebot_plugin_alconna-0.14.2-py3-none-any.whl", hash = "sha256:85a104c3f5c9a4fc7379e78f5870d43142254cebaf4e45140ed11480936e9486"},
-    {file = "nonebot_plugin_alconna-0.14.2.tar.gz", hash = "sha256:3e1597331255097f07ac769e28dc785a028b37f897706fcb9a0403e071c85fbc"},
+    {file = "nonebot_plugin_alconna-0.16.0-py3-none-any.whl", hash = "sha256:0f9a752c4052fc647483731e1d6fea33972b626a05ff53ccbf704719709a4daf"},
+    {file = "nonebot_plugin_alconna-0.16.0.tar.gz", hash = "sha256:cbf34aaeffaf49c1f2abf95b3fa42c6c752a777e1aaed0bcb7476496d4e7710c"},
 ]
 
 [[package]]

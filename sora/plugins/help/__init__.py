@@ -34,10 +34,9 @@ async def help_(plugin: Match[str] = AlconnaMatch("plugin")):
     if plugin.available:
         plugin_help = command_manager.command_help(plugin.result)
         if plugin_help is None:
-            await MessageFactory("唔...没有找到帮助呢").send(at_sender=True)
-            await help.finish()
-        await MessageFactory(plugin_help).send(at_sender=True)
-        await help.finish()
+            await MessageFactory("唔...没有找到帮助呢").finish(at_sender=True)
+        else:
+            await MessageFactory(plugin_help).finish(at_sender=True)
 
     await MessageFactory(command_manager.all_command_help()).send(at_sender=True)
     await help.finish()

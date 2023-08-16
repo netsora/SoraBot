@@ -1,7 +1,6 @@
 import random
 import datetime
 from datetime import date
-from typing import Annotated
 
 from nonebot import require
 from nonebot.rule import to_me
@@ -15,9 +14,11 @@ from arclet.alconna.typing import CommandMeta
 from nonebot_plugin_alconna import on_alconna
 from nonebot_plugin_saa import Text, Image, MessageFactory
 
-from sora.database.models import UserInfo, UserSign
-from sora.utils.user import getUserInfo, get_user_avatar
+from sora.database.models import UserSign
+from sora.utils.user import get_user_avatar
 from sora.database.rewards import Exp, Coin, Favor, EventReward
+
+from sora.utils.annotated import UserInfo
 
 from .utils import generate_progress_bar
 from .config import (
@@ -76,9 +77,21 @@ info = on_alconna(
     block=True,
 )
 
+rank = on_alconna(
+    Alconna(
+        "rank",
+        meta=CommandMeta(
+            description="排行榜",
+            usage="@bot /排行榜",
+            example="@bot /我的信息",
+            compact=True,
+        ),
+    )
+)
+
 
 @sign.handle()
-async def sign_(userInfo: Annotated[UserInfo, getUserInfo()]):
+async def sign_(userInfo: UserInfo):
     user_id = userInfo.user_id
 
     if user_id is None:
@@ -144,7 +157,7 @@ async def sign_(userInfo: Annotated[UserInfo, getUserInfo()]):
 
 
 @info.handle()
-async def info_(userInfo: Annotated[UserInfo, getUserInfo()]):
+async def info_(userInfo: UserInfo):
     user_id = userInfo.user_id
     if user_id is None:
         await MessageFactory("该账号未注册，请先发送 [/注册] 注册林汐账户").send(at_sender=True)

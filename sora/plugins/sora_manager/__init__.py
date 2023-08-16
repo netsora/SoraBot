@@ -16,10 +16,10 @@ from arclet.alconna.typing import CommandMeta
 from nonebot_plugin_saa import MessageFactory
 from nonebot_plugin_alconna import Match, AlconnaMatch, on_alconna
 
-from sora.utils import NICKNAME
+from sora.utils import __version__, NICKNAME
 from sora.permission import BOT_ADMIN, BOT_HELPER
 from sora.utils.helpers import HandleCancellation
-from sora.utils.update import update, check_update
+from sora.utils.update import update, CheckUpdate
 
 __sora_plugin_meta__ = PluginMetadata(
     name="Bot管理",
@@ -102,8 +102,14 @@ async def _():
 
 @check_update_cmd.handle()
 async def _():
-    result = await check_update()
-    await MessageFactory(result).send(at_sender=True)
+    l_v, l_v_t = await CheckUpdate.show_latest_version()
+    if l_v and l_v_t:
+        if l_v != __version__:
+            await MessageFactory(f"新版本已发布, 请更新\n最新版本: {l_v} 更新时间: {l_v_t}").send(
+                at_sender=True
+            )
+        else:
+            await MessageFactory("当前已是最新版本").send(at_sender=True)
     await check_update_cmd.finish()
 
 

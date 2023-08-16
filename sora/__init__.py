@@ -1,3 +1,5 @@
+import asyncio
+
 from typing import Any
 from pathlib import Path
 
@@ -5,8 +7,8 @@ from nonebot import logger, load_plugins
 from tortoise.connection import ConnectionHandler
 
 from sora import database
-from sora.utils import DRIVER
-from sora.utils.update import check_update
+from sora.utils import DRIVER, __version__
+from sora.utils.update import CheckUpdate
 
 DBConfigType = dict[str, Any]
 
@@ -34,7 +36,23 @@ logo = r"""<g>
 async def startup():
     logger.opt(colors=True).info(logo)
     await database.connect()
-    await check_update()
+
+    logger.info(f"当前版本: {__version__}")
+
+    logger.info("开始检查更新...")
+    commit_info = await CheckUpdate.show_latest_commit_info()
+    if commit_info:
+        logger.info(commit_info)
+
+    l_v, l_v_t = await CheckUpdate.show_latest_version()
+    if l_v and l_v_t:
+        if l_v != __version__:
+            logger.warning("新版本已发布, 请更新")
+            logger.warning(f"最新版本: {l_v} 更新时间: {l_v_t}")
+        else:
+            logger.success("当前已是最新版本！")
+        await asyncio.sleep(3)
+
     # await PluginManager.init()
     # asyncio.ensure_future(check_resource())
 

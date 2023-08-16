@@ -1,7 +1,7 @@
 from nonebot import get_driver
 from .scheduler import scheduler as scheduler
 
-__version__ = "1.0.0"
+__version__ = "v1.0.0"
 
 DRIVER = get_driver()
 

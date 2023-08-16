@@ -1,5 +1,4 @@
 import re
-import datetime
 from pathlib import Path
 
 from git.repo import Repo
@@ -12,13 +11,17 @@ from .requests import AsyncHttpx
 from . import NICKNAME, __version__
 
 
+REPO_COMMITS_URL = "https://api.github.com/repos/netsora/SoraBot/commits"
+REPO_RELEASE_URL = "https://api.github.com/repos/netsora/SoraBot/releases"
+
+
 @run_sync
 def update():
     try:
         repo = Repo(Path().absolute())
     except InvalidGitRepositoryError:
         return "没有发现git仓库，无法通过git更新，请手动下载最新版本的文件进行替换。"
-    logger.info("林汐更新", "开始执行<m>git pull</m>更新操作")
+    logger.info("更新", "开始执行<m>git pull</m>更新操作")
     origin = repo.remotes.origin
     try:
         origin.pull()
@@ -35,7 +38,7 @@ def update():
                 pyproject_new_content = pyproject_raw_content.replace(
                     raw_plugins_load.group(), "plugins = []"
                 )
-                logger.info("林汐更新", f"检测到已安装插件：{raw_plugins_load.group()}，暂时重置")
+                logger.info("更新", f"检测到已安装插件：{raw_plugins_load.group()}，暂时重置")
             else:
                 pyproject_new_content = pyproject_raw_content
             pyproject_file.write_text(pyproject_new_content, encoding="utf-8")
@@ -61,51 +64,59 @@ def update():
                         "plugins = []", raw_plugins_load.group()
                     )
                     pyproject_file.write_text(pyproject_new_content, encoding="utf-8")
-                    logger.info("林汐更新", f"更新结束，还原插件：{raw_plugins_load.group()}")
+                    logger.info("更新", f"更新结束，还原插件：{raw_plugins_load.group()}")
             return msg
         else:
             msg = f"更新失败，错误信息：{e.stderr}，请尝试手动进行更新"
     return msg
 
 
-async def check_update():
-    resp = await AsyncHttpx.get("https://api.github.com/repos/netsora/SoraBot/commits")
-    data = resp.json()
-    if not isinstance(data, list):
-        result = "检查更新失败，可能是网络问题，请稍后再试"
-        logger.info("检查更新", result)
-        return result
-    try:
-        repo = Repo(Path().absolute())
-    except InvalidGitRepositoryError:
-        result = "没有发现git仓库，无法通过git检查更新"
-        logger.info("检查更新", result)
-        return result
-    local_commit = repo.head.commit
-    remote_commit = []
-    for commit in data:
-        if str(local_commit) == commit["sha"]:
-            break
-        remote_commit.append(commit)
-    if not remote_commit:
-        result = f"当前已是最新版本：{__version__}"
-        logger.info("检查更新", result)
-        return result
-    result = "检查到更新，日志如下：\n"
-    for i, commit in enumerate(remote_commit, start=1):
-        time_str = (
-            datetime.datetime.strptime(
-                commit["commit"]["committer"]["date"], "%Y-%m-%dT%H:%M:%SZ"
-            )
-            + datetime.timedelta(hours=8)
-        ).strftime("%Y-%m-%d %H:%M:%S")
-        result += (
-            f"{i}.{time_str}\n"
-            + commit["commit"]["message"]
-            .replace(":bug:", "🐛")
-            .replace(":sparkles:", "✨")
-            .replace(":memo:", "📝")
-            + "\n"
-        )
-    logger.info("检查更新", result)
-    return result
+class CheckUpdate:
+    @staticmethod
+    async def _get_commits_info() -> dict:
+        req = await AsyncHttpx.get(REPO_COMMITS_URL)
+        return req.json()
+
+    @staticmethod
+    async def _get_release_info() -> dict:
+        req = await AsyncHttpx.get(REPO_RELEASE_URL)
+        return req.json()
+
+    @classmethod
+    async def show_latest_commit_info(cls) -> str:
+        try:
+            data = await cls._get_commits_info()
+        except Exception:
+            logger.error("更新", "获取最新推送信息失败...")
+            raise Exception("获取最新推送信息失败")
+
+        try:
+            commit_data: dict = data[0]
+        except Exception:
+            logger.error("更新", "GitHub 数据结构已更改, 请前往仓库提交 Issue.")
+            raise Exception("GitHub 数据结构已更改, 请前往仓库提交 Issue.")
+
+        c_info = commit_data["commit"]
+        c_msg = c_info["message"]
+        c_sha = commit_data["sha"][0:5]
+        c_time = c_info["author"]["date"]
+
+        return f"Latest commit {c_msg} | sha: {c_sha} | time: {c_time}"
+
+    @classmethod
+    async def show_latest_version(cls) -> tuple:
+        try:
+            data = await cls._get_release_info()
+        except Exception:
+            logger.error("更新", "获取发布列表失败...")
+            raise Exception("获取发布列表失败")
+
+        try:
+            release_data: dict = data[0]
+        except Exception:
+            logger.error("更新", "GitHub 数据结构已更改, 请前往仓库提交 Issue.")
+            raise Exception("GitHub 数据结构已更改, 请前往仓库提交 Issue.")
+
+        l_v = release_data["tag_name"]
+        l_v_t = release_data["published_at"]
+        return l_v, l_v_t

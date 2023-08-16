@@ -88,13 +88,13 @@ class CheckUpdate:
             data = await cls._get_commits_info()
         except Exception:
             logger.error("更新", "获取最新推送信息失败...")
-            raise Exception("获取最新推送信息失败")
+            return ""
 
         try:
             commit_data: dict = data[0]
         except Exception:
-            logger.error("更新", "GitHub 数据结构已更改, 请前往仓库提交 Issue.")
-            raise Exception("GitHub 数据结构已更改, 请前往仓库提交 Issue.")
+            logger.error("更新", "检查更新失败，频率过高")
+            return ""
 
         c_info = commit_data["commit"]
         c_msg = c_info["message"]
@@ -109,13 +109,13 @@ class CheckUpdate:
             data = await cls._get_release_info()
         except Exception:
             logger.error("更新", "获取发布列表失败...")
-            raise Exception("获取发布列表失败")
+            return "", ""
 
         try:
             release_data: dict = data[0]
         except Exception:
-            logger.error("更新", "GitHub 数据结构已更改, 请前往仓库提交 Issue.")
-            raise Exception("GitHub 数据结构已更改, 请前往仓库提交 Issue.")
+            logger.error("更新", "检查更新失败，频率过高")
+            return "", ""
 
         l_v = release_data["tag_name"]
         l_v_t = release_data["published_at"]

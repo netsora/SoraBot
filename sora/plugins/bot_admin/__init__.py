@@ -1,5 +1,7 @@
 from typing import Annotated
+
 from nonebot import require
+from nonebot.rule import to_me
 
 require("nonebot_plugin_saa")
 require("nonebot_plugin_alconna")
@@ -7,6 +9,7 @@ require("nonebot_plugin_alconna")
 from arclet.alconna.args import Args
 from arclet.alconna.core import Alconna
 from arclet.alconna.base import Option, Subcommand
+from arclet.alconna.config import namespace
 from arclet.alconna.typing import CommandMeta
 from nonebot_plugin_alconna import Query, Match, on_alconna, AlconnaMatch, AlconnaQuery
 from nonebot_plugin_saa import MessageFactory
@@ -33,29 +36,34 @@ BOT_ADMIN
 取消协助者：/admin remove -h <user_id>
 """
 
-
-bot_admin = on_alconna(
-    Alconna(
-        "admin",
-        Option("-l|--list", help_text="查看 Bot管理员 列表"),
-        Option("-i|--init", Args["token", str], help_text="初始化权限"),
-        Subcommand(
-            "add",
-            Option("-a|--admin", Args["who?", int], help_text="增加 Bot管理员"),
-            Option("-h|--helper", Args["who?", int], help_text="增加 Bot协助者"),
+with namespace("Sora") as ns:
+    ns.builtin_option_name["help"] = {"--h", "--help"}
+    bot_admin = on_alconna(
+        Alconna(
+            "admin",
+            Option("-l|--list", help_text="查看 Bot管理员 列表"),
+            Option("-i|--init", Args["token", str], help_text="初始化权限"),
+            Subcommand(
+                "add",
+                Option("-a|--admin", Args["who?", int], help_text="增加 Bot管理员"),
+                Option("-h|--helper", Args["who?", int], help_text="增加 Bot协助者"),
+            ),
+            Subcommand(
+                "remove",
+                Option("-a|--admin", Args["who?", int], help_text="取消 Bot管理员"),
+                Option("-h|--helper", Args["who?", int], help_text="取消 Bot协助者"),
+            ),
+            meta=CommandMeta(
+                description="Bot管理员相关指令",
+                usage=__usage__,
+                example="/admin -l",
+                compact=True,
+            ),
         ),
-        Subcommand(
-            "remove",
-            Option("-a|--admin", Args["who?", int], help_text="取消 Bot管理员"),
-            Option("-h|--helper", Args["who?", int], help_text="取消 Bot协助者"),
-        ),
-        meta=CommandMeta(
-            description="Bot管理员相关指令", usage=__usage__, example="/admin -l", compact=True
-        ),
-    ),
-    priority=5,
-    block=True,
-)
+        priority=5,
+        block=True,
+        rule=to_me(),
+    )
 
 
 @bot_admin.assign("list")
@@ -100,9 +108,11 @@ async def add(
             await MessageFactory(f"已成功增加 Bot管理员：{admin_who.result}").send(
                 at_sender=True
             )
+        elif admin_who.result == 0:
+            ...
         else:
             await MessageFactory(f"用户 {admin_who.result} 不存在").send(at_sender=True)
-    elif helper_who.available:
+    if helper_who.available:
         if await UserInfo.check_user_exist(str(helper_who.result)):
             await UserInfo.filter(user_id=helper_who.result).update(
                 permission="bot_helper"
@@ -110,10 +120,11 @@ async def add(
             await MessageFactory(f"已成功增加 Bot协助者：{helper_who.result}").send(
                 at_sender=True
             )
+        elif helper_who.result == 0:
+            ...
         else:
             await MessageFactory(f"用户 {helper_who.result} 不存在").send(at_sender=True)
-    else:
-        await MessageFactory("参数缺失。").send(at_sender=True)
+
     await bot_admin.finish()
 
 

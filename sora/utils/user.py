@@ -72,7 +72,7 @@ def getUserInfo():
     return Depends(dependency)
 
 
-async def get_user_info(event, user_id: str | None = None) -> UserInfo:
+async def get_user_info(event: Event, user_id: str | None = None) -> UserInfo:
     """
     获取用户信息
     :param event:

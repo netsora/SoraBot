@@ -1,25 +1,11 @@
 import pandas as pd
-from typing import Annotated
 
 from nonebot import require
 from nonebot.rule import to_me
-from nonebot.adapters.qqguild import (
-    Bot as GuildBot,
-    MessageEvent as GuildMessageEvent,
-    DirectMessageCreateEvent as DirectMessageCreateEvent,
-)
-from nonebot.adapters.onebot.v11 import (
-    Bot as V11Bot,
-    MessageEvent as V11MessageEvent,
-    GroupMessageEvent as V11GroupMessageEvent,
-    PrivateMessageEvent as V11PrivateMessageEvent,
-)
+from nonebot.internal.adapter import Event
+from nonebot.adapters.qqguild import Bot as GuildBot
+from nonebot.adapters.onebot.v11 import Bot as V11Bot
 from nonebot.adapters.telegram.bot import Bot as TGBOT
-from nonebot.adapters.telegram.event import (
-    MessageEvent as TGMessageEvent,
-    GroupMessageEvent as TGroupMessageEvent,
-    PrivateMessageEvent as TGPrivateMessageEvent,
-)
 
 require("nonebot_plugin_saa")
 require("nonebot_plugin_alconna")
@@ -31,20 +17,17 @@ from nonebot_plugin_alconna import Match, on_alconna, AlconnaMatch
 from nonebot_plugin_alconna.adapters import At
 from nonebot_plugin_saa import MessageFactory
 
-from sora.database import UserInfo
 from sora.utils.api import random_text
+from sora.utils.annotated import UserInfo
 from sora.database.models.bind import UserBind
-from sora.utils.user import get_user_info, getUserInfo
+from sora.utils.user import get_user_info
 from sora.utils.utils import get_setting_path
 
-from .model import token_manager, validate_token
 from .utils import read_value
+from .model import token_manager, validate_token
 
 AllBot = V11Bot | GuildBot | TGBOT
-AllGroupMessageEvent = V11GroupMessageEvent | GuildMessageEvent | TGroupMessageEvent
-AllPrivateMessageEvent = (
-    V11PrivateMessageEvent | DirectMessageCreateEvent | TGPrivateMessageEvent
-)
+
 
 __usage__ = """
 绑定：@bot /绑定 <token>
@@ -90,8 +73,8 @@ bind = on_alconna(
 @bind.assign("$main")
 async def bind_(
     bot: AllBot,
-    event: AllGroupMessageEvent | AllPrivateMessageEvent,
-    userInfo: Annotated[UserInfo, getUserInfo()],
+    event: Event,
+    userInfo: UserInfo,
     input_token: Match[str] = AlconnaMatch("input_token"),
 ):
     if input_token.available:
@@ -120,7 +103,7 @@ async def bind_(
 
 @bind.assign("token")
 async def token_(
-    user: Annotated[UserInfo, getUserInfo()],
+    user: UserInfo,
     token: Match[str] = AlconnaMatch("token"),
 ):
     if token.available:
@@ -140,7 +123,7 @@ async def token_(
 
 @bind.assign("list")
 async def bind_list_(
-    event: V11MessageEvent | GuildMessageEvent | TGMessageEvent,
+    event: Event,
     who: Match[At] = AlconnaMatch("who"),
 ):
     if who.available:
@@ -163,7 +146,7 @@ async def bind_list_(
 @bind.assign("rebind")
 async def rebind(
     bot: AllBot,
-    userInfo: Annotated[UserInfo, getUserInfo()],
+    userInfo: UserInfo,
 ):
     await UserBind.rebind(userInfo.user_id, bot.adapter.get_name())
     await MessageFactory("已取消绑定").send(at_sender=True)

@@ -1,5 +1,3 @@
-from typing import Annotated
-
 from nonebot import require
 from nonebot.rule import to_me
 
@@ -17,9 +15,8 @@ from nonebot_plugin_saa import MessageFactory
 from sora.log import logger
 from sora.utils import DRIVER
 from sora.utils.api import random_text
-from sora.utils.user import getUserInfo
-from sora.database.models import UserInfo
 from sora.permission import get_admin_list, get_helper_list
+from sora.utils.annotated import UserInfo
 
 
 authorize: str = ""
@@ -78,9 +75,7 @@ async def list():
 
 
 @bot_admin.assign("init")
-async def init(
-    user: Annotated[UserInfo, getUserInfo()], token: Match[str] = AlconnaMatch("token")
-):
+async def init(user: UserInfo, token: Match[str] = AlconnaMatch("token")):
     global authorize
     if token.result == authorize:
         await UserInfo.filter(user_id=user.user_id).update(permission="bot_admin")
@@ -92,7 +87,7 @@ async def init(
 
 @bot_admin.assign("add")
 async def add(
-    user: Annotated[UserInfo, getUserInfo()],
+    user: UserInfo,
     admin_who: Query[int] = AlconnaQuery("add.admin.who", 0),
     helper_who: Query[int] = AlconnaQuery("add.helper.who", 0),
 ):
@@ -130,7 +125,7 @@ async def add(
 
 @bot_admin.assign("remove")
 async def remove(
-    user: Annotated[UserInfo, getUserInfo()],
+    user: UserInfo,
     admin_who: Query[int] = AlconnaQuery("remove.admin.who", 0),
     helper_who: Query[int] = AlconnaQuery("remove.helper.who", 0),
 ):
@@ -144,18 +139,21 @@ async def remove(
             await MessageFactory(f"已取消 {admin_who.result} 的 Bot管理员 身份").send(
                 at_sender=True
             )
+        elif admin_who.result == 0:
+            ...
         else:
             await MessageFactory(f"用户 {admin_who.result} 不存在").send(at_sender=True)
-    elif helper_who.available:
+    if helper_who.available:
         if await UserInfo.check_user_exist(str(helper_who.result)):
             await UserInfo.filter(user_id=helper_who.result).update(permission="USER")
             await MessageFactory(f"已取消 {helper_who.result} 的 Bot协助者 身份").send(
                 at_sender=True
             )
+        elif helper_who.result == 0:
+            ...
         else:
             await MessageFactory(f"用户 {helper_who.result} 不存在").send(at_sender=True)
-    else:
-        await MessageFactory("参数缺失。").send(at_sender=True)
+
     await bot_admin.finish()
 
 

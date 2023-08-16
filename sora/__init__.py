@@ -7,6 +7,7 @@ from nonebot import logger, load_plugins
 from tortoise.connection import ConnectionHandler
 
 from sora import database
+
 from sora.utils import DRIVER, __version__
 from sora.utils.update import CheckUpdate
 

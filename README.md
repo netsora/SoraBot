@@ -146,3 +146,6 @@ reboot_cmd = on_command(
 本项目使用 AGPLv3.
 
 意味着你可以运行本项目，并向你的用户提供服务。除非获得商业授权，否则无论以何种方式修改或者使用代码，都需要开源
+
+## 活动
+![Repo Beats](https://repobeats.axiom.co/api/embed/3f28eb2c8fe036be9117c61a8b1bf1b445c12310.svg "Repobeats analytics image")

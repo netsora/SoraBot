@@ -24,6 +24,7 @@ _✨ 基于 Nonebot2，互通多平台，超可爱的林汐酱 ✨_
 <a href="https://github.com/astral-sh/ruff">
     <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json" alt="ruff">
 </a>
+<a href="https://app.fossa.com/projects/git%2Bgithub.com%2Fnetsora%2FSoraBot?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2Fnetsora%2FSoraBot.svg?type=shield"/></a>
 <br />
 <a href="https://github.com/netsora/SoraBot-website/actions/workflows/website-deploy.yml">
     <img src="https://github.com/netsora/SoraBot-website/actions/workflows/website-deploy.yml/badge.svg?branch=master&event=push" alt="site"/>
@@ -68,6 +69,9 @@ _✨ 基于 Nonebot2，互通多平台，超可爱的林汐酱 ✨_
   ·
   <a href="https://sorabot.netlify.app/">文档打不开?</a>
 </p>
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fnetsora%2FSoraBot.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fnetsora%2FSoraBot?ref=badge_large)
 
 ## 简介
 > **Note**  

@@ -11,7 +11,7 @@ require("nonebot_plugin_saa")
 require("nonebot_plugin_alconna")
 from arclet.alconna.core import Alconna
 from arclet.alconna.typing import CommandMeta
-from nonebot_plugin_alconna import on_alconna
+from nonebot_plugin_alconna import on_alconna, AlcResult
 from nonebot_plugin_saa import Text, Image, MessageFactory
 
 from sora.database.models import UserSign
@@ -20,7 +20,7 @@ from sora.database.rewards import Exp, Coin, Favor, EventReward
 
 from sora.utils.annotated import UserInfo
 
-from .utils import generate_progress_bar
+from .utils import get_rank, get_user_rank, generate_progress_bar
 from .config import (
     base_exp as base_exp,
     max_level as max_level,
@@ -79,14 +79,26 @@ info = on_alconna(
 
 rank = on_alconna(
     Alconna(
-        "rank",
+        "排行榜",
         meta=CommandMeta(
             description="排行榜",
             usage="@bot /排行榜",
             example="@bot /我的信息",
             compact=True,
         ),
-    )
+    ),
+    aliases={
+        "硬币排行",
+        "经验排行",
+        "经验值排行",
+        "好感度排行",
+        "硬币排行榜",
+        "经验值排行榜",
+        "好感度排行榜",
+    },
+    rule=to_me(),
+    priority=20,
+    block=True,
 )
 
 
@@ -187,3 +199,40 @@ async def info_(userInfo: UserInfo):
         )
     await msg.send(at_sender=True)
     await info.finish()
+
+
+@rank.handle()
+async def rank_(userInfo: UserInfo, commands: AlcResult):
+    if "硬币" in commands.result.header_result:
+        type = "coin"
+        command = "硬币"
+    elif "经验" in commands.result.header_result:
+        type = "exp"
+        command = "经验值"
+    elif "好感" in commands.result.header_result:
+        type = "favor"
+        command = "好感度"
+    else:
+        type = "coin"
+        command = "硬币"
+
+    all_ranks = await get_rank(type)
+    user_rank = await get_user_rank(userInfo.user_id, type)
+
+    msg = ""
+
+    for ranks, user in all_ranks.items():
+        user_id = user["user_id"]
+        user_name = user["user_name"]
+        count = user["count"]
+        msg += f"[{ranks}] {user_name}({user_id}):  {count}\n"
+
+    await MessageFactory(
+        f"""
+{command}排行榜：
+{msg}
+----------
+您当前{command}排行：第{user_rank}名
+"""
+    ).send(at_sender=True)
+    await rank.finish()

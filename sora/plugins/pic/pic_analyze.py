@@ -42,7 +42,7 @@ analysis = on_alconna(
         "图像鉴赏",
         Args["img?", AlcImage],
         meta=CommandMeta(
-            description="让林汐为你的图片打发！",
+            description="让林汐为你的图片打分！",
             usage="/图像鉴赏",
             example="/图像鉴赏",
             compact=True,

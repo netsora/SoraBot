@@ -2,10 +2,8 @@ import pandas as pd
 
 from nonebot import require
 from nonebot.rule import to_me
-from nonebot.internal.adapter import Event
-from nonebot.adapters.qqguild import Bot as GuildBot
-from nonebot.adapters.onebot.v11 import Bot as V11Bot
-from nonebot.adapters.telegram.bot import Bot as TGBOT
+from nonebot.internal.adapter.bot import Bot
+from nonebot.internal.adapter.event import Event
 
 require("nonebot_plugin_saa")
 require("nonebot_plugin_alconna")
@@ -25,9 +23,6 @@ from sora.utils.utils import get_setting_path
 
 from .utils import read_value
 from .model import token_manager, validate_token
-
-AllBot = V11Bot | GuildBot | TGBOT
-
 
 __usage__ = """
 绑定：@bot /绑定 <token>
@@ -72,7 +67,7 @@ bind = on_alconna(
 
 @bind.assign("$main")
 async def bind_(
-    bot: AllBot,
+    bot: Bot,
     event: Event,
     userInfo: UserInfo,
     input_token: Match[str] = AlconnaMatch("input_token"),
@@ -82,7 +77,7 @@ async def bind_(
         if validation_result.is_valid and validation_result.user_id is not None:
             await UserBind.bind(
                 validation_result.user_id,
-                platform=bot.adapter.get_name(),
+                platform=bot.type,
                 account=event.get_user_id(),
             )
             bindUserInfo = await get_user_info(event, validation_result.user_id)
@@ -145,9 +140,9 @@ async def bind_list_(
 
 @bind.assign("rebind")
 async def rebind(
-    bot: AllBot,
+    bot: Bot,
     userInfo: UserInfo,
 ):
-    await UserBind.rebind(userInfo.user_id, bot.adapter.get_name())
+    await UserBind.rebind(userInfo.user_id, bot.type)
     await MessageFactory("已取消绑定").send(at_sender=True)
     await bind.finish()

@@ -26,10 +26,8 @@ reboot_cmd = on_command(
 
 ```
 """
+from nonebot.internal.adapter.event import Event
 from nonebot.internal.permission import Permission as Permission
-from nonebot.adapters.qqguild import MessageEvent as GuildMessageEvent
-from nonebot.adapters.onebot.v11 import MessageEvent as V11MessageEvent
-from nonebot.adapters.telegram.event import MessageEvent as TGMessageEvent
 
 from sora.utils.user import get_user_id
 from sora.database.models import UserInfo
@@ -65,9 +63,7 @@ class BotAdminUser:
     def __repr__(self) -> str:
         return "BotAdminUser()"
 
-    async def __call__(
-        self, event: V11MessageEvent | GuildMessageEvent | TGMessageEvent
-    ) -> bool:
+    async def __call__(self, event: Event) -> bool:
         try:
             user_id = await get_user_id(event)
         except Exception:
@@ -88,9 +84,7 @@ class BotHelperUser:
     def __repr__(self) -> str:
         return "BotHelperUser()"
 
-    async def __call__(
-        self, event: V11MessageEvent | GuildMessageEvent | TGMessageEvent
-    ) -> bool:
+    async def __call__(self, event: Event) -> bool:
         try:
             user_id = await get_user_id(event)
         except Exception:

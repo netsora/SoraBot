@@ -203,13 +203,15 @@ async def info_(userInfo: UserInfo):
 
 @rank.handle()
 async def rank_(userInfo: UserInfo, commands: AlcResult):
-    if "硬币" in commands.result.header_result:
+    command_result = commands.result.header_result
+
+    if "硬币" in command_result:
         type = "coin"
         command = "硬币"
-    elif "经验" in commands.result.header_result:
+    elif "经验" in command_result:
         type = "exp"
         command = "经验值"
-    elif "好感" in commands.result.header_result:
+    elif "好感" in command_result:
         type = "favor"
         command = "好感度"
     else:

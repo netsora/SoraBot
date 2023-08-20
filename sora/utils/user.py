@@ -32,6 +32,18 @@ async def get_user_id(event: Event) -> str | None:
     return user_id
 
 
+async def get_user_name(user_id: str) -> str:
+    """
+    说明：
+        获取用户名
+    参数：
+        * user_id
+    """
+    user = await UserInfo.get(user_id=user_id)
+
+    return user.user_name
+
+
 async def get_bind_info(event: Event, account=None) -> UserBind:
     if account is not None:
         user = await UserBind.get(account=account)

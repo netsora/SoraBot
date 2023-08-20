@@ -6,21 +6,25 @@ from nonebot import require
 from nonebot.rule import to_me
 from tortoise.expressions import F
 from nonebot.plugin import PluginMetadata
+from nonebot.internal.adapter import Event
 
 require("nonebot_plugin_saa")
 require("nonebot_plugin_alconna")
+from arclet.alconna.args import Args
+from arclet.alconna.base import Option
 from arclet.alconna.core import Alconna
 from arclet.alconna.typing import CommandMeta
-from nonebot_plugin_alconna import on_alconna, AlcResult
+from nonebot_plugin_alconna.adapters import At
+from nonebot_plugin_alconna import Match, on_alconna, AlconnaMatch
 from nonebot_plugin_saa import Text, Image, MessageFactory
 
 from sora.database.models import UserSign
-from sora.utils.user import get_user_avatar
+from sora.utils.user import get_bind_info, get_user_avatar, get_user_name
 from sora.database.rewards import Exp, Coin, Favor, EventReward
 
 from sora.utils.annotated import UserInfo
 
-from .utils import get_rank, get_user_rank, generate_progress_bar
+from .utils import generate_progress_bar
 from .config import (
     base_exp as base_exp,
     max_level as max_level,
@@ -49,13 +53,17 @@ __sora_plugin_meta__ = PluginMetadata(
 sign = on_alconna(
     Alconna(
         "签到",
+        Option("info", Args["target?", At | int], alias={"信息"}, help_text="获取签到信息"),
+        Option("rank", alias={"排行", "排行榜"}, help_text="当日签到排行榜"),
+        Option("rank2", alias={"总排行", "排行榜"}, help_text="签到总排行"),
         meta=CommandMeta(
             description="每日打卡",
-            usage="@bot /签到",
+            usage="签到：@bot /签到\n签到信息：@bot /签到信息 [At]\n当日签到排行：@bot /签到排行",
             example="@bot /签到",
             compact=True,
         ),
     ),
+    aliases={"sign"},
     rule=to_me(),
     priority=20,
     block=True,
@@ -77,32 +85,8 @@ info = on_alconna(
     block=True,
 )
 
-rank = on_alconna(
-    Alconna(
-        "排行榜",
-        meta=CommandMeta(
-            description="排行榜",
-            usage="@bot /排行榜",
-            example="@bot /我的信息",
-            compact=True,
-        ),
-    ),
-    aliases={
-        "硬币排行",
-        "经验排行",
-        "经验值排行",
-        "好感度排行",
-        "硬币排行榜",
-        "经验值排行榜",
-        "好感度排行榜",
-    },
-    rule=to_me(),
-    priority=20,
-    block=True,
-)
 
-
-@sign.handle()
+@sign.assign("$main")
 async def sign_(userInfo: UserInfo):
     user_id = userInfo.user_id
 
@@ -201,40 +185,53 @@ async def info_(userInfo: UserInfo):
     await info.finish()
 
 
-@rank.handle()
-async def rank_(userInfo: UserInfo, commands: AlcResult):
-    command_result = commands.result.header_result
-
-    if "硬币" in command_result:
-        type = "coin"
-        command = "硬币"
-    elif "经验" in command_result:
-        type = "exp"
-        command = "经验值"
-    elif "好感" in command_result:
-        type = "favor"
-        command = "好感度"
+@sign.assign("info")
+async def sign_info(
+    event: Event, userInfo: UserInfo, target: Match[At | str] = AlconnaMatch("target")
+):
+    if target.available:
+        if isinstance(target.result, At):
+            target_id = (await get_bind_info(event, target.result.target)).user_id
+        else:
+            target_id = target.result
+        call = await get_user_name(target_id)
     else:
-        type = "coin"
-        command = "硬币"
+        target_id = userInfo.user_id
+        call = "您"
 
-    all_ranks = await get_rank(type)
-    user_rank = await get_user_rank(userInfo.user_id, type)
+    total_days, continuous_days = await UserSign.get_user_sign_info(target_id)
+
+    await MessageFactory(f"{call}当前连续签到 {continuous_days} 天，累计 {total_days} 天").send(
+        at_sender=True
+    )
+    await sign.finish()
+
+
+@sign.assign("rank")
+async def today_rank():
+    result = await UserSign.get_today_rank()
 
     msg = ""
 
-    for ranks, user in all_ranks.items():
-        user_id = user["user_id"]
-        user_name = user["user_name"]
-        count = user["count"]
-        msg += f"[{ranks}] {user_name}({user_id}):  {count}\n"
+    for i, info in enumerate(result, start=1):
+        user_id = info.user_id
+        user_name = await get_user_name(user_id)
+        msg += f"\n[{i}] {user_name}({user_id}) 共签到 {info.total_days} 天，当前已连续签到 {info.continuous_days} 天"
 
-    await MessageFactory(
-        f"""
-{command}排行榜：
-{msg}
-----------
-您当前{command}排行：第{user_rank}名
-"""
-    ).send(at_sender=True)
-    await rank.finish()
+    await MessageFactory(msg).send(at_sender=True)
+    await sign.finish()
+
+
+@sign.assign("rank2")
+async def total_rank():
+    result = await UserSign.get_total_rank()
+
+    msg = ""
+
+    for i, info in enumerate(result, start=1):
+        user_id = info.user_id
+        user_name = await get_user_name(user_id)
+        msg += f"\n[{i}] {user_name}({user_id}) 共签到 {info.total_days} 天，当前已连续签到 {info.continuous_days} 天"
+
+    await MessageFactory(msg).send(at_sender=True)
+    await sign.finish()

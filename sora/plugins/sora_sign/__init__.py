@@ -137,16 +137,16 @@ async def sign_(userInfo: UserInfo):
     await MessageFactory(
         f"""
     签到成功！
-    {msg}历史最高 {str(total_days+1)} 天\n
-    ——————————————\n
-    ۞≡==——☚◆☛——==≡۞\n
-    ➢[金币+{sign_coin}]\n
-            —— Now: {coin + sign_coin}\n
-    ➢[好感+{sign_favor}]\n
-            —— Now: {favor + sign_favor}\n
-    ➢[经验+{sign_exp}]\n
-            —— Now: {exp + sign_exp}\n
-    ۞≡==——☚◆☛——==≡۞\n
+    {msg}历史最高 {str(total_days+1)} 天
+    ——————————————
+    ۞≡==——☚◆☛——==≡۞
+    ➢[金币+{sign_coin}]
+            —— Now: {coin + sign_coin}
+    ➢[好感+{sign_favor}]
+            —— Now: {favor + sign_favor}
+    ➢[经验+{sign_exp}]
+            —— Now: {exp + sign_exp}
+    ۞≡==——☚◆☛——==≡۞
     —————————————
     """
     ).send(at_sender=True)

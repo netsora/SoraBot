@@ -27,7 +27,9 @@ async def remind(bot: V11Bot | GuildBot | TGBot):
                     "python3 bot.py"
                 )
             os.system("chmod +x ./restart.sh")
-            logger.info("配置", "已自动生成 restart.sh 重启脚本，请检查脚本是否与本地指令符合..")
+            logger.info(
+                "配置", "已自动生成 restart.sh 重启脚本，请检查脚本是否与本地指令符合.."
+            )
     is_restart_file = Path() / "is_restart"
     if is_restart_file.exists():
         if isinstance(bot, V11Bot):

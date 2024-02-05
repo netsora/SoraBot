@@ -118,7 +118,9 @@ async def add(
         elif helper_who.result == 0:
             ...
         else:
-            await MessageFactory(f"用户 {helper_who.result} 不存在").send(at_sender=True)
+            await MessageFactory(f"用户 {helper_who.result} 不存在").send(
+                at_sender=True
+            )
 
     await bot_admin.finish()
 
@@ -152,7 +154,9 @@ async def remove(
         elif helper_who.result == 0:
             ...
         else:
-            await MessageFactory(f"用户 {helper_who.result} 不存在").send(at_sender=True)
+            await MessageFactory(f"用户 {helper_who.result} 不存在").send(
+                at_sender=True
+            )
 
     await bot_admin.finish()
 
@@ -163,4 +167,6 @@ async def atuhorize_admin():
         global authorize
         authorize = random_text(20)
         logger.info("Admin", f"已自动生成授权token：{authorize}")
-        logger.info("Admin", f"在任意平台发送 /admin -i {authorize} 即可获取 Bot管理员 权限")
+        logger.info(
+            "Admin", f"在任意平台发送 /admin -i {authorize} 即可获取 Bot管理员 权限"
+        )

@@ -53,7 +53,9 @@ __sora_plugin_meta__ = PluginMetadata(
 sign = on_alconna(
     Alconna(
         "签到",
-        Option("info", Args["target?", At | int], alias={"信息"}, help_text="获取签到信息"),
+        Option(
+            "info", Args["target?", At | int], alias={"信息"}, help_text="获取签到信息"
+        ),
         Option("rank", alias={"排行", "排行榜"}, help_text="当日签到排行榜"),
         Option("rank2", alias={"总排行", "排行榜"}, help_text="签到总排行"),
         meta=CommandMeta(
@@ -91,7 +93,9 @@ async def sign_(userInfo: UserInfo):
     user_id = userInfo.user_id
 
     if user_id is None:
-        await MessageFactory("该账号暂未注册林汐账户，请先发送 [/注册] ").send(at_sender=True)
+        await MessageFactory("该账号暂未注册林汐账户，请先发送 [/注册] ").send(
+            at_sender=True
+        )
         await sign.finish()
     user_sign = await UserSign.get_or_none(user_id=user_id).values(
         "total_days", "continuous_days", "last_day"
@@ -156,7 +160,9 @@ async def sign_(userInfo: UserInfo):
 async def info_(userInfo: UserInfo):
     user_id = userInfo.user_id
     if user_id is None:
-        await MessageFactory("该账号未注册，请先发送 [/注册] 注册林汐账户").send(at_sender=True)
+        await MessageFactory("该账号未注册，请先发送 [/注册] 注册林汐账户").send(
+            at_sender=True
+        )
         await info.finish()
 
     user_avatar = get_user_avatar(user_id)
@@ -201,9 +207,9 @@ async def sign_info(
 
     total_days, continuous_days = await UserSign.get_user_sign_info(target_id)
 
-    await MessageFactory(f"{call}当前连续签到 {continuous_days} 天，累计 {total_days} 天").send(
-        at_sender=True
-    )
+    await MessageFactory(
+        f"{call}当前连续签到 {continuous_days} 天，累计 {total_days} 天"
+    ).send(at_sender=True)
     await sign.finish()
 
 

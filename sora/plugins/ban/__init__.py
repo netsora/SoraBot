@@ -76,7 +76,10 @@ async def add(
         else:
             minutes_result = 0
         hours_result = hours.result
-        logger.info("封禁", f"封禁目标：{target_id}，时长：{hours_result}小时{minutes_result}分钟")
+        logger.info(
+            "封禁",
+            f"封禁目标：{target_id}，时长：{hours_result}小时{minutes_result}分钟",
+        )
         await BanUser.ban(
             target_id, duration=convert_to_seconds(hours_result, minutes_result)
         )

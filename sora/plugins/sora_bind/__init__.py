@@ -49,7 +49,12 @@ bind = on_alconna(
         "绑定",
         Args["input_token?", str],
         Option("-t|--token", Args["token?", str], help_text="生成token"),
-        Option("-l|--list", Args["who?", At], alias={"列表", "信息"}, help_text="查询绑定信息"),
+        Option(
+            "-l|--list",
+            Args["who?", At],
+            alias={"列表", "信息"},
+            help_text="查询绑定信息",
+        ),
         Option("-r|--rebind", alias={"取消"}, help_text="取消绑定"),
         meta=CommandMeta(
             description="绑定",
@@ -90,7 +95,9 @@ async def bind_(
         else:
             await MessageFactory("绑定失败，密钥错误！").send(at_sender=True)
     else:
-        await MessageFactory("格式错误。输入 /help 绑定 查看其详细用法").send(at_sender=True)
+        await MessageFactory("格式错误。输入 /help 绑定 查看其详细用法").send(
+            at_sender=True
+        )
     token_manager.remove_token(validation_result.user_id)  # type: ignore
 
     await bind.finish()
@@ -105,14 +112,20 @@ async def token_(
         if token.result == "random":
             random_token = random_text(15, prefix="Sora/")
             token_manager.add_token(user_id=user.user_id, token=random_token)
-            await MessageFactory(f"已为您生成一次性token：{random_token}").send(at_sender=True)
+            await MessageFactory(f"已为您生成一次性token：{random_token}").send(
+                at_sender=True
+            )
         else:
             token_manager.add_token(user_id=user.user_id, token=token.result)
-            await MessageFactory(f"一次性token设置成功：{token.result}").send(at_sender=True)
+            await MessageFactory(f"一次性token设置成功：{token.result}").send(
+                at_sender=True
+            )
     else:
         random_token = random_text(15, prefix="Sora/")
         token_manager.add_token(user_id=user.user_id, token=random_token)
-        await MessageFactory(f"已为您生成一次性token：{random_token}\n").send(at_sender=True)
+        await MessageFactory(f"已为您生成一次性token：{random_token}\n").send(
+            at_sender=True
+        )
     await bind.finish()
 
 
@@ -129,7 +142,9 @@ async def bind_list_(
             df = pd.DataFrame(bindInfo)
             await MessageFactory(df.to_string(index=False)).send(at_sender=True)
         else:
-            await MessageFactory("该用户已设置 “不允许查看绑定资料”").send(at_sender=True)
+            await MessageFactory("该用户已设置 “不允许查看绑定资料”").send(
+                at_sender=True
+            )
         await bind.finish()
 
     bindInfo = await UserBind.get_bind_info(event.get_user_id())

@@ -105,9 +105,9 @@ async def _():
     l_v, l_v_t = await CheckUpdate.show_latest_version()
     if l_v and l_v_t:
         if l_v != __version__:
-            await MessageFactory(f"新版本已发布, 请更新\n最新版本: {l_v} 更新时间: {l_v_t}").send(
-                at_sender=True
-            )
+            await MessageFactory(
+                f"新版本已发布, 请更新\n最新版本: {l_v} 更新时间: {l_v_t}"
+            ).send(at_sender=True)
         else:
             await MessageFactory("当前已是最新版本").send(at_sender=True)
     await check_update_cmd.finish()
@@ -135,7 +135,9 @@ async def _(state: T_State, cmd: Match[str] = AlconnaMatch("cmd")):
         state["cmd"] = cmd
 
 
-@run_cmd.got("cmd", prompt="你输入你要运行的命令", parameterless=[HandleCancellation("已取消")])
+@run_cmd.got(
+    "cmd", prompt="你输入你要运行的命令", parameterless=[HandleCancellation("已取消")]
+)
 async def _(cmd: str = ArgPlainText("cmd")):
     await MessageFactory(f"开始执行{cmd}...").send(at_sender=True)
     p = await asyncio.subprocess.create_subprocess_shell(

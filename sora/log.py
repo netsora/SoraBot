@@ -25,9 +25,7 @@ class logger:
         result_str = (
             f"<g>{escape_tag(result)}</g>"
             if result_type
-            else f"<r>{escape_tag(result)}</r>"
-            if result
-            else ""
+            else f"<r>{escape_tag(result)}</r>" if result else ""
         )
         nb_logger.opt(colors=True).info(
             f"<u><y>[{command}]</y></u>{info}{param_str}{result_str}"

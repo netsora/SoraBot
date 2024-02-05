@@ -26,6 +26,7 @@ reboot_cmd = on_command(
 
 ```
 """
+
 from nonebot.internal.adapter.event import Event
 from nonebot.internal.permission import Permission as Permission
 

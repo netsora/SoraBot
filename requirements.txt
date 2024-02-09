@@ -202,9 +202,9 @@ nonebot-plugin-alconna==0.16.0 \
 nonebot-plugin-send-anything-anywhere==0.3.0 \
     --hash=sha256:1ec98b48c842cdc656fbc9d90ee44a60eb77761d94843cf03cc1327f1b04773c \
     --hash=sha256:30ed3346e9acd0b80f7be5306b70f581d6a20f90388e46ccc984303d4c4449be
-nonebot2==2.0.1 \
-    --hash=sha256:58111068df7a6c13cca2a412dd0f6f88d7bf2a2af3e92ae770fd913a9421743e \
-    --hash=sha256:c61294644aef08f2b427301ca1c358d34e6cfaa7025d694a502ad66e9508e7c2
+nonebot2==2.2.0 \
+    --hash=sha256:138800846fa3dc635bda9f2ddc589519ee8d9d3b401013fbb95e47676fc830fb \
+    --hash=sha256:447fa63d384414c0e610f4ce6d2b3999db81ac2becd8d86716c4117013dc032f
 numpy==1.25.2 \
     --hash=sha256:0d60fbae8e0019865fc4784745814cff1c421df5afee233db6d88ab4f14655a2 \
     --hash=sha256:1a1329e26f46230bf77b02cc19e900db9b52f398d6722ca853349a782d4cff55 \

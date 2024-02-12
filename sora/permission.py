@@ -1,58 +1,23 @@
-"""
-林汐权限机制：
+from typing import Any
 
-规则：user < bot_helper < bot_admin
-
-说明：
-    * bot_helper 包括所有的 bot_admin
-    * bot_admin 是最高权限，同样拥有 bot_helper 的权限
-
-例子：
-
-`/重启` 指令只能由 bot_admin 触发
-```python
-reboot_cmd = on_command(
-    cmd='重启',
-    permission=BOT_ADMIN
-)
-```
-
-`/重启` 指令可以由 bot_admin 和 bot_helper 触发
-```python
-reboot_cmd = on_command(
-    cmd='重启',
-    permission=BOT_HELPER
-)
-
-```
-"""
 from nonebot.internal.adapter.event import Event
 from nonebot.internal.permission import Permission as Permission
 
-from sora.utils.user import get_user_id
-from sora.database.models import UserInfo
+from sora.database import User
 
 
-async def get_admin_list():
+async def get_admin_list() -> list[tuple[Any, ...]]:
     """
     获取权限为 `Bot管理员` 的所有用户ID
     """
-    admin_list = await UserInfo.filter(permission="bot_admin").values_list(
-        "user_id", flat=True
-    )
-    return admin_list
+    return await User.filter(permission="ADMIN").values_list("uid", flat=True)
 
 
-async def get_helper_list():
+async def get_helper_list() -> list[tuple[Any, ...]]:
     """
-    获取所有拥有 Bot协助者 权限的用户ID
+    获取所有拥有 `Bot协助者` 权限的用户ID
     """
-    admin_list = await get_admin_list()
-    helper_list = await UserInfo.filter(permission="bot_helper").values_list(
-        "user_id", flat=True
-    )
-    helper_list = admin_list + helper_list
-    return helper_list
+    return await User.filter(permission="HELPER").values_list("uid", flat=True)
 
 
 class BotAdminUser:
@@ -65,12 +30,12 @@ class BotAdminUser:
 
     async def __call__(self, event: Event) -> bool:
         try:
-            user_id = await get_user_id(event)
+            uid = (await User.get_user_by_event(event)).uid
         except Exception:
             return False
 
-        admin_list: list = await get_admin_list()
-        if user_id in admin_list:
+        admin_list: list[tuple[Any, ...]] = await get_admin_list()
+        if uid in admin_list:
             return True
         else:
             return False
@@ -86,18 +51,18 @@ class BotHelperUser:
 
     async def __call__(self, event: Event) -> bool:
         try:
-            user_id = await get_user_id(event)
+            uid = (await User.get_user_by_event(event)).uid
         except Exception:
             return False
 
-        helper_list: list = await get_helper_list()
-        if user_id in helper_list:
+        helper_list: list[tuple[Any, ...]] = await get_helper_list()
+        if uid in helper_list:
             return True
         else:
             return False
 
 
-BOT_ADMIN: Permission = Permission(BotAdminUser())
+ADMIN: Permission = Permission(BotAdminUser())
 """Bot 管理员"""
-BOT_HELPER: Permission = Permission(BotHelperUser())
-"""Bot 协助者（默认包含 Bot管理员，不需要重复配置）"""
+HELPER: Permission = Permission(BotHelperUser())
+"""Bot 协助者"""

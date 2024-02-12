@@ -293,7 +293,7 @@ class AsyncHttpx:
                         )
                     )
                 )
-            _x = await asyncio.gather(*tasks)
+            _x = await asyncio.gather(*tasks)  # type: ignore
             result_ = result_ + list(_x)
             tasks.clear()
         return result_

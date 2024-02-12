@@ -1,15 +1,18 @@
+from nonebot.adapters import Bot, Event
 from nonebot.message import run_preprocessor
 from nonebot.exception import IgnoredException
 
 from sora.log import logger
-from sora.database import BanUser
-from sora.utils.annotated import UserInfo
+from sora.database import Ban, User
 
 
 @run_preprocessor
-async def _(userInfo: UserInfo):
-    user_id = userInfo.user_id
-    is_ban = await BanUser.is_ban(user_id)
-    if is_ban:
-        logger.debug("封禁", f"用户 {user_id} 处于黑名单中")
-        raise IgnoredException("用户处于黑名单中")
+async def _(bot: Bot, event: Event):
+    platform = bot.adapter.get_name()
+    pid = event.get_user_id()
+    if await User.check_exists(platform, pid):
+        uid = (await User.get_user_by_pid(pid)).uid
+        is_ban = await Ban.is_banned(uid)
+        if is_ban:
+            logger.debug(f"用户 {uid} 处于黑名单中")
+            raise IgnoredException("用户处于黑名单中")

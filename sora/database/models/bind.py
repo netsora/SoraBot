@@ -1,81 +1,87 @@
+from typing import Any
+
 from tortoise import fields
 from tortoise.models import Model
 
+from .user import User
 
-class UserBind(Model):
+
+class Bind(Model):
     id = fields.IntField(pk=True, generated=True, auto_increment=True)
-    user_id = fields.CharField(max_length=10)
+    uid = fields.CharField(max_length=10)
     """用户ID"""
-    user_origin_id = fields.CharField(max_length=10, null=True)
+    origin_uid = fields.CharField(max_length=10, null=True)
     """用户原始ID"""
     platform = fields.CharField(max_length=50)
     """绑定平台"""
-    account = fields.CharField(max_length=50)
+    pid = fields.CharField(max_length=50)
     """平台ID"""
 
+    info: fields.ForeignKeyRelation[User] = fields.ForeignKeyField(
+        "models.User", related_name="bind", to_field="uid"
+    )
+
     class Meta:
-        table = "userBind"
+        table = "Bind"
 
     @classmethod
-    async def check_account_exists(cls, platform: str, account: str) -> bool:
+    async def check_pid_exists(cls, platform: str, pid: str) -> bool:
         """
         说明：
-            判断 platform 账号 是否存在于 UserBind 表中
+            判断 platform 账号 是否存在于 Bind 表中
 
         参数：
             * platform: 平台
-            * account: 平台ID
+            * pid: 平台ID
 
         返回：
             如果存在则返回 `true`,
             反之则返回 `false`
         """
-        exists = await cls.filter(platform=platform, account=account).exists()
+        exists = await cls.filter(platform=platform, pid=pid).exists()
         return exists
 
     @classmethod
-    async def bind(cls, bind_id: str, platform: str, account: str):
+    async def bind(cls, origin_uid: str, bind_uid: str) -> None:
         """
         说明：
             绑定账号
         参数：
-            * bind_id: 绑定 ID
-            * platform: 平台
-            * account: 平台ID
+            * origin_uid: 原 uid
+            * bind_uid: 预绑定后的 uid
         """
-        obj = await cls.filter(platform=platform, account=account).first()
-        if obj:
-            obj.user_origin_id = obj.user_id
-            obj.user_id = bind_id
-            await obj.save()
+        bind = await Bind.get(uid=origin_uid)
+        user = await User.get(uid=bind_uid)
+        bind.origin_uid = origin_uid
+        bind.uid = bind_uid
+        bind.info = user
+        await bind.save()
 
     @classmethod
-    async def rebind(cls, user_id: str, platform: str):
+    async def cancel(cls, origin_uid: str, rebind_uid: str, platform: str) -> None:
         """
         说明：
             取消绑定
         参数：
-            * user_id: 用户 ID
-            * platform: 平台
+            * origin_uid: 原uid
+            * rebind_uid: 预取消绑定的 uid
         """
-        obj = await cls.filter(user_id=user_id, platform=platform).first()
-        if obj:
-            obj.user_id = obj.user_origin_id
-            await obj.save()
+        bind = await Bind.get(uid=rebind_uid, platform=platform)
+        user = await User.get(uid=origin_uid)
+        bind.origin_uid = None
+        bind.uid = origin_uid
+        bind.info = user
+        await bind.save()
 
     @classmethod
-    async def get_bind_info(cls, account):
+    async def get_user_bind(cls, pid: str) -> list[dict[str, Any]]:
         """
         说明：
             获取用户绑定信息
         参数：
-            *account: 平台ID
+            * pid: 平台ID
         """
-        user_data = await cls.filter(account=account).values(
-            "user_id", "platform", "account"
-        )
-        user_id = user_data[0]["user_id"]
-        data = await cls.filter(user_id=user_id).values(
-            "user_id", "platform", "account"
-        )
+        user_data = await cls.filter(pid=pid).values("uid", "platform", "pid")
+        uid = user_data[0]["uid"]
+        data = await cls.filter(uid=uid).values("uid", "platform", "pid")
         return data

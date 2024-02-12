@@ -1,23 +1,20 @@
 from nonebot import require
 from nonebot.rule import to_me
 from nonebot.internal.adapter import Bot
-from nonebot.internal.adapter import Event
 
 require("nonebot_plugin_saa")
 require("nonebot_plugin_alconna")
+from nonebot_plugin_saa import Text
 from arclet.alconna.args import Args
 from arclet.alconna.base import Option
 from arclet.alconna.core import Alconna
 from arclet.alconna.typing import CommandMeta
-from nonebot_plugin_alconna import Match, on_alconna, AlconnaMatch
-from nonebot_plugin_alconna.adapters import At
-from nonebot_plugin_saa import MessageFactory
+from nonebot_plugin_alconna import Match, on_alconna
+from nonebot_plugin_alconna.uniseg.segment import At
 
 from sora.log import logger
-from sora.database import BanUser
-from sora.utils.user import get_bind_info
-from sora.permission import BOT_HELPER, get_helper_list
-
+from sora.database import Ban, User
+from sora.permission import ADMIN, HELPER
 
 ban = on_alconna(
     Alconna(
@@ -45,30 +42,28 @@ ban = on_alconna(
     priority=5,
     block=True,
     rule=to_me(),
-    permission=BOT_HELPER,
+    permission=ADMIN | HELPER,
 )
 
 
 @ban.assign("add")
 async def add(
     bot: Bot,
-    event: Event,
-    banUser: Match[At | int] = AlconnaMatch("target"),
-    hours: Match[int] = AlconnaMatch("hours"),
-    minutes: Match[int] = AlconnaMatch("minutes"),
+    target: At | int,
+    hours: Match[int],
+    minutes: Match[int],
 ):
-    if isinstance(banUser.result, At):
-        target = banUser.result.target
-        if target == bot.self_id:
-            await MessageFactory("你的权限不够喔").send(at_sender=True)
-            await ban.finish()
-        target_id = (await get_bind_info(event, target)).user_id
+    if isinstance(target, At):
+        pid = target.target
+        if pid == bot.self_id:
+            await Text("不要禁我，会把我弄哭的哦").finish(at_sender=True)
+        if not await User.check_exists(bot.adapter.get_name(), pid):
+            await Text("您@的用户还未注册喔").finish(at_sender=True)
+        uid = (await User.get_user_by_pid(pid)).uid
     else:
-        target_id = banUser.result
+        uid = str(target)
 
-    if target_id in await get_helper_list():
-        await MessageFactory("你的权限不够喔").send(at_sender=True)
-        await ban.finish()
+    user_name = (await User.get_user_by_uid(uid)).user_name
 
     if hours.available:
         if minutes.available:
@@ -76,53 +71,63 @@ async def add(
         else:
             minutes_result = 0
         hours_result = hours.result
-        logger.info("封禁", f"封禁目标：{target_id}，时长：{hours_result}小时{minutes_result}分钟")
-        await BanUser.ban(
-            target_id, duration=convert_to_seconds(hours_result, minutes_result)
-        )
-        await MessageFactory(
-            f"已成功封禁用户：{target_id}，时长：{hours_result}小时{minutes_result}分钟"
+        logger.info(f"封禁目标：{uid}({user_name})，时长：{hours_result}小时{minutes_result}分钟")
+        await Ban.ban(uid, duration=convert_to_seconds(hours_result, minutes_result))
+        await Text(
+            f"已成功封禁用户：{uid}({user_name})，时长：{hours_result}小时{minutes_result}分钟"
         ).send(at_sender=True)
     else:
-        logger.info("封禁", f"永久封禁目标：{target_id}")
-        await BanUser.ban(target_id, duration=-1)
-        await MessageFactory(f"已永久封禁用户：{target_id}").send(at_sender=True)
+        logger.info(f"永久封禁目标：{uid}({user_name})")
+        await Ban.ban(uid, duration=-1)
+        await Text(f"已永久封禁用户：{uid}({user_name})").send(at_sender=True)
 
     await ban.finish()
 
 
 @ban.assign("remove")
-async def remove(
-    bot: Bot, event: Event, banUser: Match[At | int] = AlconnaMatch("target")
+async def unban(
+    bot: Bot,
+    target: At | int,
+    hours: Match[int],
+    minutes: Match[int],
 ):
-    if isinstance(banUser.result, At):
-        target = banUser.result.target
-        if target == bot.self_id:
-            await MessageFactory("你的权限不够喔").send(at_sender=True)
-            await ban.finish()
-        target_id = (await get_bind_info(event, target)).user_id
+    if isinstance(target, At):
+        pid = target.target
+        if not await User.check_exists(bot.adapter.get_name(), pid):
+            await Text("您@的用户还未注册喔").finish(at_sender=True)
+        uid = (await User.get_user_by_pid(pid)).uid
     else:
-        target_id = banUser.result
+        uid = str(target)
 
-    if target_id in await get_helper_list():
-        await MessageFactory("你的权限不够喔").send(at_sender=True)
-        await ban.finish()
+    user_name = (await User.get_user_by_uid(uid)).user_name
 
-    await BanUser.unban(target_id)
-    logger.info("封禁", f"解除封禁：{target_id}")
-    await MessageFactory(f"已解除封禁：{target_id}").send(at_sender=True)
+    if hours.available:
+        if minutes.available:
+            minutes_result = minutes.result
+        else:
+            minutes_result = 0
+        hours_result = hours.result
+        logger.info(f"封禁目标：{uid}({user_name})，时长：{hours_result}小时{minutes_result}分钟")
+        await Ban.unban(uid)
+        await Text(
+            f"已成功封禁用户：{uid}({user_name})，时长：{hours_result}小时{minutes_result}分钟"
+        ).send(at_sender=True)
+    else:
+        logger.info(f"永久封禁目标：{uid}({user_name})")
+        await Ban.unban(uid)
+        await Text(f"已永久封禁用户：{uid}({user_name})").send(at_sender=True)
 
     await ban.finish()
 
 
 @ban.assign("list")
 async def list():
-    ban_users = await BanUser.all()
+    ban_users = await Ban.all()
     if ban_users:
         message = "\n".join(
             [
                 f"ID: {ban_user.id}\n"
-                f"用户ID: {ban_user.user_id}\n"
+                f"用户ID: {ban_user.uid}\n"
                 f"封禁开始时间: {ban_user.ban_time}\n"
                 f"封禁时长: {ban_user.duration}\n"
                 for ban_user in ban_users
@@ -130,7 +135,7 @@ async def list():
         )
     else:
         message = "当前还没有被封禁用户呢"
-    await MessageFactory(message).send(at_sender=True)
+    await Text(message).finish(at_sender=True)
 
 
 def convert_to_seconds(hours: int, minutes: int):

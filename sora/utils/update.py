@@ -6,10 +6,10 @@ from nonebot.utils import run_sync
 from git.exc import GitCommandError, InvalidGitRepositoryError
 
 from sora.log import logger
+from sora.config import bot_config
+from sora.version import __version__
 
 from .requests import AsyncHttpx
-from . import NICKNAME, __version__
-
 
 REPO_COMMITS_URL = "https://api.github.com/repos/netsora/SoraBot/commits"
 REPO_RELEASE_URL = "https://api.github.com/repos/netsora/SoraBot/releases"
@@ -25,7 +25,7 @@ def update():
     origin = repo.remotes.origin
     try:
         origin.pull()
-        msg = f"""更新完成，版本：{__version__}\n可使用命令 [@bot /重启] 重启{NICKNAME[1]}"""
+        msg = f"""更新完成，版本：{__version__}\n可使用命令 [@bot /重启] 重启{bot_config.nickname}"""
     except GitCommandError as e:
         if "timeout" in e.stderr or "unable to access" in e.stderr:
             msg = "更新失败，连接git仓库超时，请重试或修改源为代理源后再重试。"
@@ -44,7 +44,7 @@ def update():
             pyproject_file.write_text(pyproject_new_content, encoding="utf-8")
             try:
                 origin.pull()
-                msg = f"""更新完成，版本：{__version__}\n可使用命令 [@bot /重启] 重启{NICKNAME[1]}"""
+                msg = f"""更新完成，版本：{__version__}\n可使用命令 [@bot /重启] 重启{bot_config.nickname}"""
             except GitCommandError as e:
                 if "timeout" in e.stderr or "unable to access" in e.stderr:
                     msg = "更新失败，连接git仓库超时，请重试或修改源为代理源后再重试。"

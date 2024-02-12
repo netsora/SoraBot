@@ -1,6 +1,4 @@
 import httpx
-from typing import Any
-from pathlib import Path
 
 try:
     import ujson as json
@@ -10,8 +8,7 @@ except ImportError:
 from nonebot.internal.adapter import Message
 
 from sora.log import logger
-from sora.utils import PROXY
-from sora.config.path import DATABASE_PATH
+from sora.config import bot_config
 
 
 def get_message_at(data: str) -> list:
@@ -125,7 +122,7 @@ def get_local_proxy() -> str | None:
     """
     获取 .env* 中设置的代理
     """
-    return PROXY or None
+    return bot_config.proxy_url or None
 
 
 async def get_user_avatar(qq: int) -> bytes | None:
@@ -141,11 +138,6 @@ async def get_user_avatar(qq: int) -> bytes | None:
             except TimeoutError:
                 pass
     return None
-
-
-def get_setting_path(user_id: Any):
-    path = Path(f"{DATABASE_PATH}/user/{user_id}/setting.toml")
-    return path
 
 
 def is_number(s: int | str) -> bool:

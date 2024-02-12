@@ -1,44 +1,34 @@
+"""本模块定义了 Sora 运行所需的文件目录"""
+
 from pathlib import Path
 
-# 配置路径
-SORA_CONFIG = Path() / "data" / "config" / "config.yaml"
+BOT_DIR = Path.cwd()
+"""Bot 根目录"""
 
-# 图片路径
-IMAGE_PATH = Path() / "resources" / "image"
-# 语音路径
-RECORD_PATH = Path() / "resources" / "record"
-# 文本路径
-TEXT_PATH = Path() / "resources" / "text"
-# 字体路径
-FONT_PATH = Path() / "resources" / "font"
-# 网页模板路径
-TEMPLATE_PATH = Path() / "resources" / "template"
+DATA_DIR = BOT_DIR / "data"
+"""数据保存目录"""
 
-# 数据路径
-DATA_PATH = Path() / "data"
-# 插件数据路径
-PLUGIN_PATH = Path() / "data" / "plugin"
+RES_DIR = BOT_DIR / "resources"
+"""资源文件目录"""
 
-# 数据库路径
-DATABASE_PATH = Path() / "data" / "database"
-# 黑名单数据路径
-USER_BAN_DB_PATH = DATABASE_PATH / "ban.db"
-# 用户数据路径
-USER_INFO_DB_PATH = DATABASE_PATH / "user.db"
-# 用户绑定数据路径
-USER_BIND_DB_PATH = DATABASE_PATH / "bind.db"
-# 用户签到数据路径
-USER_SIGN_DB_PATH = DATABASE_PATH / "sign.db"
+LOG_DIR = DATA_DIR / "logs"
+"""日志保存目录"""
 
+IMAGE_DIR = RES_DIR / "image"
+"""图片文件目录"""
 
-def load_path():
-    IMAGE_PATH.mkdir(parents=True, exist_ok=True)
-    RECORD_PATH.mkdir(parents=True, exist_ok=True)
-    TEXT_PATH.mkdir(parents=True, exist_ok=True)
-    FONT_PATH.mkdir(parents=True, exist_ok=True)
-    TEMPLATE_PATH.mkdir(parents=True, exist_ok=True)
-    DATABASE_PATH.mkdir(parents=True, exist_ok=True)
-    DATA_PATH.mkdir(parents=True, exist_ok=True)
+VIDEO_DIR = RES_DIR / "video"
+"""视频文件目录"""
 
+AUDIO_DIR = RES_DIR / "audio"
+"""音频文件目录"""
 
-load_path()
+FONT_DIR = RES_DIR / "font"
+"""字体文件目录"""
+
+PAGE_DIR = RES_DIR / "page"
+"""网页文件目录"""
+
+for name, var in locals().copy().items():
+    if name.endswith("_DIR") and isinstance(var, Path):
+        var.mkdir(parents=True, exist_ok=True)

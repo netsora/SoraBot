@@ -1,9 +1,10 @@
 import logging
 
-from nonebot import get_driver
 from pydantic import Field, BaseSettings
-from nonebot.log import LoguruHandler, logger
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
+from sora import get_driver
+from sora.log import LoguruHandler, logger
 
 
 class Config(BaseSettings):
@@ -28,13 +29,13 @@ scheduler.configure(plugin_config.apscheduler_config)
 async def _start_scheduler():
     if not scheduler.running:
         scheduler.start()
-        logger.opt(colors=True).info("<y>Scheduler Started</y>")
+        logger.success("⏱️ <y><b>Scheduler Started</b></y>")
 
 
 async def _shutdown_scheduler():
     if scheduler.running:
         scheduler.shutdown()
-        logger.opt(colors=True).info("<y>Scheduler Shutdown</y>")
+        logger.opt(colors=True).info("⏱️ <y><b>Scheduler Shutdown</b></y>")
 
 
 if plugin_config.apscheduler_autostart:

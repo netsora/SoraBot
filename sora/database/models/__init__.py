@@ -1,9 +1,4 @@
-from . import ban as ban
-from . import bind as bind
-from . import sign as sign
-from . import user as user
-
-from .ban import BanUser as BanUser
-from .bind import UserBind as UserBind
-from .sign import UserSign as UserSign
-from .user import UserInfo as UserInfo
+from .ban import Ban as Ban
+from .bind import Bind as Bind
+from .sign import Sign as Sign
+from .user import User as User

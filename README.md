@@ -70,50 +70,32 @@ _✨ 基于 Nonebot2，互通多平台，超可爱的林汐酱 ✨_
 </p>
 
 ## 简介
+
 > **Note**  
 > 一切开发旨在学习，请勿用于非法用途
 
 林汐（SoraBot）基于 Nonebot2 开发，互通多平台，以 sqlite3 作为数据库的功能型机器人
 
-## 特色
-* 使用 NoneBot2 进行项目底层构建.
-* 使用 go-cqhttp 作为默认协议端.
-* 互通 QQ、QQ频道、Telegram 等平台
-* 独立ID，更方便管理与互通数据
-* 全新的权限系统，不用重启便可自定义 Bot管理员 和 Bot协助者
-* Coming soon...
+## 特性
+
+- 使用 NoneBot2 进行项目底层构建.
+- 使用 go-cqhttp 作为默认协议端.
+- 互通 QQ、QQ频道、Telegram 等平台
+- 独立ID，更方便管理与互通数据
+- 全新的权限系统，不用重启便可自定义 Bot管理员 和 Bot协助者
+- Coming soon...
 
 ## 你可能会问
+
 **什么是独立ID，它有什么用？**  
 独立ID是林汐为每个用户分配的专属ID，通过它，我们便可知晓用户信息、绑定信息、权限等，以便我们更好向用户提供服务
 
 **全新的权限系统，新在哪里？**  
 林汐的权限系统，并没有使用 Nonebot2 所提供的 `SUPERUSER`，而是改为了 `Bot管理员` 和 `Bot协助者`
-> **Warning**  
-> 请不要将 Bot管理员ID 重复设置在 Bot协助者中。事实上，Bot协助者本就包括Bot管理员
 
-**Bot管理员 和 Bot协助者 的区别是？**  
-Bot管理员是最高权限， 拥有 Bot协助者 的权限，所以我们便可以说 Bot协助者 包括 Bot管理员
+## 配置
 
-<details>
-<summary>Example</summary>
-
-`/重启` 指令只能由 Bot管理员 触发
-```python
-reboot_cmd = on_command(
-    cmd='重启',
-    permission=BOT_ADMIN
-)
-```
-
-`/重启` 指令可以由 Bot管理员 和 Bot协助者 触发
-```python
-reboot_cmd = on_command(
-    cmd='重启',
-    permission=BOT_HELPER
-)
-```
-</details>
+SoraBot 文档：~~[📖这里](bot.netsora.info)~~ 仓库内介绍：[📦这里](.)
 
 ## 更新日志
 
@@ -133,19 +115,22 @@ reboot_cmd = on_command(
 请参考 [贡献指南](./CONTRIBUTING.md)
 
 ## 鸣谢
-感谢以下 开发者 和 Github项目 对 SoraBot 作出的贡献：（排名不分先后）
-* [`nonebot/noenbot2`](https://github.com/netsora/SoraBot)：跨平台Python异步机器人框架  
-* [`Mrs4s/go-cqhttp`](https://github.com/Mrs4s/go-cqhttp)：cqhttp的golang实现，轻量、原生跨平台.  
-* [`Kyomotoi/ATRI`](https://github.com/Kyomotoi/ATRI)：高性能文爱萝卜子
-* [`HibiKier/zhenxun_bot`](https://github.com/HibiKier/zhenxun_bot)：非常可爱的绪山真寻bot
-* [`CMHopeSunshine/LittlePaimon`](https://github.com/CMHopeSunshine/LittlePaimon)：原神Q群机器人
-* [`nonebot_plugin_saa`](https://github.com/felinae98/nonebot-plugin-send-anything-anywhere)：多适配器消息发送支持
-* [`nonebot_plugin_alconna`](https://github.com/nonebot/plugin-alconna)：强大的 Nonebot2 命令匹配拓展
+
+感谢以下 开发者 和 Github 项目对 SoraBot 作出的贡献：（排名不分先后）
+- [`nonebot/nonebot2`](https://github.com/nonebot/nonebot2)：跨平台Python异步机器人框架
+- [`A-kirami/KiramiBot`](https://github.com/A-kirami/KiramiBot)：简明轻快的聊天机器人应用。 
+- [`Kyomotoi/ATRI`](https://github.com/Kyomotoi/ATRI)：高性能文爱萝卜子
+- [`HibiKier/zhenxun_bot`](https://github.com/HibiKier/zhenxun_bot)：非常可爱的绪山真寻bot
+- [`CMHopeSunshine/LittlePaimon`](https://github.com/CMHopeSunshine/LittlePaimon)：原神Q群机器人
+- [`nonebot_plugin_saa`](https://github.com/felinae98/nonebot-plugin-send-anything-anywhere)：多适配器消息发送支持
+- [`nonebot_plugin_alconna`](https://github.com/nonebot/plugin-alconna)：强大的 Nonebot2 命令匹配拓展
 
 ## 许可证
+
 本项目使用 AGPLv3.
 
 意味着你可以运行本项目，并向你的用户提供服务。除非获得商业授权，否则无论以何种方式修改或者使用代码，都需要开源
 
 ## 活动
+
 ![Repo Beats](https://repobeats.axiom.co/api/embed/3f28eb2c8fe036be9117c61a8b1bf1b445c12310.svg "Repobeats analytics image")

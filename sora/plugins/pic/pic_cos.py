@@ -3,10 +3,8 @@ from nonebot import require
 require("nonebot_plugin_saa")
 require("nonebot_plugin_alconna")
 
-from arclet.alconna.core import Alconna
-from arclet.alconna.typing import CommandMeta
-from nonebot_plugin_alconna import on_alconna
-from nonebot_plugin_saa import Image, MessageFactory
+from nonebot_plugin_saa import Text, Image
+from nonebot_plugin_alconna import Alconna, CommandMeta, on_alconna
 
 from sora.log import logger
 
@@ -22,17 +20,17 @@ cos = on_alconna(
             compact=True,
         ),
     ),
-    aliases={"coser"},
     priority=50,
     block=True,
 )
+cos.shortcut("coser", prefix=True)
 
 
 @cos.handle()
-async def cos_():
+async def _():
     try:
-        await MessageFactory([Image(URL)]).send(at_sender=True)
+        await Image(URL).send(at_sender=True)
     except Exception as e:
-        logger.error("cos", f"{e}")
-        await MessageFactory("你cos给我看！").send(at_sender=True)
+        logger.error(f"{e}")
+        await Text("你cos给我看！").send(at_sender=True)
     await cos.finish()

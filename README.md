@@ -71,10 +71,10 @@ _✨ 基于 Nonebot2，互通多平台，超可爱的林汐酱 ✨_
 
 ## 简介
 
-> **Note**  
+> [!Note]
 > 一切开发旨在学习，请勿用于非法用途
 
-林汐（SoraBot）基于 Nonebot2 开发，互通多平台，以 sqlite3 作为数据库的功能型机器人
+林汐（SoraBot）基于 Nonebot2 开发，互通多平台，以 Sqlite3 作为数据库的功能型机器人
 
 ## 特性
 
@@ -95,7 +95,7 @@ _✨ 基于 Nonebot2，互通多平台，超可爱的林汐酱 ✨_
 
 ## 配置
 
-SoraBot 文档：~~[📖这里](bot.netsora.info)~~ 仓库内介绍：[📦这里](.)
+SoraBot 文档：~~[📖这里](bot.netsora.info)~~ 仓库内介绍：[📦这里](https://github.com/netsora/SoraBot/wiki)
 
 ## 更新日志
 

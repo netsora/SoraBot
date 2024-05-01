@@ -1,6 +1,7 @@
 import platform
 from io import BytesIO
 
+import cpuinfo
 import nonebot
 from PIL import Image, ImageDraw, ImageFont
 
@@ -93,7 +94,7 @@ def draw() -> bytes:
 
         content.text(
             (352, 1378),
-            f"{truncate_string(platform.processor())}",
+            f"{truncate_string(cpuinfo.get_cpu_info()['brand_raw'])}",
             font=adlam_fnt,
             fill=details_color,
         )

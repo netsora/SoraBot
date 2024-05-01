@@ -16,3 +16,4 @@ status = (
     .build(rule=to_me())
 )
 status.shortcut("状态", {"prefix": True})
+status.shortcut("运行状态", {"prefix": True})

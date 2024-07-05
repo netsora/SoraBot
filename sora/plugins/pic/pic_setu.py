@@ -34,7 +34,7 @@ setu = on_alconna(
 )
 
 
-def wrapper(slot: int | str, content: str):
+def wrapper(slot: int | str, content: str | None) -> str | None:
     if slot == 0:
         if not content:
             return "1"

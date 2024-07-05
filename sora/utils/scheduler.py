@@ -1,13 +1,13 @@
 import logging
 
-from pydantic import Field, BaseSettings
+from pydantic import Field, BaseModel
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from sora import get_driver
 from sora.log import LoguruHandler, logger
 
 
-class Config(BaseSettings):
+class Config(BaseModel):
     apscheduler_autostart: bool = True
     apscheduler_log_level: int = 30
     apscheduler_config: dict = Field(

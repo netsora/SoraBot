@@ -8,7 +8,7 @@ from collections.abc import Mapping, KeysView
 from typing import TYPE_CHECKING, Any, Literal, ClassVar, NoReturn, TypeAlias
 
 from nonebot.config import Env, Config
-from pydantic import Field, BaseModel, IPvAnyAddress, root_validator
+from pydantic import Field, BaseModel, IPvAnyAddress, model_validator
 
 from .utils import find_plugin
 
@@ -165,13 +165,13 @@ class BotConfig(BaseConfig):
     default_policy_allow: set[str] = {"*"}
     """默认权限策略允许的内容列表"""
 
-    _env_file: str | None = Field(default=None, alias="env_file")
+    env_file: str | None = Field(default=None, alias="_env_file")
     """配置文件名默认从 `.env.{env_name}` 中读取配置"""
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     def mixin_config(cls, values: dict[str, Any]) -> dict[str, Any]:
         config = Config(**values, _env_file=(".env", f".env.{Env().environment}"))
-        return config.dict(exclude_unset=True)
+        return config.model_dump(exclude_unset=True)
 
     class Config:
         extra = "allow"
@@ -199,7 +199,7 @@ class SoraConfig(BaseConfig):
     database: DatabaseConfig
     """数据库相关配置"""
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     def set_default_config(cls, values: dict[str, Any]) -> dict[str, Any]:
         BaseConfig.__raw_config__ = MappingProxyType(values)
         for name, config in cls.__annotations__.items():

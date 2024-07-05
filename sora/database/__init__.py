@@ -1,3 +1,5 @@
+from typing import Any
+
 from tortoise import Tortoise
 
 from sora.log import logger
@@ -9,6 +11,8 @@ from .models import Bind as Bind
 from .models import Sign as Sign
 from .models import User as User
 
+DATABASE: dict[str, Any] = {"models": ["sora.database.models"]}
+
 
 @on_startup(pre=True)
 async def connect_database() -> None:
@@ -17,14 +21,21 @@ async def connect_database() -> None:
     """
     try:
         await Tortoise.init(
-            db_url=database_config.url,
-            modules={"models": ["sora.database.models"]},
+            db_url=database_config.url, modules=DATABASE, timezone="Asia/Shanghai"
         )
         await Tortoise.generate_schemas()
         logger.opt(colors=True).success("🗃️ [magenta]Database connected successful.[/]")
 
     except Exception as e:
         raise Exception("Database connection failed.") from e
+
+
+def register_database(model: str):
+    """
+    注册数据库
+    """
+    models: list[str] = DATABASE["models"]
+    models.append(model)
 
 
 @on_shutdown
